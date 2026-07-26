@@ -6,8 +6,8 @@ import { JumpBar } from '../src/components/JumpBar';
 import { ColumnGrid } from '../src/components/ColumnGrid';
 
 describe('UI Components Rendering', () => {
-  it('renders HeaderClock component with quick actions', () => {
-    const { container } = render(
+  it('renders HeaderClock component with top-right quick tools', () => {
+    const { container, getByTitle } = render(
       <HeaderClock
         onOpenSearch={() => {}}
         onOpenCheatsheet={() => {}}
@@ -15,7 +15,8 @@ describe('UI Components Rendering', () => {
         onOpenImportExport={() => {}}
       />
     );
-    expect(container.textContent).toContain('Search or type a shortcut');
+    expect(getByTitle('Fuzzy Search (Press any key)')).not.toBeNull();
+    expect(getByTitle('Shortcuts Cheatsheet (? or F1)')).not.toBeNull();
   });
 
   it('renders JumpBar category tabs', () => {

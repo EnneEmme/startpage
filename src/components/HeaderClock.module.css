@@ -1,68 +1,25 @@
-.header {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-.actionsBar {
+.topRightTools {
+  position: fixed;
+  top: 0.85rem;
+  right: 1.25rem;
+  z-index: 950;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  max-width: 640px;
-}
-
-.searchTriggerBtn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.7rem 1.15rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  backdrop-filter: var(--glass-backdrop);
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-sm);
-}
-
-.searchTriggerBtn:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-color-hover);
-  color: var(--text-primary);
-  transform: translateY(-1px);
-}
-
-.keyBadge {
-  margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  padding: 0.18rem 0.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-sm);
-  color: var(--text-muted);
-}
-
-.quickTools {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
 .iconBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-md);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
+  backdrop-filter: var(--glass-backdrop);
+  box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
 }
 
