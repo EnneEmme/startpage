@@ -1,6 +1,6 @@
 /**
  * DataStore Engine
- * Handles links configuration, category grouping, custom category ordering, dynamic link rules, and localStorage persistence.
+ * Handles links configuration, category grouping, custom category ordering, link reordering, dynamic link rules, and localStorage persistence.
  */
 
 import { LinkItem, CategoryGroup, StartpageConfig } from '../types/startpage';
@@ -178,6 +178,21 @@ export class DataStore {
     this.save();
   }
 
+  public moveLink(linkId: string, targetCategoryId: string, targetIndex?: number): void {
+    const linkIdx = this.config.commands.findIndex(l => l.id === linkId);
+    if (linkIdx === -1) return;
+
+    const [draggedLink] = this.config.commands.splice(linkIdx, 1);
+    draggedLink.category = targetCategoryId;
+
+    if (typeof targetIndex === 'number' && targetIndex >= 0) {
+      this.config.commands.splice(targetIndex, 0, draggedLink);
+    } else {
+      this.config.commands.push(draggedLink);
+    }
+    this.save();
+  }
+
   public getCategories(): CategoryGroup[] {
     const groupsMap: Record<string, LinkItem[]> = {};
 
@@ -191,7 +206,6 @@ export class DataStore {
 
     const categoryNames = Object.keys(groupsMap);
 
-    // Sort categories according to custom categoryOrder preference if defined
     if (this.categoryOrder.length > 0) {
       categoryNames.sort((a, b) => {
         const idxA = this.categoryOrder.indexOf(a);

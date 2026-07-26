@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { X, Edit3, Trash2, Check } from 'lucide-preact';
+import { X, Edit3, Trash2, Check, Plus } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
 import { dataStore } from '../engine/dataStore';
 import styles from './VisualEditModal.module.css';
@@ -22,15 +22,21 @@ export const VisualEditModal = ({
   const [url, setUrl] = useState<string>('');
   const [aliasesStr, setAliasesStr] = useState<string>('');
   const [category, setCategory] = useState<string>('General');
+  const [customCategory, setCustomCategory] = useState<string>('');
+  const [isCreatingNewCategory, setIsCreatingNewCategory] = useState<boolean>(false);
   const [icon, setIcon] = useState<string>('');
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null);
+
+  const existingCategories = dataStore.getCategories().map(c => c.name);
 
   const handleResetForm = () => {
     setSelectedLinkId(null);
     setTitle('');
     setUrl('');
     setAliasesStr('');
-    setCategory('General');
+    setCategory(existingCategories.length > 0 ? existingCategories[0] : 'General');
+    setCustomCategory('');
+    setIsCreatingNewCategory(false);
     setIcon('');
   };
 
@@ -40,6 +46,8 @@ export const VisualEditModal = ({
     setUrl(link.url);
     setAliasesStr(link.aliases.join(', '));
     setCategory(link.category);
+    setCustomCategory('');
+    setIsCreatingNewCategory(false);
     setIcon(link.icon || '');
   };
 
@@ -59,6 +67,10 @@ export const VisualEditModal = ({
     e.preventDefault();
     if (!title.trim()) return;
 
+    const finalCategory = isCreatingNewCategory
+      ? (customCategory.trim() || 'General')
+      : category;
+
     const id = selectedLinkId || title.toLowerCase().replace(/[^a-z0-9]/g, '_');
     const aliases = aliasesStr
       ? aliasesStr.split(',').map(a => a.trim()).filter(Boolean)
@@ -69,7 +81,7 @@ export const VisualEditModal = ({
       title: title.trim(),
       url: url.trim(),
       aliases,
-      category: category.trim() || 'General',
+      category: finalCategory,
       icon: icon.trim() || undefined
     };
 
@@ -139,15 +151,55 @@ export const VisualEditModal = ({
                 />
               </div>
 
+              {/* Category Selector with Suggested List + Create New Option */}
               <div class={styles.formGroup}>
-                <label>Category</label>
-                <input
-                  type="text"
-                  class={styles.input}
-                  placeholder="e.g. Dev, Social, Fun"
-                  value={category}
-                  onInput={e => setCategory((e.target as HTMLInputElement).value)}
-                />
+                <label>Category *</label>
+
+                {!isCreatingNewCategory ? (
+                  <div class={styles.categorySelectRow}>
+                    <select
+                      class={styles.selectInput}
+                      value={category}
+                      onChange={e => {
+                        const val = (e.target as HTMLSelectElement).value;
+                        if (val === '__CREATE_NEW__') {
+                          setIsCreatingNewCategory(true);
+                        } else {
+                          setCategory(val);
+                        }
+                      }}
+                    >
+                      {existingCategories.map(cat => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                      <option value="__CREATE_NEW__">
+                        + Create New Category...
+                      </option>
+                    </select>
+                  </div>
+                ) : (
+                  <div class={styles.categoryCreateRow}>
+                    <input
+                      type="text"
+                      class={styles.input}
+                      placeholder="Type new category name..."
+                      value={customCategory}
+                      onInput={e => setCustomCategory((e.target as HTMLInputElement).value)}
+                      autoFocus
+                      required
+                    />
+                    <button
+                      type="button"
+                      class={styles.cancelNewCatBtn}
+                      onClick={() => setIsCreatingNewCategory(false)}
+                      title="Use existing category"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
