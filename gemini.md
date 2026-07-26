@@ -57,6 +57,8 @@ This document specifies the operational rules, coding standards, git workflow, a
 4. **Commit Policy**:
    - Use Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `style:`).
    - Every commit MUST include a clear, comprehensive description of what was changed and why.
+   - On `dev`: commit messages describe the change (e.g. `feat: add settings modal with theme picker`). Do NOT include version numbers in dev commits.
+   - On `main`: the single squashed commit uses the format `release: vX.Y.Z — short description`.
 
 5. **Mandatory Documentation Updates**:
    - Whenever files/folders are added, removed, or moved, `structure.md` MUST be updated in the same commit or step.
@@ -65,6 +67,15 @@ This document specifies the operational rules, coding standards, git workflow, a
 6. **GitHub Pages Deployment**:
    - The site is served via GitHub Pages from `main` branch, root directory (`/`).
    - After pushing to `main`, the site is automatically deployed to `https://<username>.github.io/startpage/`.
+
+7. **Semantic Versioning Policy**:
+   - Follow [SemVer](https://semver.org/): `MAJOR.MINOR.PATCH`.
+   - **Pre-release** (current phase): use `0.x.y` — the project is NOT yet feature-complete.
+     - `0.1.0` → first public pre-release
+     - `0.2.0` → new features added
+     - `0.2.1` → bug fixes only
+   - **Stable release**: `1.0.0` — only when the project is considered feature-complete and stable for daily use.
+   - Bump version ONLY when pushing a new build to `main`. Dev branch commits do not carry version numbers.
 
 ---
 
