@@ -29,6 +29,7 @@ export const ColumnGrid = ({
     link: LinkItem;
   } | null>(null);
 
+  const [scrollStates, setScrollStates] = useState<Record<string, { canScrollTop: boolean; canScrollBottom: boolean }>>({});
   const [draggedLinkId, setDraggedLinkId] = useState<string | null>(null);
   const [draggedCategoryName, setDraggedCategoryName] = useState<string | null>(null);
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
@@ -67,6 +68,23 @@ export const ColumnGrid = ({
     if (onConfigChanged) {
       onConfigChanged();
     }
+  };
+
+  const handleScroll = (e: Event, categoryName: string) => {
+    const target = e.target as HTMLDivElement;
+    const canScrollTop = target.scrollTop > 5;
+    const canScrollBottom = target.scrollTop + target.clientHeight < target.scrollHeight - 8;
+
+    setScrollStates(prev => {
+      const current = prev[categoryName];
+      if (current?.canScrollTop === canScrollTop && current?.canScrollBottom === canScrollBottom) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [categoryName]: { canScrollTop, canScrollBottom }
+      };
+    });
   };
 
   /* --------------------------------------------------------------------------
@@ -148,7 +166,20 @@ export const ColumnGrid = ({
         const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
         const isHighlighted = highlightedCategory === cat.name;
         const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
-        const hasOverflowLinks = cat.links.length > 20;
+
+        const state = scrollStates[cat.name] || {
+          canScrollTop: false,
+          canScrollBottom: cat.links.length > 20
+        };
+
+        let fadeClass = '';
+        if (state.canScrollTop && state.canScrollBottom) {
+          fadeClass = styles.fadeBoth;
+        } else if (state.canScrollTop && !state.canScrollBottom) {
+          fadeClass = styles.fadeTop;
+        } else if (!state.canScrollTop && state.canScrollBottom) {
+          fadeClass = styles.fadeBottom;
+        }
 
         return (
           <div
@@ -170,8 +201,11 @@ export const ColumnGrid = ({
               <h2 class={styles.columnTitle}>{cat.name}</h2>
             </div>
 
-            {/* Single Column Links List with Minimal Fade Mask & Hidden Scrollbars */}
-            <div class={`${styles.linksList} ${hasOverflowLinks ? styles.hasMoreBelow : ''}`}>
+            {/* Reactive Dynamic Top/Bottom Fade Masked Links List */}
+            <div
+              class={`${styles.linksList} ${fadeClass}`}
+              onScroll={e => handleScroll(e, cat.name)}
+            >
               {cat.links.map((link, linkIdx) => {
                 const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
                 const mainAlias = link.aliases && link.aliases.length > 0 ? link.aliases[0] : null;

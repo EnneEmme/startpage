@@ -113,6 +113,7 @@
   overflow-y: auto;
   scrollbar-width: none; /* Hide scrollbar Firefox */
   -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
+  transition: mask-image 0.2s ease, -webkit-mask-image 0.2s ease;
 }
 
 /* Hide scrollbar Chrome/Safari/Blink */
@@ -120,10 +121,20 @@
   display: none;
 }
 
-/* Sleek Minimalist Gradient Fade Mask when > 20 links exist below fold */
-.linksList.hasMoreBelow {
+/* Dynamic Reactive Gradient Fade Masks */
+.linksList.fadeBottom {
   mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
+}
+
+.linksList.fadeTop {
+  mask-image: linear-gradient(to top, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, #000 88%, transparent 100%);
+}
+
+.linksList.fadeBoth {
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
 }
 
 .linkCardDragWrapper {
