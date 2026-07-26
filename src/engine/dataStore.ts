@@ -40,8 +40,12 @@ export const DEFAULT_CONFIG: StartpageConfig = {
   ]
 };
 
+const cloneConfig = (config: StartpageConfig): StartpageConfig => {
+  return JSON.parse(JSON.stringify(config));
+};
+
 export class DataStore {
-  private config: StartpageConfig = DEFAULT_CONFIG;
+  private config: StartpageConfig = cloneConfig(DEFAULT_CONFIG);
 
   constructor() {
     this.load();
@@ -58,7 +62,7 @@ export class DataStore {
         }
       }
     } catch {}
-    this.config = DEFAULT_CONFIG;
+    this.config = cloneConfig(DEFAULT_CONFIG);
   }
 
   public save(): void {
@@ -119,7 +123,7 @@ export class DataStore {
   }
 
   public resetToDefault(): void {
-    this.config = DEFAULT_CONFIG;
+    this.config = cloneConfig(DEFAULT_CONFIG);
     try {
       localStorage.removeItem(STORAGE_LINKS_KEY);
     } catch {}

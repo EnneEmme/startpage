@@ -7,12 +7,18 @@ import {
   resolveDynamicUrl
 } from '../src/engine/dynamicEvaluator';
 
-describe('dynamicEvaluator Engine', () => {
+describe('dynamicEvaluator Engine & Edge Cases', () => {
   const mockDate = new Date(2026, 6, 26); // 26 July 2026
 
   it('formats dates correctly (DD-MM-YYYY and YYYY-MM-DD)', () => {
     expect(parseDateFormatted(mockDate)).toBe('26-07-2026');
     expect(parseDateISO(mockDate)).toBe('2026-07-26');
+  });
+
+  it('handles year turnover dates (Dec 31 to Jan 1)', () => {
+    const newYearsEve = new Date(2025, 11, 31);
+    expect(parseDateFormatted(newYearsEve)).toBe('31-12-2025');
+    expect(parseDateISO(newYearsEve)).toBe('2025-12-31');
   });
 
   it('resolves unimib_orari dynamic rule correctly', () => {
@@ -24,7 +30,6 @@ describe('dynamicEvaluator Engine', () => {
   it('resolves unimib_esami dynamic rule correctly with 60 day offset', () => {
     const url = getUnimibEsamiUrl(mockDate);
     expect(url).toContain('datefrom=26-07-2026');
-    // 60 days after July 26 is September 24
     expect(url).toContain('dateto=24-09-2026');
   });
 
@@ -32,5 +37,10 @@ describe('dynamicEvaluator Engine', () => {
     const rawTemplate = 'https://example.com/logs?date={{YYYY-MM-DD}}&formatted={{DD-MM-YYYY}}';
     const result = resolveDynamicUrl(rawTemplate, undefined, mockDate);
     expect(result).toBe('https://example.com/logs?date=2026-07-26&formatted=26-07-2026');
+  });
+
+  it('returns raw URL unchanged if no dynamic rules or templates match', () => {
+    const plainUrl = 'https://google.com';
+    expect(resolveDynamicUrl(plainUrl, undefined, mockDate)).toBe('https://google.com');
   });
 });

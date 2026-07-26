@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { FuzzySearchEngine } from '../src/engine/fuzzySearch';
 import { LinkItem } from '../src/types/startpage';
 
-describe('FuzzySearchEngine', () => {
+describe('FuzzySearchEngine & Edge Cases', () => {
   let engine: FuzzySearchEngine;
 
   const mockLinks: LinkItem[] = [
@@ -31,6 +31,11 @@ describe('FuzzySearchEngine', () => {
     expect(res3.isPrefixCommand).toBe(false);
   });
 
+  it('handles unknown prefix or query without space as normal fuzzy search', () => {
+    const res = engine.parseCommandPrefix('unknownprefix query');
+    expect(res.isPrefixCommand).toBe(false);
+  });
+
   it('matches links by title, category, and alias', () => {
     const results = engine.search('gmail');
     expect(results.length).toBeGreaterThan(0);
@@ -41,5 +46,21 @@ describe('FuzzySearchEngine', () => {
     const results = engine.search('gh');
     expect(results.length).toBeGreaterThan(0);
     expect(results[0].item.id).toBe('github');
+  });
+
+  it('returns empty array when search query is empty or whitespace', () => {
+    expect(engine.search('')).toEqual([]);
+    expect(engine.search('   ')).toEqual([]);
+  });
+
+  it('handles search with special characters cleanly', () => {
+    const results = engine.search('!@#$%^&*()');
+    expect(Array.isArray(results)).toBe(true);
+  });
+
+  it('handles empty links list without throwing errors', () => {
+    const emptyEngine = new FuzzySearchEngine();
+    emptyEngine.setLinks([]);
+    expect(emptyEngine.search('test')).toEqual([]);
   });
 });

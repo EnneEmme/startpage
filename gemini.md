@@ -4,18 +4,22 @@ This document specifies the operational rules, coding standards, git workflow, a
 
 ---
 
-## 1. Core Architecture Principles
+## 1. Core Architecture & Tooling Principles
 
-1. **Serverless & Standalone Output**:
+1. **Bun Tooling Mandate**:
+   - MUST use `bun` exclusively for package installation, script execution, and testing (`bun ./node_modules/vitest/vitest.mjs run`).
+   - NEVER use `npm` or `npx`.
+
+2. **Serverless & Standalone Output**:
    - The final production build on the `main` branch MUST consist solely of static `index.html`, JavaScript, and CSS assets.
    - It MUST run directly when opened as a local file (`file:///...`) in a browser or hosted on static hosts like GitHub Pages.
    - No runtime server, node backend, or external dynamic servers are allowed for execution.
 
-2. **Decoupled Data Architecture**:
+3. **Decoupled Data Architecture**:
    - Link configurations, categories, icons, and aliases MUST remain completely decoupled from the UI layer.
    - Any modifications to the UI layout or styling MUST NOT break the underlying data schema or local storage keys (`startpage_links`, `startpage_ranks`, `startpage_settings`).
 
-3. **Clean Code & Extensibility**:
+4. **Clean Code & Extensibility**:
    - Use TypeScript strict mode.
    - Keep modules small, single-purpose, and fully documented.
    - Follow SOLID design principles.
@@ -43,8 +47,8 @@ This document specifies the operational rules, coding standards, git workflow, a
 
 - **Zero-Regression Policy**: Every new feature or refactor MUST be accompanied by unit or integration tests in Vitest.
 - Before considering any task complete:
-  1. Run `npm test` or `npx vitest run` to ensure all tests pass.
-  2. Test edge cases (missing icons, invalid URLs, empty search queries, local storage corruption).
+  1. Run `bun ./node_modules/vitest/vitest.mjs run` to ensure all tests pass.
+  2. Test edge cases (missing icons, invalid URLs, empty search queries, local storage corruption, dynamic date boundaries).
 
 ---
 

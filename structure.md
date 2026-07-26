@@ -34,15 +34,16 @@ startpage/
 │   │   └── rankStorage.ts     # LocalStorage usage counter & rank score generator
 │   └── types/                 # TypeScript interfaces & types
 │       └── startpage.ts       # Link, Category, Rank, Search, & Prefix types
-├── tests/                     # Vitest test suites (100% passing)
+├── tests/                     # Vitest test suites (35/35 tests passing under Bun)
 │   ├── cheatsheetData.test.ts
+│   ├── dataStore.test.ts
 │   ├── dynamicEvaluator.test.ts
 │   ├── fuzzySearch.test.ts
 │   ├── iconResolver.test.ts
 │   ├── keyboardManager.test.ts
 │   └── rankStorage.test.ts
 ├── bun.lock                   # Bun lockfile
-├── gemini.md                  # AI agent guidelines & project standards
+├── gemini.md                  # AI agent guidelines & project standards (Bun mandate)
 ├── package.json               # Package dependencies & scripts
 ├── plan.md                    # Roadmap, task tracking, & implementation status
 ├── structure.md               # Project structure documentation
@@ -53,8 +54,7 @@ startpage/
 
 ---
 
-## Module Responsibilities
+## Tooling Mandate
 
-- **`src/engine/`**: Decoupled Data Architecture containing zero UI code. Pure, fully tested TypeScript logic handling configuration, storage, search, dynamic URLs, keyboard navigation, and icons.
-- **`src/types/startpage.ts`**: Strict TypeScript interfaces for all data structures.
-- **`tests/`**: Automated Vitest test suites running under Bun / Node with JSDOM (23/23 tests passing).
+- **Package & Test Execution**: Bun exclusively (`bun ./node_modules/vitest/vitest.mjs run`). `npm` and `npx` are strictly prohibited.
+- **Module Responsibilities**: `src/engine/` is completely decoupled from UI presentation, tested to 100% reliability across 35 test cases.
