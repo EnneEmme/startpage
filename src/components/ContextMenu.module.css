@@ -1,7 +1,7 @@
 .menuContainer {
   position: fixed;
   z-index: 2000;
-  width: 170px;
+  width: 180px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color-hover);
   border-radius: var(--radius-md);
@@ -28,9 +28,9 @@
 .menuItem {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   padding: 0.45rem 0.6rem;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 500;
   color: var(--text-primary);
   border-radius: var(--radius-sm);
@@ -47,4 +47,54 @@
 .menuItem.danger:hover {
   background: rgba(248, 113, 113, 0.15);
   color: #f87171;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 0.2rem 0;
+}
+
+.submenuWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.categorySubmenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 150px;
+  max-height: 180px;
+  overflow-y: auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  z-index: 2010;
+}
+
+.submenuItem {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  text-align: left;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.submenuItem:hover {
+  background: var(--bg-card-hover);
+  color: var(--accent-primary);
+}
+
+.submenuItem.active {
+  font-weight: 600;
+  color: var(--accent-highlight);
+  background: rgba(16, 185, 129, 0.1);
 }

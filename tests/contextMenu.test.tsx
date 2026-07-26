@@ -22,12 +22,15 @@ describe('ContextMenu Component', () => {
         onClose={() => {}}
         onEdit={() => {}}
         onRemove={() => {}}
+        onConfigChanged={() => {}}
       />
     );
 
     expect(container.textContent).toContain('Test Link');
     expect(container.textContent).toContain('Edit Link');
     expect(container.textContent).toContain('Remove Link');
+    expect(container.textContent).toContain('Move Up');
+    expect(container.textContent).toContain('Move Down');
   });
 
   it('triggers onEdit callback when Edit Link is clicked', () => {
@@ -42,6 +45,7 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={onEditSpy}
         onRemove={() => {}}
+        onConfigChanged={() => {}}
       />
     );
 
@@ -63,6 +67,7 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={() => {}}
         onRemove={onRemoveSpy}
+        onConfigChanged={() => {}}
       />
     );
 

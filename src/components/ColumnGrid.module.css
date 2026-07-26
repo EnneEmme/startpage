@@ -40,18 +40,12 @@
 
 .columnCard {
   background: transparent;
-  border: 1px dashed transparent;
+  border: none;
   padding: 0.4rem;
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-lg);
   transition: all var(--transition-fast);
-}
-
-.columnCard.dragOver {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 /* Highlight Pulse Animation when jumping to section */
@@ -85,11 +79,6 @@
   padding-bottom: 0.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
-  cursor: grab;
-}
-
-.columnHeader:active {
-  cursor: grabbing;
 }
 
 .columnTitle {
@@ -153,25 +142,6 @@
 
 .linkRowWrapper {
   width: 100%;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-  cursor: grab;
-}
-
-.linkRowWrapper:active {
-  cursor: grabbing;
-}
-
-/* Premium insertion drop indicator */
-.linkRowWrapper.linkDragOver {
-  border-top: 2px solid #10b981;
-  background: rgba(16, 185, 129, 0.08);
-  box-shadow: 0 -4px 12px rgba(16, 185, 129, 0.2);
-}
-
-.linkRowWrapper.linkBeingDragged {
-  opacity: 0.3;
-  transform: scale(0.97);
 }
 
 .linkRow {
@@ -184,6 +154,7 @@
   color: var(--text-primary);
   transition: all var(--transition-fast);
   background: transparent;
+  position: relative;
 }
 
 .linkRow:hover {
@@ -222,4 +193,39 @@
   background: rgba(255, 255, 255, 0.05);
   padding: 0.1rem 0.35rem;
   border-radius: var(--radius-sm);
+}
+
+.linkHoverControls {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  margin-left: 0.3rem;
+}
+
+.linkRow:hover .linkHoverControls {
+  opacity: 1;
+}
+
+.linkHoverBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.linkHoverBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--text-primary);
+}
+
+.linkHoverBtn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
 }
