@@ -1,278 +1,299 @@
 import { h } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
-import { X, Edit3, Trash2, Check, Plus, Tag, ChevronDown } from 'lucide-preact';
+import { useState } from 'preact/hooks';
+import {
+  X, Check, Plus, Tag, Mail, Globe, Search, MessageSquare, Sparkles, Bot, Cpu, Send,
+  Tv, Music, Film, Code, Terminal, Calendar, FileText, Share2, Video, Image, BookOpen,
+  Zap, Star, Heart, Folder, Link, Shield, Box, Compass
+} from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
 import { dataStore } from '../engine/dataStore';
+import { LinkIcon } from './LinkIcon';
 import styles from './VisualEditModal.module.css';
 
 interface VisualEditModalProps {
-  isOpen: boolean;
-  initialEditLink?: LinkItem | null;
+  initialLink?: LinkItem | null;
   onClose: () => void;
-  onConfigChanged: () => void;
+  onSave?: () => void;
 }
 
-export const VisualEditModal = ({
-  isOpen,
-  initialEditLink = null,
-  onClose,
-  onConfigChanged
-}: VisualEditModalProps) => {
-  const [title, setTitle] = useState<string>('');
-  const [url, setUrl] = useState<string>('');
-  const [aliasesStr, setAliasesStr] = useState<string>('');
-  const [category, setCategory] = useState<string>('General');
-  const [customCategory, setCustomCategory] = useState<string>('');
-  const [isCreatingNewCategory, setIsCreatingNewCategory] = useState<boolean>(false);
-  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-  const [icon, setIcon] = useState<string>('');
-  const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null);
+const PRESET_ICONS = [
+  { name: 'Mail', spec: 'Mail', icon: Mail },
+  { name: 'Globe', spec: 'Globe', icon: Globe },
+  { name: 'Search', spec: 'Search', icon: Search },
+  { name: 'MessageSquare', spec: 'MessageSquare', icon: MessageSquare },
+  { name: 'Sparkles', spec: 'Sparkles', icon: Sparkles },
+  { name: 'Bot', spec: 'Bot', icon: Bot },
+  { name: 'Cpu', spec: 'Cpu', icon: Cpu },
+  { name: 'Send', spec: 'Send', icon: Send },
+  { name: 'Tv', spec: 'Tv', icon: Tv },
+  { name: 'Music', spec: 'Music', icon: Music },
+  { name: 'Film', spec: 'Film', icon: Film },
+  { name: 'Code', spec: 'Code', icon: Code },
+  { name: 'Terminal', spec: 'Terminal', icon: Terminal },
+  { name: 'Calendar', spec: 'Calendar', icon: Calendar },
+  { name: 'FileText', spec: 'FileText', icon: FileText },
+  { name: 'Share2', spec: 'Share2', icon: Share2 },
+  { name: 'Video', spec: 'Video', icon: Video },
+  { name: 'Image', spec: 'Image', icon: Image },
+  { name: 'BookOpen', spec: 'BookOpen', icon: BookOpen },
+  { name: 'Zap', spec: 'Zap', icon: Zap },
+  { name: 'Star', spec: 'Star', icon: Star },
+  { name: 'Heart', spec: 'Heart', icon: Heart },
+  { name: 'Folder', spec: 'Folder', icon: Folder },
+  { name: 'Link', spec: 'Link', icon: Link },
+  { name: 'Shield', spec: 'Shield', icon: Shield },
+  { name: 'Box', spec: 'Box', icon: Box },
+  { name: 'Compass', spec: 'Compass', icon: Compass }
+];
 
-  const existingCategories = dataStore.getCategories().map(c => c.name);
+export const VisualEditModal = ({ initialLink, onClose, onSave }: VisualEditModalProps) => {
+  const isEditing = Boolean(initialLink);
 
-  const handleResetForm = () => {
-    setSelectedLinkId(null);
-    setTitle('');
-    setUrl('');
-    setAliasesStr('');
-    setCategory(existingCategories.length > 0 ? existingCategories[0] : 'General');
-    setCustomCategory('');
+  const [title, setTitle] = useState(initialLink?.title || '');
+  const [url, setUrl] = useState(initialLink?.url || '');
+  const [aliases, setAliases] = useState(initialLink?.aliases ? initialLink.aliases.join(', ') : '');
+  const [icon, setIcon] = useState(initialLink?.icon || '');
+  const [category, setCategory] = useState(initialLink?.category || 'General');
+
+  // Custom Category State
+  const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [isCategoryPickerOpen, setIsCategoryPickerOpen] = useState(false);
+
+  // Icon Search State
+  const [iconQuery, setIconQuery] = useState('');
+
+  const categories = dataStore.getCategories().map(c => c.name);
+
+  const handleSelectCategory = (catName: string) => {
+    setCategory(catName);
+    setIsCategoryPickerOpen(false);
     setIsCreatingNewCategory(false);
-    setDropdownOpen(false);
-    setIcon('');
   };
 
-  const handleEditLink = (link: LinkItem) => {
-    setSelectedLinkId(link.id);
-    setTitle(link.title);
-    setUrl(link.url);
-    setAliasesStr(link.aliases.join(', '));
-    setCategory(link.category);
-    setCustomCategory('');
-    setIsCreatingNewCategory(false);
-    setDropdownOpen(false);
-    setIcon(link.icon || '');
-  };
-
-  useEffect(() => {
-    if (initialEditLink) {
-      handleEditLink(initialEditLink);
-    } else {
-      handleResetForm();
+  const handleCreateNewCategory = () => {
+    if (newCategoryName.trim()) {
+      const trimmed = newCategoryName.trim();
+      setCategory(trimmed);
+      setIsCreatingNewCategory(false);
+      setNewCategoryName('');
+      setIsCategoryPickerOpen(false);
     }
-  }, [initialEditLink, isOpen]);
+  };
 
-  if (!isOpen) return null;
-
-  const links = dataStore.getLinks();
-
-  const handleSave = (e: Event) => {
+  const handleSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
-    if (!title.trim()) return;
 
-    const finalCategory = isCreatingNewCategory
-      ? (customCategory.trim() || 'General')
-      : category;
+    if (!title.trim() || !url.trim()) return;
 
-    const id = selectedLinkId || title.toLowerCase().replace(/[^a-z0-9]/g, '_');
-    const aliases = aliasesStr
-      ? aliasesStr.split(',').map(a => a.trim()).filter(Boolean)
-      : [id];
+    const parsedAliases = aliases
+      .split(',')
+      .map(a => a.trim().toLowerCase())
+      .filter(Boolean);
 
-    const linkItem: LinkItem = {
-      id,
+    const linkId = initialLink?.id || `link_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const targetCat = isCreatingNewCategory && newCategoryName.trim() ? newCategoryName.trim() : category;
+
+    const updatedLink: LinkItem = {
+      id: linkId,
       title: title.trim(),
       url: url.trim(),
-      aliases,
-      category: finalCategory,
+      aliases: parsedAliases,
+      category: targetCat || 'General',
       icon: icon.trim() || undefined
     };
 
-    dataStore.addLink(linkItem);
-    onConfigChanged();
+    dataStore.addLink(updatedLink);
+    if (onSave) onSave();
     onClose();
   };
 
-  const handleDeleteLink = (linkId: string) => {
-    if (confirm(`Are you sure you want to remove this link?`)) {
-      dataStore.removeLink(linkId);
-      onConfigChanged();
-      if (selectedLinkId === linkId) {
-        handleResetForm();
-      }
-    }
-  };
+  const filteredIcons = PRESET_ICONS.filter(i =>
+    i.name.toLowerCase().includes(iconQuery.toLowerCase()) ||
+    i.spec.toLowerCase().includes(iconQuery.toLowerCase())
+  );
 
   return (
     <div class={styles.overlay} onClick={onClose}>
       <div class={`${styles.modalContainer} fade-in`} onClick={e => e.stopPropagation()}>
-        <div class={styles.header}>
-          <div class={styles.titleGroup}>
-            <Edit3 size={22} class={styles.titleIcon} />
-            <h2>{selectedLinkId ? 'Edit Link' : 'Add New Link'}</h2>
-          </div>
-          <button class={styles.closeBtn} onClick={onClose} title="Close">
-            <X size={20} />
+        <div class={styles.modalHeader}>
+          <h2 class={styles.modalTitle}>{isEditing ? 'Edit Link' : 'Add New Link'}</h2>
+          <button class={styles.closeBtn} onClick={onClose}>
+            <X size={18} />
           </button>
         </div>
 
-        <div class={styles.contentBody}>
-          {/* Add/Edit Form */}
-          <form class={styles.form} onSubmit={handleSave}>
-            <div class={styles.formGroup}>
-              <label>Title *</label>
-              <input
-                type="text"
-                class={styles.input}
-                placeholder="e.g. GitHub Trending"
-                value={title}
-                onInput={e => setTitle((e.target as HTMLInputElement).value)}
-                required
-              />
-            </div>
+        <form onSubmit={handleSubmit} class={styles.formContent}>
+          {/* Title */}
+          <div class={styles.fieldGroup}>
+            <label class={styles.label}>Title</label>
+            <input
+              type="text"
+              class={styles.input}
+              placeholder="e.g. GitHub, ChatGPT, Mail..."
+              value={title}
+              onInput={e => setTitle((e.target as HTMLInputElement).value)}
+              required
+            />
+          </div>
 
-            <div class={styles.formGroup}>
-              <label>URL *</label>
-              <input
-                type="text"
-                class={styles.input}
-                placeholder="e.g. https://github.com/trending"
-                value={url}
-                onInput={e => setUrl((e.target as HTMLInputElement).value)}
-              />
-            </div>
+          {/* URL */}
+          <div class={styles.fieldGroup}>
+            <label class={styles.label}>URL</label>
+            <input
+              type="url"
+              class={styles.input}
+              placeholder="https://example.com"
+              value={url}
+              onInput={e => setUrl((e.target as HTMLInputElement).value)}
+              required
+            />
+          </div>
 
-            <div class={styles.formRow}>
-              <div class={styles.formGroup}>
-                <label>Aliases (comma separated)</label>
-                <input
-                  type="text"
-                  class={styles.input}
-                  placeholder="e.g. gh, trend"
-                  value={aliasesStr}
-                  onInput={e => setAliasesStr((e.target as HTMLInputElement).value)}
-                />
-              </div>
-
-              {/* Custom Dark Premium Category Picker Dropdown */}
-              <div class={styles.formGroup}>
-                <label>Category *</label>
-
-                {!isCreatingNewCategory ? (
-                  <div class={styles.customCategoryDropdownWrapper}>
-                    <button
-                      type="button"
-                      class={styles.categoryDropdownTrigger}
-                      onClick={() => setDropdownOpen(prev => !prev)}
-                    >
-                      <Tag size={15} class={styles.tagIcon} />
-                      <span class={styles.selectedCategoryName}>{category}</span>
-                      <ChevronDown size={16} class={`${styles.chevronIcon} ${dropdownOpen ? styles.open : ''}`} />
-                    </button>
-
-                    {dropdownOpen && (
-                      <div class={`${styles.customCategoryMenu} fade-in`}>
-                        <div class={styles.menuScrollArea}>
-                          {existingCategories.map(cat => (
-                            <button
-                              key={cat}
-                              type="button"
-                              class={`${styles.categoryMenuItem} ${category === cat ? styles.active : ''}`}
-                              onClick={() => {
-                                setCategory(cat);
-                                setDropdownOpen(false);
-                              }}
-                            >
-                              <Tag size={13} />
-                              <span>{cat}</span>
-                              {category === cat && <Check size={14} class={styles.checkIcon} />}
-                            </button>
-                          ))}
-                        </div>
-
-                        <button
-                          type="button"
-                          class={styles.createCategoryBtn}
-                          onClick={() => {
-                            setIsCreatingNewCategory(true);
-                            setDropdownOpen(false);
-                          }}
-                        >
-                          <Plus size={14} /> Create New Category...
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div class={styles.categoryCreateRow}>
-                    <input
-                      type="text"
-                      class={styles.input}
-                      placeholder="Type new category name..."
-                      value={customCategory}
-                      onInput={e => setCustomCategory((e.target as HTMLInputElement).value)}
-                      autoFocus
-                      required
-                    />
-                    <button
-                      type="button"
-                      class={styles.cancelNewCatBtn}
-                      onClick={() => setIsCreatingNewCategory(false)}
-                      title="Use existing category"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div class={styles.formGroup}>
-              <label>Icon (Lucide name, Image URL, or leave blank for Favicon)</label>
-              <input
-                type="text"
-                class={styles.input}
-                placeholder="e.g. Github or leave blank for auto favicon"
-                value={icon}
-                onInput={e => setIcon((e.target as HTMLInputElement).value)}
-              />
-            </div>
-
-            <div class={styles.formActions}>
-              {selectedLinkId && (
-                <button type="button" class={styles.secondaryBtn} onClick={handleResetForm}>
-                  Cancel Edit
-                </button>
+          {/* Custom Category Picker with Suggestions & Add Mode */}
+          <div class={styles.fieldGroup}>
+            <label class={styles.label}>Category</label>
+            <div class={styles.customSelectWrapper}>
+              {!isCreatingNewCategory ? (
+                <div
+                  class={styles.customSelectTrigger}
+                  onClick={() => setIsCategoryPickerOpen(!isCategoryPickerOpen)}
+                >
+                  <span class={styles.selectedCategoryText}>
+                    <Tag size={14} class={styles.categoryTagIcon} />
+                    {category}
+                  </span>
+                  <span class={styles.arrowIcon}>{isCategoryPickerOpen ? '▲' : '▼'}</span>
+                </div>
+              ) : (
+                <div class={styles.newCategoryInputWrapper}>
+                  <input
+                    type="text"
+                    class={styles.input}
+                    placeholder="Enter new category name..."
+                    value={newCategoryName}
+                    onInput={e => setNewCategoryName((e.target as HTMLInputElement).value)}
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    class={styles.confirmCatBtn}
+                    onClick={handleCreateNewCategory}
+                  >
+                    Add
+                  </button>
+                  <button
+                    type="button"
+                    class={styles.cancelCatBtn}
+                    onClick={() => setIsCreatingNewCategory(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
               )}
-              <button type="submit" class={styles.primaryBtn}>
-                <Check size={16} /> {selectedLinkId ? 'Update Link' : 'Add Link'}
-              </button>
-            </div>
-          </form>
 
-          {/* Links Management List */}
-          <div class={styles.linksManager}>
-            <h3 class={styles.managerTitle}>Existing Links ({links.length})</h3>
-            <div class={styles.linksList}>
-              {links.map(l => (
-                <div key={l.id} class={styles.manageRow}>
-                  <div class={styles.manageInfo}>
-                    <span class={styles.manageTitle}>{l.title}</span>
-                    <span class={styles.manageCategory}>{l.category}</span>
-                  </div>
-                  <div class={styles.manageActions}>
-                    <button class={styles.rowBtn} onClick={() => handleEditLink(l)} title="Edit">
-                      <Edit3 size={15} />
-                    </button>
-                    <button class={`${styles.rowBtn} ${styles.deleteBtn}`} onClick={() => handleDeleteLink(l.id)} title="Delete">
-                      <Trash2 size={15} />
-                    </button>
+              {/* Dark Dropdown Menu */}
+              {isCategoryPickerOpen && !isCreatingNewCategory && (
+                <div class={`${styles.customDropdownMenu} fade-in`}>
+                  {categories.map(cat => (
+                    <div
+                      key={cat}
+                      class={`${styles.dropdownOption} ${cat === category ? styles.activeOption : ''}`}
+                      onClick={() => handleSelectCategory(cat)}
+                    >
+                      <span>{cat}</span>
+                      {cat === category && <Check size={14} class={styles.checkIcon} />}
+                    </div>
+                  ))}
+                  <div
+                    class={`${styles.dropdownOption} ${styles.createOption}`}
+                    onClick={() => {
+                      setIsCreatingNewCategory(true);
+                      setIsCategoryPickerOpen(false);
+                    }}
+                  >
+                    <Plus size={14} />
+                    <span>Create New Category...</span>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
-        </div>
+
+          {/* Aliases */}
+          <div class={styles.fieldGroup}>
+            <label class={styles.label}>Shortcuts / Aliases (comma separated)</label>
+            <input
+              type="text"
+              class={styles.input}
+              placeholder="e.g. g, gh, github"
+              value={aliases}
+              onInput={e => setAliases((e.target as HTMLInputElement).value)}
+            />
+          </div>
+
+          {/* Icon Search & Live Visual Suggestions Grid */}
+          <div class={styles.fieldGroup}>
+            <label class={styles.label}>Icon Search & Visual Suggestions</label>
+            <div class={styles.iconInputPreviewRow}>
+              <div class={styles.iconLiveBadge}>
+                <LinkIcon
+                  url={url || 'https://example.com'}
+                  iconSpec={icon}
+                  title={title || 'Preview'}
+                  size={20}
+                />
+              </div>
+              <input
+                type="text"
+                class={styles.input}
+                placeholder="Search icon (e.g. Mail, Globe, Code, Bot, Search...)"
+                value={icon || iconQuery}
+                onInput={e => {
+                  const val = (e.target as HTMLInputElement).value;
+                  setIcon(val);
+                  setIconQuery(val);
+                }}
+              />
+            </div>
+
+            {/* Visual Icon Grid Suggestions */}
+            <div class={styles.iconSuggestionsBox}>
+              <div class={styles.iconGrid}>
+                {filteredIcons.map(item => {
+                  const IconComp = item.icon;
+                  const isSelected = icon === item.spec;
+
+                  return (
+                    <button
+                      key={item.spec}
+                      type="button"
+                      class={`${styles.iconGridCard} ${isSelected ? styles.selectedIconCard : ''}`}
+                      onClick={() => {
+                        setIcon(item.spec);
+                        setIconQuery(item.spec);
+                      }}
+                      title={item.name}
+                    >
+                      <IconComp size={16} />
+                      <span class={styles.iconCardLabel}>{item.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div class={styles.modalFooter}>
+            <button type="button" class={styles.cancelBtn} onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" class={styles.saveBtn}>
+              {isEditing ? 'Save Changes' : 'Create Link'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

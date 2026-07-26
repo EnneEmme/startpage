@@ -29,6 +29,7 @@ export const ColumnGrid = ({
     link: LinkItem;
   } | null>(null);
 
+  const [editingCategory, setEditingCategory] = useState<{ originalName: string; text: string } | null>(null);
   const [scrollStates, setScrollStates] = useState<Record<string, { canScrollTop: boolean; canScrollBottom: boolean }>>({});
   const [draggedLinkId, setDraggedLinkId] = useState<string | null>(null);
   const [draggedCategoryName, setDraggedCategoryName] = useState<string | null>(null);
@@ -62,6 +63,32 @@ export const ColumnGrid = ({
       y: e.clientY,
       link
     });
+  };
+
+  const handleHeaderContextMenu = (e: MouseEvent, categoryName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingCategory({
+      originalName: categoryName,
+      text: categoryName
+    });
+  };
+
+  const handleFinishRenameCategory = () => {
+    if (editingCategory && editingCategory.text.trim()) {
+      dataStore.renameCategory(editingCategory.originalName, editingCategory.text.trim());
+      if (onConfigChanged) onConfigChanged();
+    }
+    setEditingCategory(null);
+  };
+
+  const handleRenameKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleFinishRenameCategory();
+    } else if (e.key === 'Escape') {
+      setEditingCategory(null);
+    }
   };
 
   const handleRemoveLink = (linkId: string) => {
@@ -218,6 +245,7 @@ export const ColumnGrid = ({
         const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
         const isHighlighted = highlightedCategory === cat.name;
         const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
+        const isEditingThisHeader = editingCategory?.originalName === cat.name;
 
         const state = scrollStates[cat.name] || {
           canScrollTop: false,
@@ -242,18 +270,33 @@ export const ColumnGrid = ({
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, cat.name)}
           >
-            {/* Draggable Column Header */}
+            {/* Draggable Column Header with Right-Click Inline Rename */}
             <div
               class={styles.columnHeader}
-              draggable={true}
+              draggable={!isEditingThisHeader}
               onDragStart={e => handleColumnDragStart(e, cat.name)}
               onDragEnd={handleDragEnd}
-              title="Drag to reorder column"
+              onContextMenu={e => handleHeaderContextMenu(e, cat.name)}
+              title="Drag to reorder / Right-click to rename"
             >
-              <h2 class={styles.columnTitle}>{cat.name}</h2>
+              {isEditingThisHeader ? (
+                <input
+                  class={styles.inlineRenameInput}
+                  value={editingCategory.text}
+                  autoFocus
+                  onInput={e => {
+                    const val = (e.target as HTMLInputElement).value;
+                    setEditingCategory({ originalName: cat.name, text: val });
+                  }}
+                  onKeyDown={handleRenameKeyDown}
+                  onBlur={handleFinishRenameCategory}
+                />
+              ) : (
+                <h2 class={styles.columnTitle}>{cat.name}</h2>
+              )}
             </div>
 
-            {/* Reactive Dynamic Top/Bottom Fade Masked Links List with Scroll Containment */}
+            {/* Reactive Dynamic Top/Bottom Fade Masked Links List */}
             <div
               class={`${styles.linksList} ${fadeClass}`}
               onScroll={e => handleScroll(e, cat.name)}

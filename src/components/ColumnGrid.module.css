@@ -104,6 +104,20 @@
   letter-spacing: -0.01em;
 }
 
+.inlineRenameInput {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-highlight);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--accent-highlight);
+  border-radius: var(--radius-sm);
+  padding: 0.15rem 0.4rem;
+  outline: none;
+  width: 100%;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
 /* Single Column Links List - Fits exactly 20 visible links on Desktop (730px max-height) */
 .linksList {
   display: flex;
@@ -113,7 +127,7 @@
   overflow-y: auto;
   scrollbar-width: none; /* Hide scrollbar Firefox */
   -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
-  overscroll-behavior-y: contain; /* Isolate scrolling to column only - prevent parent page scroll */
+  overscroll-behavior-y: contain; /* Isolate scrolling to column only */
   overscroll-behavior-x: contain;
   transition: mask-image 0.2s ease, -webkit-mask-image 0.2s ease;
   scroll-behavior: smooth;

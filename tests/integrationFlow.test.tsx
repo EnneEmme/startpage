@@ -52,13 +52,13 @@ describe('App End-to-End Integration Flow', () => {
 
     expect(container.textContent).toContain('Add New Link');
 
-    const titleInput = getByPlaceholderText('e.g. GitHub Trending');
-    const urlInput = getByPlaceholderText('e.g. https://github.com/trending');
+    const titleInput = getByPlaceholderText('e.g. GitHub, ChatGPT, Mail...');
+    const urlInput = getByPlaceholderText('https://example.com');
 
     fireEvent.input(titleInput, { target: { value: 'My Test Link' } });
     fireEvent.input(urlInput, { target: { value: 'https://testlink.com' } });
 
-    const submitBtn = getByText('Add Link');
+    const submitBtn = getByText('Create Link');
     fireEvent.click(submitBtn);
 
     expect(dataStore.getLinks().some(l => l.title === 'My Test Link')).toBe(true);

@@ -1,6 +1,6 @@
 /**
  * DataStore Engine
- * Handles links configuration, category grouping, custom category ordering, precise link reordering/insertion, dynamic link rules, and localStorage persistence.
+ * Handles links configuration, category grouping, custom category ordering, category renaming, precise link reordering/insertion, dynamic link rules, and localStorage persistence.
  */
 
 import { LinkItem, CategoryGroup, StartpageConfig } from '../types/startpage';
@@ -65,7 +65,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'vipm', title: 'VIPM Elearning', url: 'https://elearning.unimib.it/enrol/index.php?id=68845', aliases: ['vipm'], category: 'School' },
     { id: 'info_course', title: 'Info Elearning', url: 'https://elearning.unimib.it/course/view.php?id=62130', aliases: ['info_course'], category: 'School' },
 
-    // Single Unified AI & LLMs Category (Contains all LLM 1 & LLM 2 entries)
+    // Single Unified AI & LLMs Category
     { id: 'aistudio', title: 'Google AI Studio', url: 'https://aistudio.google.com/prompts/new_chat', aliases: ['aistudio', 'studio'], category: 'AI & LLMs' },
     { id: 'gemini', title: 'Gemini', url: 'https://gemini.google.com/app', aliases: ['gem', 'gemini'], category: 'AI & LLMs' },
     { id: 'chatgpt', title: 'ChatGPT', url: 'https://chat.openai.com', aliases: ['gpt', 'chatgpt'], category: 'AI & LLMs' },
@@ -112,7 +112,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'penpot', title: 'Penpot Design', url: 'https://design.penpot.app', aliases: ['penpot'], category: 'Programming' },
     { id: 'codewars', title: 'Codewars', url: 'https://www.codewars.com/dashboard', aliases: ['codewars'], category: 'Programming' },
 
-    // ImGen (Separated Image Generation Category)
+    // ImGen
     { id: 'recraft', title: 'Recraft AI', url: 'https://www.recraft.ai/projects', aliases: ['recraft'], category: 'ImGen' },
     { id: 'ideogram', title: 'Ideogram AI', url: 'https://ideogram.ai/t/explore', aliases: ['ideogram'], category: 'ImGen' },
     { id: 'kling', title: 'Kling AI', url: 'https://kling.ai/app', aliases: ['kling'], category: 'ImGen' },
@@ -122,7 +122,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'quiver', title: 'Quiver AI', url: 'https://app.quiver.ai/', aliases: ['quieverai'], category: 'ImGen' },
     { id: 'krea', title: 'Krea AI', url: 'https://www.krea.ai/app', aliases: ['krea'], category: 'ImGen' },
 
-    // Media (Separated Audio & Media Generation Category)
+    // Media
     { id: 'suno', title: 'Suno AI', url: 'https://suno.com', aliases: ['suno'], category: 'Media' },
     { id: 'elevenlabs', title: 'ElevenLabs', url: 'https://elevenlabs.io/app/home', aliases: ['audiogen', 'elevenlabs'], category: 'Media' }
   ]
@@ -146,7 +146,6 @@ export class DataStore {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && Array.isArray(parsed.commands)) {
-          // Auto-migrate legacy 'LLMs 2' or 'ImGen & Media' categories if present in user storage
           parsed.commands.forEach((item: LinkItem) => {
             if (item.category === 'LLMs 2') {
               item.category = 'AI & LLMs';
@@ -191,6 +190,24 @@ export class DataStore {
     this.save();
   }
 
+  public renameCategory(oldName: string, newName: string): void {
+    const trimmedNew = newName.trim();
+    if (!trimmedNew || oldName === trimmedNew) return;
+
+    this.config.commands.forEach(link => {
+      if (link.category === oldName) {
+        link.category = trimmedNew;
+      }
+    });
+
+    const idx = this.categoryOrder.indexOf(oldName);
+    if (idx !== -1) {
+      this.categoryOrder[idx] = trimmedNew;
+    }
+
+    this.save();
+  }
+
   public moveLink(linkId: string, targetCategoryId: string, targetIndex?: number): void {
     const fromIdx = this.config.commands.findIndex(l => l.id === linkId);
     if (fromIdx === -1) return;
@@ -198,7 +215,6 @@ export class DataStore {
     const [draggedLink] = this.config.commands.splice(fromIdx, 1);
     draggedLink.category = targetCategoryId;
 
-    // Get all target category links to find target insertion point in the master commands array
     const targetCategoryLinks = this.config.commands.filter(l => l.category === targetCategoryId);
 
     if (typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex < targetCategoryLinks.length) {
