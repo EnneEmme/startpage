@@ -12,63 +12,45 @@ This document tracks the directory layout, module dependencies, and file organiz
 ```
 startpage/
 ├── .git/                      # Git repository data
-├── gemini.md                  # AI agent guidelines & workflow rules
-├── structure.md               # Project file & directory structure documentation
-└── plan.md                    # Roadmap, task tracking, & implementation status
-```
-
----
-
-## Planned Directory Structure (To be initialized in Phase 1)
-
-```
-startpage/
-├── .github/                   # GitHub Actions (optional static build automation)
-│   └── workflows/
-│       └── deploy.yml
-├── data/                      # Sample and default data configuration
-│   └── links.json             # Default link categories, aliases, & icons configuration
-├── old_homepage/              # (Optional) User's legacy homepage files for migration
+├── node_modules/              # Bun / NPM dependencies
+├── old_homepage/              # Legacy Tilde homepage files for migration & reference
+│   ├── ai.html                # Legacy AI dashboard
+│   ├── index.html             # Legacy main dashboard
+│   ├── css/
+│   │   └── style.css          # Legacy CSS styles
+│   └── js/
+│       ├── ai-config.js       # Legacy AI commands config
+│       ├── config.js          # Legacy commands config & Unimib dynamic functions
+│       ├── queryParser.js     # Legacy query parser
+│       └── suggester.js       # Legacy suggestion engine
 ├── src/                       # Source code (TypeScript + Preact)
-│   ├── assets/                # Local icons, images, & static assets
-│   ├── components/            # UI Components (Preact)
-│   │   ├── ColumnGrid/        # Multi-column links layout
-│   │   ├── SearchModal/       # Fuzzy search overlay & rank list
-│   │   ├── CheatsheetModal/   # Keyboard shortcuts overlay
-│   │   ├── JumpBar/           # Quick section navigation bar
-│   │   └── Common/            # Shared UI elements (badges, buttons, icons)
-│   ├── engine/                # Core Data & Business Logic (Decoupled Data Layer)
-│   │   ├── dataStore.ts       # Config loader & JSON schema validator
-│   │   ├── dynamicEvaluator.ts# Dynamic URL parser (date interpolation, JS expressions)
-│   │   ├── fuzzySearch.ts     # Fuse.js fuzzy search engine & rank booster
-│   │   ├── rankStorage.ts     # LocalStorage frequency & recency tracker
-│   │   └── iconResolver.ts    # Favicon auto-fetch + fallback icon resolver
-│   ├── styles/                # Global CSS & Design Tokens
-│   │   ├── variables.css      # Dark premium color palette & typography
-│   │   └── global.css         # Utility classes & reset
-│   ├── types/                 # TypeScript interfaces & types
-│   │   └── startpage.ts       # Link, Category, Rank, & Search types
-│   ├── app.tsx                # Main application component
-│   └── main.tsx               # Application entry point
-├── tests/                     # Vitest test suites
+│   ├── engine/                # Core Decoupled Data Architecture Engine
+│   │   ├── dataStore.ts       # Config loader, JSON validator, localStorage store
+│   │   ├── dynamicEvaluator.ts# Dynamic URL evaluator (Unimib schedules, date interpolation)
+│   │   ├── fuzzySearch.ts     # Fuse.js fuzzy search, command palette (g, yt, gh, w), rank sorting
+│   │   ├── iconResolver.ts    # Multi-tiered icon resolver (Custom URL -> Lucide -> Favicon API)
+│   │   └── rankStorage.ts     # LocalStorage usage counter & rank score generator
+│   └── types/                 # TypeScript interfaces & types
+│       └── startpage.ts       # Link, Category, Rank, Search, & Prefix types
+├── tests/                     # Vitest test suites (100% passing)
 │   ├── dynamicEvaluator.test.ts
 │   ├── fuzzySearch.test.ts
-│   ├── rankStorage.test.ts
-│   └── iconResolver.test.ts
-├── dist/                      # Production build output (bundled static files)
-├── package.json               # NPM package dependencies & scripts
-├── tsconfig.json              # TypeScript configuration
-├── vite.config.ts             # Vite build configuration (singlefile / static output)
-├── vitest.config.ts           # Vitest configuration
-├── gemini.md                  # AI agent guidelines
+│   ├── iconResolver.test.ts
+│   └── rankStorage.test.ts
+├── bun.lock                   # Bun lockfile
+├── gemini.md                  # AI agent guidelines & project standards
+├── package.json               # Package dependencies & scripts
+├── plan.md                    # Roadmap, task tracking, & implementation status
 ├── structure.md               # Project structure documentation
-└── plan.md                    # Detailed project plan & progress tracker
+├── tsconfig.json              # TypeScript compiler configuration
+├── vite.config.ts             # Vite build configuration (singlefile static HTML output)
+└── vitest.config.ts           # Vitest runner configuration
 ```
 
 ---
 
 ## Module Responsibilities
 
-- **`src/engine/`**: Pure TypeScript modules containing zero UI logic. Responsible for state, search, URL generation, and storage. Can be tested independently.
-- **`src/components/`**: Preact UI components. Consumes `src/engine/` APIs for rendering.
-- **`data/links.json`**: Plain JSON configuration file storing all link definitions. Editable directly by the user or imported/exported via local storage.
+- **`src/engine/`**: Decoupled Data Architecture containing zero UI code. Pure, fully tested TypeScript logic handling configuration, storage, search, dynamic URLs, and icons.
+- **`src/types/startpage.ts`**: Strict TypeScript interfaces for all data structures.
+- **`tests/`**: Automated Vitest test suites running under Bun / Node with JSDOM.
