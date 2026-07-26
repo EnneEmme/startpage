@@ -65,7 +65,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'vipm', title: 'VIPM Elearning', url: 'https://elearning.unimib.it/enrol/index.php?id=68845', aliases: ['vipm'], category: 'School' },
     { id: 'info_course', title: 'Info Elearning', url: 'https://elearning.unimib.it/course/view.php?id=62130', aliases: ['info_course'], category: 'School' },
 
-    // AI & LLMs
+    // Single Unified AI & LLMs Category
     { id: 'aistudio', title: 'Google AI Studio', url: 'https://aistudio.google.com/prompts/new_chat', aliases: ['aistudio', 'studio'], category: 'AI & LLMs' },
     { id: 'gemini', title: 'Gemini', url: 'https://gemini.google.com/app', aliases: ['gem', 'gemini'], category: 'AI & LLMs' },
     { id: 'chatgpt', title: 'ChatGPT', url: 'https://chat.openai.com', aliases: ['gpt', 'chatgpt'], category: 'AI & LLMs' },
@@ -87,21 +87,19 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'inceptionlabs', title: 'InceptionLabs', url: 'https://chat.inceptionlabs.ai', aliases: ['inceptionlabs'], category: 'AI & LLMs' },
     { id: 'llmstats', title: 'LLM Stats', url: 'https://llm-stats.com/leaderboards/llm-leaderboard', aliases: ['llmstats'], category: 'AI & LLMs' },
     { id: 'artificialanalysis', title: 'Artificial Analysis', url: 'https://artificialanalysis.ai', aliases: ['analysis'], category: 'AI & LLMs' },
-
-    // LLMs 2
-    { id: 'stepfun', title: 'StepFun AI', url: 'https://stepfun.ai/chats/new', aliases: ['stepfun'], category: 'LLMs 2' },
-    { id: 'upstage', title: 'Upstage AI', url: 'https://console.upstage.ai/playground/chat', aliases: ['upstage'], category: 'LLMs 2' },
-    { id: 'arcee', title: 'Arcee AI', url: 'https://chat.arcee.ai/chat', aliases: ['arcee'], category: 'LLMs 2' },
-    { id: 'liquid', title: 'Liquid AI', url: 'https://playground.liquid.ai/chat', aliases: ['liquid'], category: 'LLMs 2' },
-    { id: 'k2think', title: 'K2 Think', url: 'https://www.k2think.ai', aliases: ['k2think'], category: 'LLMs 2' },
-    { id: 'cloudflare_ai', title: 'Cloudflare AI Playground', url: 'https://playground.ai.cloudflare.com/', aliases: ['playground_cloudflare'], category: 'LLMs 2' },
-    { id: 'ernie', title: 'Baidu Ernie', url: 'https://ernie.baidu.com', aliases: ['ernie'], category: 'LLMs 2' },
-    { id: 'longcat', title: 'Longcat AI', url: 'https://longcat.chat', aliases: ['longcat'], category: 'LLMs 2' },
-    { id: 'byteplus', title: 'BytePlus AI', url: 'https://www.byteplus.com/en/ai-playground/chat', aliases: ['byteplus'], category: 'LLMs 2' },
-    { id: 'sarvam', title: 'Sarvam AI', url: 'https://dashboard.sarvam.ai/chat', aliases: ['sarvam'], category: 'LLMs 2' },
-    { id: 'jamba', title: 'AI21 Jamba', url: 'https://studio.ai21.com/v2/workspaces', aliases: ['jamba'], category: 'LLMs 2' },
-    { id: 'tinker', title: 'Tinker Machines', url: 'https://tinker.thinkingmachines.ai/playground', aliases: ['tinker'], category: 'LLMs 2' },
-    { id: 'motiftech', title: 'Motif Tech', url: 'https://chat.motiftech.io/chat', aliases: ['motiftech'], category: 'LLMs 2' },
+    { id: 'stepfun', title: 'StepFun AI', url: 'https://stepfun.ai/chats/new', aliases: ['stepfun'], category: 'AI & LLMs' },
+    { id: 'upstage', title: 'Upstage AI', url: 'https://console.upstage.ai/playground/chat', aliases: ['upstage'], category: 'AI & LLMs' },
+    { id: 'arcee', title: 'Arcee AI', url: 'https://chat.arcee.ai/chat', aliases: ['arcee'], category: 'AI & LLMs' },
+    { id: 'liquid', title: 'Liquid AI', url: 'https://playground.liquid.ai/chat', aliases: ['liquid'], category: 'AI & LLMs' },
+    { id: 'k2think', title: 'K2 Think', url: 'https://www.k2think.ai', aliases: ['k2think'], category: 'AI & LLMs' },
+    { id: 'cloudflare_ai', title: 'Cloudflare AI Playground', url: 'https://playground.ai.cloudflare.com/', aliases: ['playground_cloudflare'], category: 'AI & LLMs' },
+    { id: 'ernie', title: 'Baidu Ernie', url: 'https://ernie.baidu.com', aliases: ['ernie'], category: 'AI & LLMs' },
+    { id: 'longcat', title: 'Longcat AI', url: 'https://longcat.chat', aliases: ['longcat'], category: 'AI & LLMs' },
+    { id: 'byteplus', title: 'BytePlus AI', url: 'https://www.byteplus.com/en/ai-playground/chat', aliases: ['byteplus'], category: 'AI & LLMs' },
+    { id: 'sarvam', title: 'Sarvam AI', url: 'https://dashboard.sarvam.ai/chat', aliases: ['sarvam'], category: 'AI & LLMs' },
+    { id: 'jamba', title: 'AI21 Jamba', url: 'https://studio.ai21.com/v2/workspaces', aliases: ['jamba'], category: 'AI & LLMs' },
+    { id: 'tinker', title: 'Tinker Machines', url: 'https://tinker.thinkingmachines.ai/playground', aliases: ['tinker'], category: 'AI & LLMs' },
+    { id: 'motiftech', title: 'Motif Tech', url: 'https://chat.motiftech.io/chat', aliases: ['motiftech'], category: 'AI & LLMs' },
 
     // Programming
     { id: 'github', title: 'GitHub', url: 'https://github.com', aliases: ['g', 'gh', 'github'], category: 'Programming' },
@@ -114,7 +112,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'penpot', title: 'Penpot Design', url: 'https://design.penpot.app', aliases: ['penpot'], category: 'Programming' },
     { id: 'codewars', title: 'Codewars', url: 'https://www.codewars.com/dashboard', aliases: ['codewars'], category: 'Programming' },
 
-    // ImGen & Media
+    // ImGen & Media (Untouched)
     { id: 'recraft', title: 'Recraft AI', url: 'https://www.recraft.ai/projects', aliases: ['recraft'], category: 'ImGen & Media' },
     { id: 'ideogram', title: 'Ideogram AI', url: 'https://ideogram.ai/t/explore', aliases: ['ideogram'], category: 'ImGen & Media' },
     { id: 'kling', title: 'Kling AI', url: 'https://kling.ai/app', aliases: ['kling'], category: 'ImGen & Media' },

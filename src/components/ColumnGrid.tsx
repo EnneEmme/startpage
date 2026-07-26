@@ -70,7 +70,7 @@ export const ColumnGrid = ({
   };
 
   /* --------------------------------------------------------------------------
-     Fluid Drag & Drop Handlers (Columns & Links)
+     Fluid Drag & Drop Handlers
      -------------------------------------------------------------------------- */
   const handleColumnDragStart = (e: DragEvent, categoryName: string) => {
     setDraggedCategoryName(categoryName);
@@ -148,17 +148,18 @@ export const ColumnGrid = ({
         const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
         const isHighlighted = highlightedCategory === cat.name;
         const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
+        const isLargeCategory = cat.links.length > 10;
 
         return (
           <div
             key={cat.name}
             id={columnId}
-            class={`${styles.columnCard} ${isHighlighted ? styles.highlightPulse : ''} ${isDragOver ? styles.dragOver : ''}`}
+            class={`${styles.columnCard} ${isLargeCategory ? styles.doubleWidthCard : ''} ${isHighlighted ? styles.highlightPulse : ''} ${isDragOver ? styles.dragOver : ''}`}
             onDragOver={e => handleDragOver(e, cat.name)}
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, cat.name)}
           >
-            {/* Draggable Column Header (Clean - No Link Count Badge) */}
+            {/* Draggable Column Header */}
             <div
               class={styles.columnHeader}
               draggable={true}
@@ -169,7 +170,8 @@ export const ColumnGrid = ({
               <h2 class={styles.columnTitle}>{cat.name}</h2>
             </div>
 
-            <div class={styles.linksList}>
+            {/* Links List (Auto 2-Subcolumn Layout if > 10 links) */}
+            <div class={`${styles.linksList} ${isLargeCategory ? styles.multiSubcolumn : ''}`}>
               {cat.links.map((link, linkIdx) => {
                 const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
                 const mainAlias = link.aliases && link.aliases.length > 0 ? link.aliases[0] : null;

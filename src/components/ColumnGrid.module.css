@@ -48,6 +48,13 @@
   transition: all var(--transition-fast);
 }
 
+/* Large Categories with > 10 links span 2 columns on desktop for balanced height */
+@media (min-width: 900px) {
+  .columnCard.doubleWidthCard {
+    grid-column: span 2;
+  }
+}
+
 .columnCard.dragOver {
   border-color: rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.05);
@@ -104,6 +111,19 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+}
+
+/* Auto 2-Subcolumn Layout for large categories (>10 links) */
+.linksList.multiSubcolumn {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem 0.5rem;
+}
+
+@media (max-width: 599px) {
+  .linksList.multiSubcolumn {
+    grid-template-columns: 1fr;
+  }
 }
 
 .linkCardDragWrapper {
