@@ -88,6 +88,16 @@ export const ColumnGrid = ({
     });
   };
 
+  const handleWheel = (e: WheelEvent) => {
+    const target = e.currentTarget as HTMLDivElement;
+    const isAtTop = target.scrollTop <= 0 && e.deltaY < 0;
+    const isAtBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 1 && e.deltaY > 0;
+
+    if (isAtTop || isAtBottom) {
+      e.preventDefault();
+    }
+  };
+
   /* --------------------------------------------------------------------------
      Fluid & Premium UI/UX Drag & Drop Handlers
      -------------------------------------------------------------------------- */
@@ -106,7 +116,6 @@ export const ColumnGrid = ({
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'LINK', id: link.id }));
 
-      // Create a sleek dark ghost element for drag feedback
       const dragGhost = document.createElement('div');
       dragGhost.style.position = 'absolute';
       dragGhost.style.top = '-9999px';
@@ -135,7 +144,6 @@ export const ColumnGrid = ({
       setDragOverCategory(categoryName);
     }
 
-    // Auto-scroll column container when dragging near top or bottom boundaries
     const listContainer = (e.currentTarget as HTMLElement).closest(`.${styles.linksList}`) as HTMLDivElement;
     if (listContainer) {
       const containerRect = listContainer.getBoundingClientRect();
@@ -245,10 +253,11 @@ export const ColumnGrid = ({
               <h2 class={styles.columnTitle}>{cat.name}</h2>
             </div>
 
-            {/* Reactive Dynamic Top/Bottom Fade Masked Links List */}
+            {/* Reactive Dynamic Top/Bottom Fade Masked Links List with Scroll Containment */}
             <div
               class={`${styles.linksList} ${fadeClass}`}
               onScroll={e => handleScroll(e, cat.name)}
+              onWheel={handleWheel}
             >
               {cat.links.map((link, linkIdx) => {
                 const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);

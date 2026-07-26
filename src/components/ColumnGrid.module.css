@@ -113,6 +113,8 @@
   overflow-y: auto;
   scrollbar-width: none; /* Hide scrollbar Firefox */
   -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
+  overscroll-behavior-y: contain; /* Isolate scrolling to column only - prevent parent page scroll */
+  overscroll-behavior-x: contain;
   transition: mask-image 0.2s ease, -webkit-mask-image 0.2s ease;
   scroll-behavior: smooth;
 }
