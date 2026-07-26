@@ -70,7 +70,7 @@ export const ColumnGrid = ({
   };
 
   /* --------------------------------------------------------------------------
-     Fluid Drag & Drop Handlers (Columns & Links with LocalStorage Persistence)
+     Fluid Drag & Drop Handlers (Columns & Links)
      -------------------------------------------------------------------------- */
   const handleColumnDragStart = (e: DragEvent, categoryName: string) => {
     setDraggedCategoryName(categoryName);
@@ -113,7 +113,6 @@ export const ColumnGrid = ({
     setDragOverCategory(null);
     setDragOverLinkId(null);
 
-    // Drop Link (Persists to localStorage via dataStore.moveLink)
     if (draggedLinkId) {
       dataStore.moveLink(draggedLinkId, targetCategoryName, targetLinkIndex);
       setDraggedLinkId(null);
@@ -121,7 +120,6 @@ export const ColumnGrid = ({
       return;
     }
 
-    // Drop Column (Persists to localStorage via dataStore.setCategoryOrder)
     if (draggedCategoryName) {
       const categoryNames = categories.map(c => c.name);
       const fromIdx = categoryNames.indexOf(draggedCategoryName);
@@ -160,7 +158,7 @@ export const ColumnGrid = ({
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, cat.name)}
           >
-            {/* Draggable Column Header (Clean - No Arrows) */}
+            {/* Draggable Column Header (Clean - No Link Count Badge) */}
             <div
               class={styles.columnHeader}
               draggable={true}
@@ -169,7 +167,6 @@ export const ColumnGrid = ({
               title="Drag to reorder column"
             >
               <h2 class={styles.columnTitle}>{cat.name}</h2>
-              <span class={styles.linkCountBadge}>{cat.links.length}</span>
             </div>
 
             <div class={styles.linksList}>

@@ -100,15 +100,6 @@
   letter-spacing: -0.01em;
 }
 
-.linkCountBadge {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.06);
-  padding: 0.1rem 0.45rem;
-  border-radius: var(--radius-full);
-}
-
 .linksList {
   display: flex;
   flex-direction: column;
