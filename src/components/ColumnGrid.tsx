@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import { ChevronDown } from 'lucide-preact';
 import { CategoryGroup, LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
@@ -37,6 +37,30 @@ export const ColumnGrid = ({
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
   const [dragOverLinkId, setDragOverLinkId] = useState<string | null>(null);
   const [dropPosition, setDropPosition] = useState<'above' | 'below'>('above');
+
+  // Page-wide scroll indicator state
+  const [showPageDownCue, setShowPageDownCue] = useState(false);
+
+  useEffect(() => {
+    const checkPageScrollability = () => {
+      const isScrolledNearTop = window.scrollY < 40;
+      const isPageScrollable = document.documentElement.scrollHeight > window.innerHeight + 100;
+      setShowPageDownCue(isScrolledNearTop && isPageScrollable);
+    };
+
+    checkPageScrollability();
+    window.addEventListener('scroll', checkPageScrollability);
+    window.addEventListener('resize', checkPageScrollability);
+
+    return () => {
+      window.removeEventListener('scroll', checkPageScrollability);
+      window.removeEventListener('resize', checkPageScrollability);
+    };
+  }, [categories]);
+
+  const handleScrollPageDown = () => {
+    window.scrollBy({ top: window.innerHeight * 0.7, behavior: 'smooth' });
+  };
 
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
     if (draggedLinkId) {
@@ -353,14 +377,19 @@ export const ColumnGrid = ({
                 );
               })}
             </div>
-
-            {/* Minimalist Down Chevron Indicator Pill (visible when content exists below) */}
-            <div class={`${styles.scrollDownIndicator} ${state.canScrollBottom ? styles.visibleIndicator : ''}`}>
-              <ChevronDown size={13} />
-            </div>
           </div>
         );
       })}
+
+      {/* Page-Wide Floating Minimalist Down Indicator Cue (Bottom Center) */}
+      <button
+        type="button"
+        class={`${styles.pageScrollDownIndicator} ${showPageDownCue ? styles.visiblePageIndicator : ''}`}
+        onClick={handleScrollPageDown}
+        title="Scroll down for more categories"
+      >
+        <ChevronDown size={16} />
+      </button>
 
       {contextMenuState && (
         <ContextMenu

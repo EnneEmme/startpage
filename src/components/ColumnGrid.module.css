@@ -3,7 +3,7 @@
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 2.2rem 1.6rem;
   width: 100%;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0 3.5rem;
 }
 
 /* Mobile Screens (< 600px): 1-2 columns */
@@ -11,10 +11,11 @@
   .gridContainer {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1.5rem 1rem;
+    padding-bottom: 3rem;
   }
 
   .linksList {
-    max-height: calc(100vh - 200px) !important;
+    max-height: calc(100vh - 230px) !important;
   }
 }
 
@@ -127,12 +128,12 @@
   -webkit-user-select: text !important;
 }
 
-/* Viewport-Height Responsive Links List - Spans exact viewport height */
+/* Viewport-Height Responsive Links List - Leaves clean padding gap above screen bottom */
 .linksList {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  max-height: calc(100vh - 170px);
+  max-height: calc(100vh - 220px);
   overflow-y: auto;
   scrollbar-width: none; /* Hide scrollbar Firefox */
   -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
@@ -163,39 +164,47 @@
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
 }
 
-/* Sleek Minimalist Down Indicator Pill */
-.scrollDownIndicator {
-  position: absolute;
-  bottom: 0.2rem;
+/* Page-Wide Fixed Bottom-Center Minimalist Down Indicator Cue */
+.pageScrollDownIndicator {
+  position: fixed;
+  bottom: 1.25rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-full);
-  background: rgba(18, 21, 30, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(18, 21, 30, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--accent-highlight);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(16, 185, 129, 0.2);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  z-index: 20;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 900;
+  cursor: pointer;
 }
 
-.scrollDownIndicator.visibleIndicator {
-  opacity: 0.85;
-  animation: bounceCue 2s infinite alternate;
+.pageScrollDownIndicator:hover {
+  background: rgba(26, 30, 42, 0.95);
+  border-color: var(--accent-highlight);
 }
 
-@keyframes bounceCue {
+.pageScrollDownIndicator.visiblePageIndicator {
+  opacity: 0.9;
+  pointer-events: auto;
+  animation: bouncePageCue 2s infinite alternate;
+}
+
+@keyframes bouncePageCue {
   0% {
     transform: translate(-50%, 0);
   }
   100% {
-    transform: translate(-50%, 3px);
+    transform: translate(-50%, 4px);
   }
 }
 
