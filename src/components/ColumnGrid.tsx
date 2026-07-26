@@ -30,7 +30,18 @@ export const ColumnGrid = ({
     link: LinkItem;
   } | null>(null);
 
+  const [draggedLinkId, setDraggedLinkId] = useState<string | null>(null);
+  const [draggedCategoryName, setDraggedCategoryName] = useState<string | null>(null);
+  const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
+  const [dragOverLinkId, setDragOverLinkId] = useState<string | null>(null);
+
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
+    // If user was dragging, do not open link
+    if (draggedLinkId) {
+      e.preventDefault();
+      return;
+    }
+
     rankStorage.recordUsage(link.id);
 
     if (onLinkClick) {
@@ -75,7 +86,7 @@ export const ColumnGrid = ({
     }
   };
 
-  const handleMoveLink = (e: MouseEvent, link: LinkItem, categoryLinks: LinkItem[], linkIndex: number, direction: 'up' | 'down') => {
+  const handleMoveLinkArrow = (e: MouseEvent, link: LinkItem, categoryLinks: LinkItem[], linkIndex: number, direction: 'up' | 'down') => {
     e.preventDefault();
     e.stopPropagation();
     const targetIdx = direction === 'up' ? linkIndex - 1 : linkIndex + 1;
@@ -87,20 +98,104 @@ export const ColumnGrid = ({
     }
   };
 
+  /* --------------------------------------------------------------------------
+     Fluid Drag & Drop Handlers (Matching Column Drag & Drop Ease)
+     -------------------------------------------------------------------------- */
+  const handleColumnDragStart = (e: DragEvent, categoryName: string) => {
+    setDraggedCategoryName(categoryName);
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'COLUMN', name: categoryName }));
+    }
+  };
+
+  const handleLinkDragStart = (e: DragEvent, link: LinkItem) => {
+    e.stopPropagation();
+    setDraggedLinkId(link.id);
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'LINK', id: link.id }));
+    }
+  };
+
+  const handleDragOver = (e: DragEvent, categoryName: string, linkId?: string) => {
+    e.preventDefault();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+    if (dragOverCategory !== categoryName) {
+      setDragOverCategory(categoryName);
+    }
+    if (linkId && dragOverLinkId !== linkId) {
+      setDragOverLinkId(linkId);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverCategory(null);
+    setDragOverLinkId(null);
+  };
+
+  const handleDrop = (e: DragEvent, targetCategoryName: string, targetLinkIndex?: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverCategory(null);
+    setDragOverLinkId(null);
+
+    // Drop Link
+    if (draggedLinkId) {
+      dataStore.moveLink(draggedLinkId, targetCategoryName, targetLinkIndex);
+      setDraggedLinkId(null);
+      if (onConfigChanged) onConfigChanged();
+      return;
+    }
+
+    // Drop Column
+    if (draggedCategoryName) {
+      const categoryNames = categories.map(c => c.name);
+      const fromIdx = categoryNames.indexOf(draggedCategoryName);
+      const toIdx = categoryNames.indexOf(targetCategoryName);
+
+      if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+        const [dragged] = categoryNames.splice(fromIdx, 1);
+        categoryNames.splice(toIdx, 0, dragged);
+        dataStore.setCategoryOrder(categoryNames);
+        if (onConfigChanged) onConfigChanged();
+      }
+      setDraggedCategoryName(null);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedLinkId(null);
+    setDraggedCategoryName(null);
+    setDragOverCategory(null);
+    setDragOverLinkId(null);
+  };
+
   return (
     <div class={styles.gridContainer}>
       {categories.map((cat, idx) => {
         const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
         const isHighlighted = highlightedCategory === cat.name;
+        const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
 
         return (
           <div
             key={cat.name}
             id={columnId}
-            class={`${styles.columnCard} ${isHighlighted ? styles.highlightPulse : ''}`}
+            class={`${styles.columnCard} ${isHighlighted ? styles.highlightPulse : ''} ${isDragOver ? styles.dragOver : ''}`}
+            onDragOver={e => handleDragOver(e, cat.name)}
+            onDragLeave={handleDragLeave}
+            onDrop={e => handleDrop(e, cat.name)}
           >
-            {/* Column Header with Direct Reordering Controls */}
-            <div class={styles.columnHeader}>
+            {/* Draggable Column Header */}
+            <div
+              class={styles.columnHeader}
+              draggable={true}
+              onDragStart={e => handleColumnDragStart(e, cat.name)}
+              onDragEnd={handleDragEnd}
+            >
               <h2 class={styles.columnTitle}>{cat.name}</h2>
               <span class={styles.linkCountBadge}>{cat.links.length}</span>
 
@@ -128,12 +223,23 @@ export const ColumnGrid = ({
               {cat.links.map((link, linkIdx) => {
                 const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
                 const mainAlias = link.aliases && link.aliases.length > 0 ? link.aliases[0] : null;
+                const isItemDragOver = dragOverLinkId === link.id;
+                const isBeingDragged = draggedLinkId === link.id;
 
                 return (
-                  <div key={link.id} class={styles.linkRowWrapper}>
+                  <div
+                    key={link.id}
+                    class={`${styles.linkCardDragWrapper} ${isItemDragOver ? styles.dragOverLink : ''} ${isBeingDragged ? styles.linkBeingDragged : ''}`}
+                    draggable={true}
+                    onDragStart={e => handleLinkDragStart(e, link)}
+                    onDragOver={e => handleDragOver(e, cat.name, link.id)}
+                    onDrop={e => handleDrop(e, cat.name, linkIdx)}
+                    onDragEnd={handleDragEnd}
+                  >
                     <a
                       href={displayUrl || '#'}
                       class={styles.linkRow}
+                      draggable={false}
                       onClick={e => handleLinkClick(e, link)}
                       onContextMenu={e => handleContextMenu(e, link)}
                     >
@@ -154,11 +260,11 @@ export const ColumnGrid = ({
                         <span class={styles.aliasBadge}>{mainAlias}</span>
                       )}
 
-                      {/* Clean Hover Controls for Reordering Link */}
+                      {/* Optional Hover Arrow Controls */}
                       <div class={styles.linkHoverControls}>
                         <button
                           disabled={linkIdx === 0}
-                          onClick={e => handleMoveLink(e, link, cat.links, linkIdx, 'up')}
+                          onClick={e => handleMoveLinkArrow(e, link, cat.links, linkIdx, 'up')}
                           class={styles.linkHoverBtn}
                           title="Move Link Up"
                         >
@@ -166,7 +272,7 @@ export const ColumnGrid = ({
                         </button>
                         <button
                           disabled={linkIdx === cat.links.length - 1}
-                          onClick={e => handleMoveLink(e, link, cat.links, linkIdx, 'down')}
+                          onClick={e => handleMoveLinkArrow(e, link, cat.links, linkIdx, 'down')}
                           class={styles.linkHoverBtn}
                           title="Move Link Down"
                         >
