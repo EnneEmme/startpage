@@ -9,6 +9,7 @@ import { SearchModal } from './components/SearchModal';
 import { CheatsheetModal } from './components/CheatsheetModal';
 import { ImportExportModal } from './components/ImportExportModal';
 import { VisualEditModal } from './components/VisualEditModal';
+import { ReorderModal } from './components/ReorderModal';
 import { LinkItem, CategoryGroup } from './types/startpage';
 
 export const App = () => {
@@ -22,6 +23,7 @@ export const App = () => {
   const [cheatsheetOpen, setCheatsheetOpen] = useState<boolean>(false);
   const [importExportOpen, setImportExportOpen] = useState<boolean>(false);
   const [visualEditOpen, setVisualEditOpen] = useState<boolean>(false);
+  const [reorderOpen, setReorderOpen] = useState<boolean>(false);
   const [editTargetLink, setEditTargetLink] = useState<LinkItem | null>(null);
 
   const refreshData = () => {
@@ -35,7 +37,7 @@ export const App = () => {
     // Attach global keyboard shortcuts handlers
     keyboardManager.setHandlers({
       onOpenSearch: (char?: string) => {
-        if (!cheatsheetOpen && !importExportOpen && !visualEditOpen) {
+        if (!cheatsheetOpen && !importExportOpen && !visualEditOpen && !reorderOpen) {
           setInitialSearchChar(char || '');
           setSearchOpen(true);
         }
@@ -45,6 +47,7 @@ export const App = () => {
         setCheatsheetOpen(false);
         setImportExportOpen(false);
         setVisualEditOpen(false);
+        setReorderOpen(false);
         setEditTargetLink(null);
       },
       onOpenCheatsheet: () => {
@@ -55,7 +58,7 @@ export const App = () => {
 
     keyboardManager.attach();
     return () => keyboardManager.detach();
-  }, [cheatsheetOpen, importExportOpen, visualEditOpen]);
+  }, [cheatsheetOpen, importExportOpen, visualEditOpen, reorderOpen]);
 
   const handleEditLinkFromContext = (link: LinkItem) => {
     setEditTargetLink(link);
@@ -83,7 +86,7 @@ export const App = () => {
         categories={categoryNames}
         activeCategory={activeCategoryFilter}
         onSelectCategory={cat => setActiveCategoryFilter(cat)}
-        onConfigChanged={refreshData}
+        onOpenReorder={() => setReorderOpen(true)}
       />
 
       <main style={{ width: '100%' }}>
@@ -121,6 +124,13 @@ export const App = () => {
           setVisualEditOpen(false);
           setEditTargetLink(null);
         }}
+        onConfigChanged={refreshData}
+      />
+
+      <ReorderModal
+        isOpen={reorderOpen}
+        categories={categoryNames}
+        onClose={() => setReorderOpen(false)}
         onConfigChanged={refreshData}
       />
     </div>

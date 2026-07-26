@@ -1,18 +1,27 @@
-.jumpBar {
+.stickyHeaderWrapper {
   position: sticky;
-  top: 1rem;
+  top: 0;
   z-index: 100;
+  width: 100%;
+  padding: 0.6rem 0;
+  margin-bottom: 2rem;
+  background: rgba(8, 9, 12, 0.85);
+  backdrop-filter: var(--glass-backdrop);
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.jumpBar {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  margin-bottom: 2.2rem;
   overflow-x: auto;
   padding: 0.35rem 0.6rem;
-  background: var(--bg-glass);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full);
-  backdrop-filter: var(--glass-backdrop);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   max-width: 100%;
 }
 
@@ -42,92 +51,22 @@
 }
 
 .reorderBtn {
-  margin-left: auto;
+  margin-left: 0.5rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.4rem;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
   border-radius: var(--radius-full);
-  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all var(--transition-fast);
 }
 
 .reorderBtn:hover {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.1);
-}
-
-.reorderPopup {
-  position: absolute;
-  top: 110%;
-  right: 1rem;
-  width: 260px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color-hover);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 0.85rem;
-  z-index: 105;
-}
-
-.reorderHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.6rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.closePopupBtn {
-  font-size: 1.1rem;
-  color: var(--text-muted);
-}
-
-.reorderList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  max-height: 240px;
-  overflow-y: auto;
-}
-
-.reorderRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.35rem 0.5rem;
-  background: var(--bg-card);
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
-}
-
-.reorderName {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.reorderControls {
-  display: flex;
-  gap: 0.2rem;
-}
-
-.moveBtn {
-  padding: 0.2rem 0.4rem;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-secondary);
-}
-
-.moveBtn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--text-primary);
-}
-
-.moveBtn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+  border-color: var(--border-color-hover);
 }
