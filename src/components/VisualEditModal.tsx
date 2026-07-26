@@ -3,7 +3,11 @@ import { useState } from 'preact/hooks';
 import {
   X, Check, Plus, Tag, Mail, Globe, Search, MessageSquare, Sparkles, Bot, Cpu, Send,
   Tv, Music, Film, Code, Terminal, Calendar, FileText, Share2, Video, Image, BookOpen,
-  Zap, Star, Heart, Folder, Link, Shield, Box, Compass
+  Zap, Star, Heart, Folder, Link, Shield, Box, Compass, Activity, Layers, Grid, Database,
+  Server, HardDrive, Cloud, Lock, Unlock, Key, Eye, Settings, Sliders, Wrench, Feather,
+  PenTool, Play, Pause, Volume2, Radio, Headphones, Bookmark, Flag, Bell, Award,
+  Briefcase, ShoppingBag, DollarSign, CreditCard, BarChart2, PieChart, TrendingUp, Target,
+  Crosshair, Sun, Moon, Smile, ThumbsUp, Flame, MapPin, Maximize2, Minimize2
 } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
 import { dataStore } from '../engine/dataStore';
@@ -20,33 +24,85 @@ interface VisualEditModalProps {
 }
 
 const PRESET_ICONS = [
-  { name: 'Mail', spec: 'Mail', icon: Mail },
-  { name: 'Globe', spec: 'Globe', icon: Globe },
-  { name: 'Search', spec: 'Search', icon: Search },
-  { name: 'MessageSquare', spec: 'MessageSquare', icon: MessageSquare },
+  // AI & Tech
   { name: 'Sparkles', spec: 'Sparkles', icon: Sparkles },
   { name: 'Bot', spec: 'Bot', icon: Bot },
   { name: 'Cpu', spec: 'Cpu', icon: Cpu },
+  { name: 'Zap', spec: 'Zap', icon: Zap },
+  { name: 'Terminal', spec: 'Terminal', icon: Terminal },
+  { name: 'Code', spec: 'Code', icon: Code },
+  { name: 'Database', spec: 'Database', icon: Database },
+  { name: 'Server', spec: 'Server', icon: Server },
+  { name: 'HardDrive', spec: 'HardDrive', icon: HardDrive },
+  { name: 'Cloud', spec: 'Cloud', icon: Cloud },
+  { name: 'Lock', spec: 'Lock', icon: Lock },
+  { name: 'Unlock', spec: 'Unlock', icon: Unlock },
+  { name: 'Key', spec: 'Key', icon: Key },
+  { name: 'Shield', spec: 'Shield', icon: Shield },
+  { name: 'Box', spec: 'Box', icon: Box },
+  { name: 'Layers', spec: 'Layers', icon: Layers },
+  { name: 'Grid', spec: 'Grid', icon: Grid },
+  { name: 'Activity', spec: 'Activity', icon: Activity },
+  { name: 'Compass', spec: 'Compass', icon: Compass },
+
+  // Communication & Social
+  { name: 'Mail', spec: 'Mail', icon: Mail },
   { name: 'Send', spec: 'Send', icon: Send },
+  { name: 'MessageSquare', spec: 'MessageSquare', icon: MessageSquare },
+  { name: 'Share2', spec: 'Share2', icon: Share2 },
+  { name: 'Globe', spec: 'Globe', icon: Globe },
+  { name: 'Link', spec: 'Link', icon: Link },
+  { name: 'Tag', spec: 'Tag', icon: Tag },
+  { name: 'Flag', spec: 'Flag', icon: Flag },
+  { name: 'Bell', spec: 'Bell', icon: Bell },
+  { name: 'Award', spec: 'Award', icon: Award },
+  { name: 'Briefcase', spec: 'Briefcase', icon: Briefcase },
+  { name: 'Heart', spec: 'Heart', icon: Heart },
+  { name: 'Smile', spec: 'Smile', icon: Smile },
+  { name: 'ThumbsUp', spec: 'ThumbsUp', icon: ThumbsUp },
+
+  // Media & Entertainment
   { name: 'Tv', spec: 'Tv', icon: Tv },
   { name: 'Music', spec: 'Music', icon: Music },
   { name: 'Film', spec: 'Film', icon: Film },
-  { name: 'Code', spec: 'Code', icon: Code },
-  { name: 'Terminal', spec: 'Terminal', icon: Terminal },
-  { name: 'Calendar', spec: 'Calendar', icon: Calendar },
-  { name: 'FileText', spec: 'FileText', icon: FileText },
-  { name: 'Share2', spec: 'Share2', icon: Share2 },
   { name: 'Video', spec: 'Video', icon: Video },
   { name: 'Image', spec: 'Image', icon: Image },
+  { name: 'Radio', spec: 'Radio', icon: Radio },
+  { name: 'Headphones', spec: 'Headphones', icon: Headphones },
+  { name: 'Play', spec: 'Play', icon: Play },
+  { name: 'Pause', spec: 'Pause', icon: Pause },
+  { name: 'Volume2', spec: 'Volume2', icon: Volume2 },
+  { name: 'Flame', spec: 'Flame', icon: Flame },
+  { name: 'Sun', spec: 'Sun', icon: Sun },
+  { name: 'Moon', spec: 'Moon', icon: Moon },
+
+  // Office & Education
+  { name: 'Calendar', spec: 'Calendar', icon: Calendar },
+  { name: 'FileText', spec: 'FileText', icon: FileText },
   { name: 'BookOpen', spec: 'BookOpen', icon: BookOpen },
-  { name: 'Zap', spec: 'Zap', icon: Zap },
-  { name: 'Star', spec: 'Star', icon: Star },
-  { name: 'Heart', spec: 'Heart', icon: Heart },
   { name: 'Folder', spec: 'Folder', icon: Folder },
-  { name: 'Link', spec: 'Link', icon: Link },
-  { name: 'Shield', spec: 'Shield', icon: Shield },
-  { name: 'Box', spec: 'Box', icon: Box },
-  { name: 'Compass', spec: 'Compass', icon: Compass }
+  { name: 'Search', spec: 'Search', icon: Search },
+  { name: 'Bookmark', spec: 'Bookmark', icon: Bookmark },
+  { name: 'BarChart2', spec: 'BarChart2', icon: BarChart2 },
+  { name: 'PieChart', spec: 'PieChart', icon: PieChart },
+  { name: 'TrendingUp', spec: 'TrendingUp', icon: TrendingUp },
+  { name: 'Target', spec: 'Target', icon: Target },
+  { name: 'Crosshair', spec: 'Crosshair', icon: Crosshair },
+  { name: 'DollarSign', spec: 'DollarSign', icon: DollarSign },
+  { name: 'CreditCard', spec: 'CreditCard', icon: CreditCard },
+  { name: 'ShoppingBag', spec: 'ShoppingBag', icon: ShoppingBag },
+
+  // Tools & Settings
+  { name: 'Settings', spec: 'Settings', icon: Settings },
+  { name: 'Sliders', spec: 'Sliders', icon: Sliders },
+  { name: 'Wrench', spec: 'Wrench', icon: Wrench },
+  { name: 'Feather', spec: 'Feather', icon: Feather },
+  { name: 'PenTool', spec: 'PenTool', icon: PenTool },
+  { name: 'Star', spec: 'Star', icon: Star },
+  { name: 'MapPin', spec: 'MapPin', icon: MapPin },
+  { name: 'Eye', spec: 'Eye', icon: Eye },
+  { name: 'Maximize2', spec: 'Maximize2', icon: Maximize2 },
+  { name: 'Minimize2', spec: 'Minimize2', icon: Minimize2 }
 ];
 
 export const VisualEditModal = ({
@@ -272,7 +328,7 @@ export const VisualEditModal = ({
                   class={styles.iconPickerToggleBtn}
                   onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}
                 >
-                  Choose ▼
+                  Choose ({PRESET_ICONS.length}) ▼
                 </button>
               </div>
 
@@ -283,7 +339,7 @@ export const VisualEditModal = ({
                     <input
                       type="text"
                       class={styles.iconSearchInput}
-                      placeholder="Search icons..."
+                      placeholder="Search 75+ icons..."
                       value={iconSearchQuery}
                       onInput={e => setIconSearchQuery((e.target as HTMLInputElement).value)}
                       autoFocus
