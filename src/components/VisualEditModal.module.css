@@ -99,7 +99,7 @@
   }
 }
 
-.input, .selectInput {
+.input {
   padding: 0.65rem 0.9rem;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -110,14 +110,124 @@
   width: 100%;
 }
 
-.selectInput option {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+.input:focus {
+  border-color: var(--border-focus);
+  background: var(--bg-card-hover);
 }
 
-.categorySelectRow {
+/* Custom Dark Premium Category Picker Dropdown */
+.customCategoryDropdownWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.categoryDropdownTrigger {
   display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+.categoryDropdownTrigger:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color-hover);
+}
+
+.tagIcon {
+  color: var(--accent-primary);
+  opacity: 0.8;
+}
+
+.selectedCategoryName {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+}
+
+.chevronIcon {
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.chevronIcon.open {
+  transform: rotate(180deg);
+}
+
+.customCategoryMenu {
+  position: absolute;
+  top: 108%;
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  z-index: 100;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.menuScrollArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.categoryMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+  width: 100%;
+  text-align: left;
+}
+
+.categoryMenuItem:hover {
+  background: var(--bg-card-hover);
+  color: var(--accent-primary);
+}
+
+.categoryMenuItem.active {
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+
+.checkIcon {
+  margin-left: auto;
+  color: var(--accent-highlight);
+}
+
+.createCategoryBtn {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--accent-primary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  margin-top: 0.2rem;
+}
+
+.createCategoryBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .categoryCreateRow {
@@ -138,11 +248,6 @@
 .cancelNewCatBtn:hover {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.12);
-}
-
-.input:focus, .selectInput:focus {
-  border-color: var(--border-focus);
-  background: var(--bg-card-hover);
 }
 
 .formActions {

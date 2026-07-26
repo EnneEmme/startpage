@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { X, Edit3, Trash2, Check, Plus } from 'lucide-preact';
+import { X, Edit3, Trash2, Check, Plus, Tag, ChevronDown } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
 import { dataStore } from '../engine/dataStore';
 import styles from './VisualEditModal.module.css';
@@ -24,6 +24,7 @@ export const VisualEditModal = ({
   const [category, setCategory] = useState<string>('General');
   const [customCategory, setCustomCategory] = useState<string>('');
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState<boolean>(false);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [icon, setIcon] = useState<string>('');
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null);
 
@@ -37,6 +38,7 @@ export const VisualEditModal = ({
     setCategory(existingCategories.length > 0 ? existingCategories[0] : 'General');
     setCustomCategory('');
     setIsCreatingNewCategory(false);
+    setDropdownOpen(false);
     setIcon('');
   };
 
@@ -48,6 +50,7 @@ export const VisualEditModal = ({
     setCategory(link.category);
     setCustomCategory('');
     setIsCreatingNewCategory(false);
+    setDropdownOpen(false);
     setIcon(link.icon || '');
   };
 
@@ -151,33 +154,54 @@ export const VisualEditModal = ({
                 />
               </div>
 
-              {/* Category Selector with Suggested List + Create New Option */}
+              {/* Custom Dark Premium Category Picker Dropdown */}
               <div class={styles.formGroup}>
                 <label>Category *</label>
 
                 {!isCreatingNewCategory ? (
-                  <div class={styles.categorySelectRow}>
-                    <select
-                      class={styles.selectInput}
-                      value={category}
-                      onChange={e => {
-                        const val = (e.target as HTMLSelectElement).value;
-                        if (val === '__CREATE_NEW__') {
-                          setIsCreatingNewCategory(true);
-                        } else {
-                          setCategory(val);
-                        }
-                      }}
+                  <div class={styles.customCategoryDropdownWrapper}>
+                    <button
+                      type="button"
+                      class={styles.categoryDropdownTrigger}
+                      onClick={() => setDropdownOpen(prev => !prev)}
                     >
-                      {existingCategories.map(cat => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                      <option value="__CREATE_NEW__">
-                        + Create New Category...
-                      </option>
-                    </select>
+                      <Tag size={15} class={styles.tagIcon} />
+                      <span class={styles.selectedCategoryName}>{category}</span>
+                      <ChevronDown size={16} class={`${styles.chevronIcon} ${dropdownOpen ? styles.open : ''}`} />
+                    </button>
+
+                    {dropdownOpen && (
+                      <div class={`${styles.customCategoryMenu} fade-in`}>
+                        <div class={styles.menuScrollArea}>
+                          {existingCategories.map(cat => (
+                            <button
+                              key={cat}
+                              type="button"
+                              class={`${styles.categoryMenuItem} ${category === cat ? styles.active : ''}`}
+                              onClick={() => {
+                                setCategory(cat);
+                                setDropdownOpen(false);
+                              }}
+                            >
+                              <Tag size={13} />
+                              <span>{cat}</span>
+                              {category === cat && <Check size={14} class={styles.checkIcon} />}
+                            </button>
+                          ))}
+                        </div>
+
+                        <button
+                          type="button"
+                          class={styles.createCategoryBtn}
+                          onClick={() => {
+                            setIsCreatingNewCategory(true);
+                            setDropdownOpen(false);
+                          }}
+                        >
+                          <Plus size={14} /> Create New Category...
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div class={styles.categoryCreateRow}>
