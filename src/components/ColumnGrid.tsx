@@ -148,6 +148,7 @@ export const ColumnGrid = ({
         const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
         const isHighlighted = highlightedCategory === cat.name;
         const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
+        const hasOverflowLinks = cat.links.length > 20;
 
         return (
           <div
@@ -169,8 +170,8 @@ export const ColumnGrid = ({
               <h2 class={styles.columnTitle}>{cat.name}</h2>
             </div>
 
-            {/* Single Column Links List with Internal Scrollbar */}
-            <div class={styles.linksList}>
+            {/* Single Column Links List with Minimal Fade Mask & Hidden Scrollbars */}
+            <div class={`${styles.linksList} ${hasOverflowLinks ? styles.hasMoreBelow : ''}`}>
               {cat.links.map((link, linkIdx) => {
                 const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
                 const mainAlias = link.aliases && link.aliases.length > 0 ? link.aliases[0] : null;

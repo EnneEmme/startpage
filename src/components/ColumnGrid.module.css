@@ -12,6 +12,10 @@
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1.5rem 1rem;
   }
+
+  .linksList {
+    max-height: 380px !important;
+  }
 }
 
 /* Medium Screens / Tablets (600px - 1024px): 2-3 columns */
@@ -100,31 +104,26 @@
   letter-spacing: -0.01em;
 }
 
+/* Single Column Links List - Fits exactly 20 visible links on Desktop (730px max-height) */
 .linksList {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  max-height: 420px;
+  max-height: 730px;
   overflow-y: auto;
-  padding-right: 0.2rem;
+  scrollbar-width: none; /* Hide scrollbar Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
 }
 
-/* Custom subtle dark scrollbar for tall columns */
+/* Hide scrollbar Chrome/Safari/Blink */
 .linksList::-webkit-scrollbar {
-  width: 4px;
+  display: none;
 }
 
-.linksList::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.linksList::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-full);
-}
-
-.linksList::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+/* Sleek Minimalist Gradient Fade Mask when > 20 links exist below fold */
+.linksList.hasMoreBelow {
+  mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
 }
 
 .linkCardDragWrapper {
