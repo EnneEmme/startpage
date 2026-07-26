@@ -11,9 +11,12 @@ import { LinkIcon } from './LinkIcon';
 import styles from './VisualEditModal.module.css';
 
 interface VisualEditModalProps {
+  isOpen?: boolean;
+  initialEditLink?: LinkItem | null;
   initialLink?: LinkItem | null;
   onClose: () => void;
   onSave?: () => void;
+  onConfigChanged?: () => void;
 }
 
 const PRESET_ICONS = [
@@ -46,22 +49,33 @@ const PRESET_ICONS = [
   { name: 'Compass', spec: 'Compass', icon: Compass }
 ];
 
-export const VisualEditModal = ({ initialLink, onClose, onSave }: VisualEditModalProps) => {
-  const isEditing = Boolean(initialLink);
+export const VisualEditModal = ({
+  isOpen = true,
+  initialEditLink,
+  initialLink,
+  onClose,
+  onSave,
+  onConfigChanged
+}: VisualEditModalProps) => {
+  if (!isOpen) return null;
 
-  const [title, setTitle] = useState(initialLink?.title || '');
-  const [url, setUrl] = useState(initialLink?.url || '');
-  const [aliases, setAliases] = useState(initialLink?.aliases ? initialLink.aliases.join(', ') : '');
-  const [icon, setIcon] = useState(initialLink?.icon || '');
-  const [category, setCategory] = useState(initialLink?.category || 'General');
+  const targetLink = initialEditLink || initialLink;
+  const isEditing = Boolean(targetLink);
+
+  const [title, setTitle] = useState(targetLink?.title || '');
+  const [url, setUrl] = useState(targetLink?.url || '');
+  const [aliases, setAliases] = useState(targetLink?.aliases ? targetLink.aliases.join(', ') : '');
+  const [icon, setIcon] = useState(targetLink?.icon || '');
+  const [category, setCategory] = useState(targetLink?.category || 'General');
 
   // Custom Category State
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isCategoryPickerOpen, setIsCategoryPickerOpen] = useState(false);
 
-  // Icon Search State
-  const [iconQuery, setIconQuery] = useState('');
+  // Icon Picker Dropdown State
+  const [isIconDropdownOpen, setIsIconDropdownOpen] = useState(false);
+  const [iconSearchQuery, setIconSearchQuery] = useState('');
 
   const categories = dataStore.getCategories().map(c => c.name);
 
@@ -91,7 +105,7 @@ export const VisualEditModal = ({ initialLink, onClose, onSave }: VisualEditModa
       .map(a => a.trim().toLowerCase())
       .filter(Boolean);
 
-    const linkId = initialLink?.id || `link_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const linkId = targetLink?.id || `link_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const targetCat = isCreatingNewCategory && newCategoryName.trim() ? newCategoryName.trim() : category;
 
     const updatedLink: LinkItem = {
@@ -105,12 +119,13 @@ export const VisualEditModal = ({ initialLink, onClose, onSave }: VisualEditModa
 
     dataStore.addLink(updatedLink);
     if (onSave) onSave();
+    if (onConfigChanged) onConfigChanged();
     onClose();
   };
 
   const filteredIcons = PRESET_ICONS.filter(i =>
-    i.name.toLowerCase().includes(iconQuery.toLowerCase()) ||
-    i.spec.toLowerCase().includes(iconQuery.toLowerCase())
+    i.name.toLowerCase().includes(iconSearchQuery.toLowerCase()) ||
+    i.spec.toLowerCase().includes(iconSearchQuery.toLowerCase())
   );
 
   return (
@@ -118,7 +133,7 @@ export const VisualEditModal = ({ initialLink, onClose, onSave }: VisualEditModa
       <div class={`${styles.modalContainer} fade-in`} onClick={e => e.stopPropagation()}>
         <div class={styles.modalHeader}>
           <h2 class={styles.modalTitle}>{isEditing ? 'Edit Link' : 'Add New Link'}</h2>
-          <button class={styles.closeBtn} onClick={onClose}>
+          <button class={styles.closeBtn} onClick={onClose} type="button">
             <X size={18} />
           </button>
         </div>
@@ -150,7 +165,7 @@ export const VisualEditModal = ({ initialLink, onClose, onSave }: VisualEditModa
             />
           </div>
 
-          {/* Custom Category Picker with Suggestions & Add Mode */}
+          {/* Custom Category Picker */}
           <div class={styles.fieldGroup}>
             <label class={styles.label}>Category</label>
             <div class={styles.customSelectWrapper}>
@@ -232,55 +247,72 @@ export const VisualEditModal = ({ initialLink, onClose, onSave }: VisualEditModa
             />
           </div>
 
-          {/* Icon Search & Live Visual Suggestions Grid */}
+          {/* Clean Non-Invasive Icon Dropdown Picker */}
           <div class={styles.fieldGroup}>
-            <label class={styles.label}>Icon Search & Visual Suggestions</label>
-            <div class={styles.iconInputPreviewRow}>
-              <div class={styles.iconLiveBadge}>
-                <LinkIcon
-                  url={url || 'https://example.com'}
-                  iconSpec={icon}
-                  title={title || 'Preview'}
-                  size={20}
+            <label class={styles.label}>Icon</label>
+            <div class={styles.iconDropdownWrapper}>
+              <div class={styles.iconInputTriggerRow}>
+                <div class={styles.iconLiveBadge}>
+                  <LinkIcon
+                    url={url || 'https://example.com'}
+                    iconSpec={icon}
+                    title={title || 'Preview'}
+                    size={20}
+                  />
+                </div>
+                <input
+                  type="text"
+                  class={styles.input}
+                  placeholder="Lucide name or Image URL..."
+                  value={icon}
+                  onInput={e => setIcon((e.target as HTMLInputElement).value)}
                 />
+                <button
+                  type="button"
+                  class={styles.iconPickerToggleBtn}
+                  onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}
+                >
+                  Choose ▼
+                </button>
               </div>
-              <input
-                type="text"
-                class={styles.input}
-                placeholder="Search icon (e.g. Mail, Globe, Code, Bot, Search...)"
-                value={icon || iconQuery}
-                onInput={e => {
-                  const val = (e.target as HTMLInputElement).value;
-                  setIcon(val);
-                  setIconQuery(val);
-                }}
-              />
-            </div>
 
-            {/* Visual Icon Grid Suggestions */}
-            <div class={styles.iconSuggestionsBox}>
-              <div class={styles.iconGrid}>
-                {filteredIcons.map(item => {
-                  const IconComp = item.icon;
-                  const isSelected = icon === item.spec;
+              {/* Compact Dark Icon Dropdown Menu */}
+              {isIconDropdownOpen && (
+                <div class={`${styles.iconDropdownMenu} fade-in`}>
+                  <div class={styles.iconSearchHeader}>
+                    <input
+                      type="text"
+                      class={styles.iconSearchInput}
+                      placeholder="Search icons..."
+                      value={iconSearchQuery}
+                      onInput={e => setIconSearchQuery((e.target as HTMLInputElement).value)}
+                      autoFocus
+                    />
+                  </div>
+                  <div class={styles.iconDropdownGrid}>
+                    {filteredIcons.map(item => {
+                      const IconComp = item.icon;
+                      const isSelected = icon === item.spec;
 
-                  return (
-                    <button
-                      key={item.spec}
-                      type="button"
-                      class={`${styles.iconGridCard} ${isSelected ? styles.selectedIconCard : ''}`}
-                      onClick={() => {
-                        setIcon(item.spec);
-                        setIconQuery(item.spec);
-                      }}
-                      title={item.name}
-                    >
-                      <IconComp size={16} />
-                      <span class={styles.iconCardLabel}>{item.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
+                      return (
+                        <button
+                          key={item.spec}
+                          type="button"
+                          class={`${styles.iconDropdownItem} ${isSelected ? styles.selectedIconItem : ''}`}
+                          onClick={() => {
+                            setIcon(item.spec);
+                            setIsIconDropdownOpen(false);
+                          }}
+                          title={item.name}
+                        >
+                          <IconComp size={15} />
+                          <span class={styles.iconItemName}>{item.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
