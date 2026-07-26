@@ -40,7 +40,7 @@
 
 .columnCard {
   background: transparent;
-  border: 1px solid transparent;
+  border: 1px dashed transparent;
   padding: 0.4rem;
   display: flex;
   flex-direction: column;
@@ -49,9 +49,9 @@
 }
 
 .columnCard.dragOver {
-  border-color: rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 /* Highlight Pulse Animation when jumping to section */
@@ -161,27 +161,51 @@
   gap: 0.25rem;
 }
 
+.linkRowWrapper {
+  width: 100%;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  cursor: grab;
+}
+
+.linkRowWrapper:active {
+  cursor: grabbing;
+}
+
+.linkRowWrapper.linkDragOver {
+  border-top: 2px solid var(--accent-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.linkRowWrapper.linkBeingDragged {
+  opacity: 0.4;
+}
+
 .linkRow {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   padding: 0.38rem 0.5rem;
   border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text-primary);
   transition: all var(--transition-fast);
   background: transparent;
-  cursor: grab;
-}
-
-.linkRow:active {
-  cursor: grabbing;
-  opacity: 0.7;
 }
 
 .linkRow:hover {
   background: var(--bg-card-hover);
   transform: translateX(2px);
+}
+
+.linkGripIcon {
+  color: var(--text-muted);
+  opacity: 0.2;
+  transition: opacity var(--transition-fast);
+}
+
+.linkRow:hover .linkGripIcon {
+  opacity: 0.7;
 }
 
 .iconContainer {
