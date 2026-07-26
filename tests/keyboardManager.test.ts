@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { KeyboardManager } from '../src/engine/keyboardManager';
 
-describe('KeyboardManager Engine', () => {
+describe('KeyboardManager Engine & Advanced Shortcuts', () => {
   let keyboardManager: KeyboardManager;
   const mockHandlers = {
     onOpenSearch: vi.fn(),
@@ -19,8 +19,10 @@ describe('KeyboardManager Engine', () => {
   it('detects if event target is an input field', () => {
     const inputEl = document.createElement('input');
     const divEl = document.createElement('div');
+    const textareaEl = document.createElement('textarea');
 
     expect(keyboardManager.isTypingInInput(inputEl)).toBe(true);
+    expect(keyboardManager.isTypingInInput(textareaEl)).toBe(true);
     expect(keyboardManager.isTypingInInput(divEl)).toBe(false);
   });
 
@@ -60,6 +62,16 @@ describe('KeyboardManager Engine', () => {
     expect(mockHandlers.onOpenSearch).toHaveBeenCalledWith('g');
   });
 
+  it('ignores modifier key combinations like Ctrl+C or Cmd+V for search auto-open', () => {
+    const ctrlC = new KeyboardEvent('keydown', { key: 'c', ctrlKey: true });
+    keyboardManager.handleKeyDown(ctrlC);
+    expect(mockHandlers.onOpenSearch).not.toHaveBeenCalled();
+
+    const cmdV = new KeyboardEvent('keydown', { key: 'v', metaKey: true });
+    keyboardManager.handleKeyDown(cmdV);
+    expect(mockHandlers.onOpenSearch).not.toHaveBeenCalled();
+  });
+
   it('handles navigation keys (ArrowUp, ArrowDown, Enter) when inside input', () => {
     const inputEl = document.createElement('input');
     const downEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
@@ -67,5 +79,26 @@ describe('KeyboardManager Engine', () => {
 
     keyboardManager.handleKeyDown(downEvent);
     expect(mockHandlers.onNavigateSearch).toHaveBeenCalledWith('down');
+
+    const upEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
+    Object.defineProperty(upEvent, 'target', { value: inputEl });
+    keyboardManager.handleKeyDown(upEvent);
+    expect(mockHandlers.onNavigateSearch).toHaveBeenCalledWith('up');
+
+    const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
+    Object.defineProperty(enterEvent, 'target', { value: inputEl });
+    keyboardManager.handleKeyDown(enterEvent);
+    expect(mockHandlers.onNavigateSearch).toHaveBeenCalledWith('enter');
+  });
+
+  it('attaches and detaches window event listener safely', () => {
+    const spyAdd = vi.spyOn(window, 'addEventListener');
+    const spyRemove = vi.spyOn(window, 'removeEventListener');
+
+    keyboardManager.attach();
+    expect(spyAdd).toHaveBeenCalledWith('keydown', expect.any(Function));
+
+    keyboardManager.detach();
+    expect(spyRemove).toHaveBeenCalledWith('keydown', expect.any(Function));
   });
 });
