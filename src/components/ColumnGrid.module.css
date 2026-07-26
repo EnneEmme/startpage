@@ -50,6 +50,8 @@
   flex-direction: column;
   border-radius: var(--radius-lg);
   transition: all var(--transition-fast);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .columnCard.dragOver {
@@ -90,6 +92,8 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
   cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .columnHeader:active {
@@ -102,6 +106,8 @@
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.01em;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .inlineRenameInput {
@@ -116,6 +122,8 @@
   outline: none;
   width: 100%;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  user-select: text !important;
+  -webkit-user-select: text !important;
 }
 
 /* Single Column Links List - Fits exactly 20 visible links on Desktop (730px max-height) */
@@ -161,6 +169,8 @@
   transition: transform 0.15s ease, margin 0.15s ease, opacity 0.15s ease, background 0.15s ease;
   cursor: grab;
   position: relative;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .linkCardDragWrapper:active {
@@ -233,6 +243,8 @@
   transition: all var(--transition-fast);
   background: transparent;
   position: relative;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .linkRow:hover {
@@ -248,6 +260,8 @@
   height: 24px;
   border-radius: var(--radius-sm);
   flex-shrink: 0;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .linkInfo {
@@ -262,6 +276,8 @@
   font-size: 0.88rem;
   font-weight: 400;
   color: var(--text-primary);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .aliasBadge {
@@ -271,4 +287,6 @@
   background: rgba(255, 255, 255, 0.05);
   padding: 0.1rem 0.35rem;
   border-radius: var(--radius-sm);
+  user-select: none;
+  -webkit-user-select: none;
 }
