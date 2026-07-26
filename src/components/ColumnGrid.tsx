@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
-import { ArrowLeft, ArrowRight, GripVertical } from 'lucide-preact';
+import { ArrowLeft, ArrowRight } from 'lucide-preact';
 import { CategoryGroup, LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
 import { rankStorage } from '../engine/rankStorage';
@@ -36,7 +36,6 @@ export const ColumnGrid = ({
   const [dragOverLinkId, setDragOverLinkId] = useState<string | null>(null);
 
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
-    // Prevent navigation if user was dragging
     if (draggedLinkId) {
       e.preventDefault();
       return;
@@ -130,7 +129,6 @@ export const ColumnGrid = ({
     setDragOverCategory(null);
     setDragOverLinkId(null);
 
-    // Handle Link Drop via State or DataTransfer
     if (draggedLinkId) {
       dataStore.moveLink(draggedLinkId, targetCategoryName, targetLinkIndex);
       setDraggedLinkId(null);
@@ -138,7 +136,6 @@ export const ColumnGrid = ({
       return;
     }
 
-    // Handle Column Drop
     if (draggedCategoryName) {
       const categoryNames = categories.map(c => c.name);
       const fromIdx = categoryNames.indexOf(draggedCategoryName);
@@ -177,14 +174,13 @@ export const ColumnGrid = ({
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, cat.name)}
           >
-            {/* Draggable Column Header */}
+            {/* Draggable Column Header (No Grip Icons) */}
             <div
               class={styles.columnHeader}
               draggable={true}
               onDragStart={e => handleColumnDragStart(e, cat.name)}
               onDragEnd={handleDragEnd}
             >
-              <GripVertical size={15} class={styles.dragGripIcon} title="Drag column" />
               <h2 class={styles.columnTitle}>{cat.name}</h2>
               <span class={styles.linkCountBadge}>{cat.links.length}</span>
 
@@ -232,8 +228,6 @@ export const ColumnGrid = ({
                       onClick={e => handleLinkClick(e, link)}
                       onContextMenu={e => handleContextMenu(e, link)}
                     >
-                      <GripVertical size={13} class={styles.linkGripIcon} />
-
                       <div class={styles.iconContainer}>
                         <LinkIcon
                           url={displayUrl || 'https://example.com'}
