@@ -29,17 +29,42 @@ This document specifies the operational rules, coding standards, git workflow, a
 ## 2. Git & Documentation Workflow
 
 1. **Branch Management**:
-   - `main`: Contains ONLY production build artifacts (compiled static files ready to use). NO source files or markdown docs here.
+   - `main`: Contains ONLY production build artifacts (compiled static files ready to use). NO source files or markdown docs here (except `README.md` and `assets/` for screenshots).
    - `dev`: Active development branch containing source code, test suites, build configs, and developer documentation (`gemini.md`, `structure.md`, `plan.md`).
    - Feature branches: `feature/<feature-name>` branched off `dev`.
 
-2. **Commit Policy**:
+2. **Main Branch Squash Policy (CRITICAL)**:
+   - The `index.html` on `main` is a **build artifact** (~1MB). Keeping old versions in git history is wasteful — the real source history lives on `dev`.
+   - Before every push to `main`, the branch MUST be **squashed into a single commit** using an orphan branch technique:
+     ```bash
+     git checkout --orphan main-clean
+     git checkout main -- .
+     git add .gitignore README.md assets/ index.html
+     git commit -m "release: vX.Y.Z — production build with README and screenshots"
+     git branch -D main
+     git branch -m main-clean main
+     git reflog expire --expire=now --all && git gc --prune=now --aggressive
+     git push origin main --force
+     ```
+   - This keeps the repo lightweight (the `dev` branch preserves the full development history).
+
+3. **Main Branch Required Files**:
+   - `index.html` — the production build (single self-contained file)
+   - `README.md` — detailed project description with screenshots, feature table, keyboard shortcuts, architecture overview
+   - `assets/` — screenshot images referenced by README.md
+   - `.gitignore` — excludes node_modules, dist, .DS_Store, old_homepage, etc.
+
+4. **Commit Policy**:
    - Use Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `style:`).
    - Every commit MUST include a clear, comprehensive description of what was changed and why.
 
-3. **Mandatory Documentation Updates**:
+5. **Mandatory Documentation Updates**:
    - Whenever files/folders are added, removed, or moved, `structure.md` MUST be updated in the same commit or step.
    - Whenever a task/feature is started or completed, `plan.md` MUST be updated immediately.
+
+6. **GitHub Pages Deployment**:
+   - The site is served via GitHub Pages from `main` branch, root directory (`/`).
+   - After pushing to `main`, the site is automatically deployed to `https://<username>.github.io/startpage/`.
 
 ---
 
