@@ -11,6 +11,7 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] Create `gemini.md` (AI behavior & workflow rules with Bun mandate).
   - [x] Create `structure.md` (Project directory & module structure).
   - [x] Create `plan.md` (Detailed roadmap & status tracker).
+  - [x] Create `TODO.md` (Detailed master task tracker & implementation blueprint).
 
 - [x] **Phase 1: Environment & Tooling Setup (Bun + Vite + Vitest)**
   - [x] Initialize `package.json` with Bun, Vite, Preact, TypeScript, Vitest, Fuse.js, Lucide Preact.
@@ -43,19 +44,19 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] Build **Import / Export Config Modal** (backup/sync `links.json` & ranking history).
   - [x] Build **Visual Edit Mode** (Add/Edit link modal directly in UI saving to LocalStorage).
   - [x] Connect Preact UI to Data Engine APIs in `src/app.tsx`.
-  - [x] Write Vitest UI component tests (42/42 total tests passing).
+  - [x] Write Vitest UI component tests (54/54 total tests passing).
   - [x] Verify standalone single-file production build (`dist/index.html`).
 
 - [x] **Phase 5: Legacy Homepage Migration & Production Release (v1.0.0)**
-  - [x] Analyze user's legacy homepage files in `old_homepage/` (Tilde startpage with Unimib dynamic links & AI config).
   - [x] Import legacy links and dynamic functions into `dataStore.ts` and `dynamicEvaluator.ts`.
-  - [x] Run full automated test suite under Bun (`42/42 tests passed`).
-  - [x] Compile serverless production distribution build (`dist/index.html`).
-  - [x] Deploy production build bundle to `main` branch ready for GitHub Pages or local disk execution (`file://`).
+  - [x] Run full automated test suite under Bun (`54/54 tests passed`).
+  - [x] Deploy production build bundle to `main` branch.
 
----
-
-## Backlog / Future Improvements & Features (Optional Suggestions)
-
-- [ ] **Custom Weather & Clock Widget** (Minimalist dark widget at top of startpage).
-- [ ] **Quick Notes / Scratchpad**: Embedded offline scratchpad saved in `localStorage`.
+- [ ] **Phase 6: Master TODO Roadmap Execution (Refer to `TODO.md`)**
+  - [ ] **Task 1**: Full Viewport-Height Columns with Minimalist Down Indicator (`↓`).
+  - [ ] **Task 2**: Hidden Aliases by default, Key-Hold Trigger (`Alt`/`Space`), and Category Number Shortcuts (`1`..`9`).
+  - [ ] **Task 3**: Settings Modal (`Impostazioni`) with Theme Color customization (Emerald, Sapphire, Violet, Amber, Silver).
+  - [ ] **Task 4**: Custom Search Engine Creator with Cheatsheet Auto-Registration.
+  - [ ] **Task 5**: Ultra-Minimalist Search Overlay.
+  - [ ] **Task 6**: Top Spacing Reduction & JumpBar Horizontal Mask.
+  - [ ] **Task 7**: Mobile Touch & Smartphone UX Refinements.

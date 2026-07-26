@@ -1,70 +1,78 @@
-# Project Structure
+# Startpage Project - Directory & File Structure
 
-This document tracks the directory layout, module dependencies, and file organization of the Startpage project.
-
-> [!NOTE]
-> This file MUST be updated whenever files or directories are added, deleted, or reorganized.
+This document outlines the codebase organization and directory structure.
 
 ---
 
-## Workspace Root (Branch: `dev`)
+## Root Level Directory Structure
 
 ```
 startpage/
-├── .git/                      # Git repository data
-├── dist/                      # Production single-file static distribution build (dist/index.html)
-├── node_modules/              # Bun dependencies
-├── old_homepage/              # Legacy Tilde homepage files for reference
-├── src/                       # Source code (TypeScript + Preact)
-│   ├── assets/                # Static assets & icons
-│   ├── components/            # Preact UI Components (Dark Premium Design)
-│   │   ├── CheatsheetModal.tsx# Interactive Keyboard Shortcuts Modal
-│   │   ├── ColumnGrid.tsx     # Categorized Multi-Column Links Grid
-│   │   ├── HeaderClock.tsx    # Real-time Clock, Date, & Quick Tools Header
-│   │   ├── ImportExportModal.tsx # JSON Backup / Sync Configuration Modal
-│   │   ├── JumpBar.tsx        # Column Section Switcher & Category Filter
-│   │   ├── LinkIcon.tsx       # Dynamic Multi-Tiered Icon Renderer
-│   │   ├── SearchModal.tsx    # Fuzzy Search Overlay & Command Palette Redirect
-│   │   └── VisualEditModal.tsx# Direct UI Add/Edit Link Modal
-│   ├── engine/                # Decoupled Data & Keyboard Engine
-│   │   ├── cheatsheetData.ts  # Shortcuts definition data
-│   │   ├── dataStore.ts       # Config loader, JSON validator, localStorage store
-│   │   ├── dynamicEvaluator.ts# Dynamic URL evaluator (Unimib schedules, date interpolation)
-│   │   ├── fuzzySearch.ts     # Fuse.js fuzzy search, command palette, rank sorting
-│   │   ├── iconResolver.ts    # Multi-tiered icon resolver (Custom -> Lucide -> Favicon API)
-│   │   ├── keyboardManager.ts # Global keystroke listener & shortcuts navigator
-│   │   └── rankStorage.ts     # LocalStorage usage counter & rank score generator
-│   ├── styles/                # CSS Design System
-│   │   ├── global.css         # Resets, animations, custom scrollbars, container
-│   │   └── variables.css      # Dark Premium color palette, glassmorphism, typography
-│   ├── types/                 # TypeScript interfaces & types
-│   │   └── startpage.ts       # Link, Category, Rank, Search, & Prefix types
-│   ├── app.tsx                # Main Application Component
-│   └── main.tsx               # Application Entry Point
-├── tests/                     # Vitest test suites (42/42 tests passing under Bun)
-│   ├── cheatsheetData.test.ts
-│   ├── dataStore.test.ts
-│   ├── dynamicEvaluator.test.ts
-│   ├── fuzzySearch.test.ts
-│   ├── iconResolver.test.ts
-│   ├── keyboardManager.test.ts
-│   ├── rankStorage.test.ts
-│   └── uiComponents.test.tsx
-├── bun.lock                   # Bun lockfile
-├── gemini.md                  # AI agent guidelines & project standards (Bun mandate)
-├── index.html                 # Root HTML document for Vite bundler
-├── package.json               # Package dependencies & scripts
-├── plan.md                    # Roadmap, task tracking, & implementation status
-├── structure.md               # Project structure documentation
-├── tsconfig.json              # TypeScript compiler configuration
-├── vite.config.ts             # Vite build configuration (singlefile static HTML output)
-└── vitest.config.ts           # Vitest runner configuration
+├── index.html                 # Production compiled single-file bundle (main branch)
+├── package.json               # Package manifests (Bun, Vite, Preact, Vitest, Fuse.js, Lucide)
+├── tsconfig.json              # Strict TypeScript configuration
+├── vite.config.ts             # Vite build configuration (vite-plugin-singlefile)
+├── vitest.config.ts           # Vitest test runner configuration
+├── gemini.md                  # Project operational & coding rules for Gemini AI
+├── structure.md               # Codebase directory & file layout documentation
+├── plan.md                    # Project roadmap & progress tracker
+├── TODO.md                    # Detailed master task implementation blueprint
+│
+├── old_homepage/              # Legacy startpage files reference (config.js, ai-config.js)
+│   ├── config.js
+│   ├── ai-config.js
+│   └── script.js
+│
+├── src/                       # Application Source Code
+│   ├── main.tsx               # Application entry point
+│   ├── app.tsx                # Main App component & state orchestration
+│   │
+│   ├── engine/                # Decoupled Data & Business Logic Engine
+│   │   ├── dataStore.ts       # Links, categories, dynamic ordering & LocalStorage persistence
+│   │   ├── dynamicEvaluator.ts# Dynamic URL date/time interpolation (Unimib exam/lesson URLs)
+│   │   ├── fuzzySearch.ts     # Fuse.js search & command palette query resolver (g, yt, gh, w)
+│   │   ├── rankStorage.ts     # Usage counter & recency scoring engine
+│   │   ├── iconResolver.ts    # Multi-tier icon resolution (Lucide / Images / Favicon API)
+│   │   ├── keyboardManager.ts # Global keystroke listener & shortcuts dispatcher
+│   │   └── cheatsheetData.ts  # Shortcuts cheatsheet data registry
+│   │
+│   ├── components/            # Preact Functional UI Components
+│   │   ├── HeaderClock.tsx    # Floating top-right tools toolbar (Search, Help, Edit, Backup)
+│   │   ├── HeaderClock.module.css
+│   │   ├── JumpBar.tsx        # Sticky category pills bar with smooth section scroll
+│   │   ├── JumpBar.module.css
+│   │   ├── ColumnGrid.tsx     # 100% full grid display, scroll containment, drag & drop, inline rename
+│   │   ├── ColumnGrid.module.css
+│   │   ├── LinkIcon.tsx       # Favicon / Lucide icon renderer component
+│   │   ├── ContextMenu.tsx    # Right-click context menu (Edit link, Remove link, English prompt)
+│   │   ├── ContextMenu.module.css
+│   │   ├── SearchModal.tsx    # Fuzzy search overlay with command palette badges
+│   │   ├── SearchModal.module.css
+│   │   ├── CheatsheetModal.tsx# Keyboard shortcuts cheatsheet modal
+│   │   ├── CheatsheetModal.module.css
+│   │   ├── ImportExportModal.tsx # JSON backup/sync import & export modal
+│   │   ├── ImportExportModal.module.css
+│   │   ├── VisualEditModal.tsx# Custom dark link creator modal with category picker & icon dropdown
+│   │   └── VisualEditModal.module.css
+│   │
+│   ├── types/                 # TypeScript Type Definitions
+│   │   └── startpage.ts       # Interfaces for LinkItem, CategoryGroup, SearchResult, etc.
+│   │
+│   └── styles/                # CSS Design System
+│       ├── variables.css      # Dark theme palette tokens, glassmorphism, typography
+│       └── global.css         # Global reset, keyframes, scrollbar & layout resets
+│
+└── tests/                     # Automated Vitest Test Suites
+    ├── dataStore.test.ts
+    ├── dynamicEvaluator.test.ts
+    ├── rankStorage.test.ts
+    ├── iconResolver.test.ts
+    ├── fuzzySearch.test.ts
+    ├── keyboardManager.test.ts
+    ├── cheatsheetData.test.ts
+    ├── uiComponents.test.tsx
+    ├── contextMenu.test.tsx
+    ├── dragDrop.test.ts
+    ├── reorderModal.test.tsx
+    └── integrationFlow.test.tsx
 ```
-
----
-
-## Tooling & Architecture Mandate
-
-- **Package & Test Execution**: Bun exclusively (`bun ./node_modules/vitest/vitest.mjs run`).
-- **Production Build**: Standalone `index.html` static bundle generated via Vite (`bun ./node_modules/vite/bin/vite.js build`).
-- **Decoupled Architecture**: Pure data engines in `src/engine/`, independent UI components in `src/components/`.
