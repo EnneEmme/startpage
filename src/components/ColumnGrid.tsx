@@ -1,21 +1,34 @@
 import { h } from 'preact';
+import { useState } from 'preact/hooks';
 import { CategoryGroup, LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
 import { rankStorage } from '../engine/rankStorage';
+import { dataStore } from '../engine/dataStore';
 import { LinkIcon } from './LinkIcon';
+import { ContextMenu } from './ContextMenu';
 import styles from './ColumnGrid.module.css';
 
 interface ColumnGridProps {
   categories: CategoryGroup[];
   activeCategoryFilter: string | null;
   onLinkClick?: (link: LinkItem) => void;
+  onEditLink?: (link: LinkItem) => void;
+  onConfigChanged?: () => void;
 }
 
 export const ColumnGrid = ({
   categories,
   activeCategoryFilter,
-  onLinkClick
+  onLinkClick,
+  onEditLink,
+  onConfigChanged
 }: ColumnGridProps) => {
+  const [contextMenuState, setContextMenuState] = useState<{
+    x: number;
+    y: number;
+    link: LinkItem;
+  } | null>(null);
+
   const filteredCategories = activeCategoryFilter
     ? categories.filter(c => c.name === activeCategoryFilter)
     : categories;
@@ -32,6 +45,23 @@ export const ColumnGrid = ({
     const targetUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
     if (targetUrl) {
       window.location.href = targetUrl;
+    }
+  };
+
+  const handleContextMenu = (e: MouseEvent, link: LinkItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenuState({
+      x: e.clientX,
+      y: e.clientY,
+      link
+    });
+  };
+
+  const handleRemoveLink = (linkId: string) => {
+    dataStore.removeLink(linkId);
+    if (onConfigChanged) {
+      onConfigChanged();
     }
   };
 
@@ -55,13 +85,14 @@ export const ColumnGrid = ({
                   href={displayUrl || '#'}
                   class={styles.linkRow}
                   onClick={e => handleLinkClick(e, link)}
+                  onContextMenu={e => handleContextMenu(e, link)}
                 >
                   <div class={styles.iconContainer}>
                     <LinkIcon
                       url={displayUrl || 'https://example.com'}
                       iconSpec={link.icon}
                       title={link.title}
-                      size={20}
+                      size={18}
                     />
                   </div>
 
@@ -78,6 +109,19 @@ export const ColumnGrid = ({
           </div>
         </div>
       ))}
+
+      {contextMenuState && (
+        <ContextMenu
+          x={contextMenuState.x}
+          y={contextMenuState.y}
+          link={contextMenuState.link}
+          onClose={() => setContextMenuState(null)}
+          onEdit={link => {
+            if (onEditLink) onEditLink(link);
+          }}
+          onRemove={handleRemoveLink}
+        />
+      )}
     </div>
   );
 };

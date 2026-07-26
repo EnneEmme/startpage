@@ -22,6 +22,7 @@ export const App = () => {
   const [cheatsheetOpen, setCheatsheetOpen] = useState<boolean>(false);
   const [importExportOpen, setImportExportOpen] = useState<boolean>(false);
   const [visualEditOpen, setVisualEditOpen] = useState<boolean>(false);
+  const [editTargetLink, setEditTargetLink] = useState<LinkItem | null>(null);
 
   const refreshData = () => {
     setLinks(dataStore.getLinks());
@@ -44,6 +45,7 @@ export const App = () => {
         setCheatsheetOpen(false);
         setImportExportOpen(false);
         setVisualEditOpen(false);
+        setEditTargetLink(null);
       },
       onOpenCheatsheet: () => {
         setSearchOpen(false);
@@ -55,6 +57,11 @@ export const App = () => {
     return () => keyboardManager.detach();
   }, [cheatsheetOpen, importExportOpen, visualEditOpen]);
 
+  const handleEditLinkFromContext = (link: LinkItem) => {
+    setEditTargetLink(link);
+    setVisualEditOpen(true);
+  };
+
   const categoryNames = categories.map(c => c.name);
 
   return (
@@ -65,7 +72,10 @@ export const App = () => {
           setSearchOpen(true);
         }}
         onOpenCheatsheet={() => setCheatsheetOpen(true)}
-        onOpenVisualEdit={() => setVisualEditOpen(true)}
+        onOpenVisualEdit={() => {
+          setEditTargetLink(null);
+          setVisualEditOpen(true);
+        }}
         onOpenImportExport={() => setImportExportOpen(true)}
       />
 
@@ -79,6 +89,8 @@ export const App = () => {
         <ColumnGrid
           categories={categories}
           activeCategoryFilter={activeCategoryFilter}
+          onEditLink={handleEditLinkFromContext}
+          onConfigChanged={refreshData}
         />
       </main>
 
@@ -103,7 +115,11 @@ export const App = () => {
 
       <VisualEditModal
         isOpen={visualEditOpen}
-        onClose={() => setVisualEditOpen(false)}
+        initialEditLink={editTargetLink}
+        onClose={() => {
+          setVisualEditOpen(false);
+          setEditTargetLink(null);
+        }}
         onConfigChanged={refreshData}
       />
     </div>

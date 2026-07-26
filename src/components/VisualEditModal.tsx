@@ -1,18 +1,20 @@
 import { h } from 'preact';
-import { useState } from 'preact/hooks';
-import { X, Plus, Edit3, Trash2, Check } from 'lucide-preact';
+import { useState, useEffect } from 'preact/hooks';
+import { X, Edit3, Trash2, Check } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
 import { dataStore } from '../engine/dataStore';
 import styles from './VisualEditModal.module.css';
 
 interface VisualEditModalProps {
   isOpen: boolean;
+  initialEditLink?: LinkItem | null;
   onClose: () => void;
   onConfigChanged: () => void;
 }
 
 export const VisualEditModal = ({
   isOpen,
+  initialEditLink = null,
   onClose,
   onConfigChanged
 }: VisualEditModalProps) => {
@@ -22,6 +24,32 @@ export const VisualEditModal = ({
   const [category, setCategory] = useState<string>('General');
   const [icon, setIcon] = useState<string>('');
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null);
+
+  const handleResetForm = () => {
+    setSelectedLinkId(null);
+    setTitle('');
+    setUrl('');
+    setAliasesStr('');
+    setCategory('General');
+    setIcon('');
+  };
+
+  const handleEditLink = (link: LinkItem) => {
+    setSelectedLinkId(link.id);
+    setTitle(link.title);
+    setUrl(link.url);
+    setAliasesStr(link.aliases.join(', '));
+    setCategory(link.category);
+    setIcon(link.icon || '');
+  };
+
+  useEffect(() => {
+    if (initialEditLink) {
+      handleEditLink(initialEditLink);
+    } else {
+      handleResetForm();
+    }
+  }, [initialEditLink, isOpen]);
 
   if (!isOpen) return null;
 
@@ -47,35 +75,17 @@ export const VisualEditModal = ({
 
     dataStore.addLink(linkItem);
     onConfigChanged();
-    handleResetForm();
-  };
-
-  const handleEditLink = (link: LinkItem) => {
-    setSelectedLinkId(link.id);
-    setTitle(link.title);
-    setUrl(link.url);
-    setAliasesStr(link.aliases.join(', '));
-    setCategory(link.category);
-    setIcon(link.icon || '');
+    onClose();
   };
 
   const handleDeleteLink = (linkId: string) => {
-    if (confirm('Delete this link?')) {
+    if (confirm(`Are you sure you want to remove this link?`)) {
       dataStore.removeLink(linkId);
       onConfigChanged();
       if (selectedLinkId === linkId) {
         handleResetForm();
       }
     }
-  };
-
-  const handleResetForm = () => {
-    setSelectedLinkId(null);
-    setTitle('');
-    setUrl('');
-    setAliasesStr('');
-    setCategory('General');
-    setIcon('');
   };
 
   return (
