@@ -7,7 +7,7 @@ import { ColumnGrid } from '../src/components/ColumnGrid';
 
 describe('UI Components Rendering', () => {
   it('renders HeaderClock component with top-right quick tools', () => {
-    const { container, getByTitle } = render(
+    const { getByTitle } = render(
       <HeaderClock
         onOpenSearch={() => {}}
         onOpenCheatsheet={() => {}}
@@ -28,7 +28,7 @@ describe('UI Components Rendering', () => {
         onSelectCategory={() => {}}
       />
     );
-    expect(container.textContent).toContain('Top');
+    expect(container.textContent).toContain('All');
     expect(container.textContent).toContain('Social');
     expect(container.textContent).toContain('LLMs');
   });

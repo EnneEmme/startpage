@@ -1,5 +1,4 @@
 import { h } from 'preact';
-import { ArrowUp } from 'lucide-preact';
 import styles from './JumpBar.module.css';
 
 interface JumpBarProps {
@@ -37,9 +36,8 @@ export const JumpBar = ({
         <button
           class={`${styles.tabBtn} ${activeCategory === null ? styles.active : ''}`}
           onClick={() => handleTabClick(null)}
-          title="Scroll to Top"
         >
-          <ArrowUp size={14} /> Top
+          All
         </button>
 
         {categories.map(cat => (

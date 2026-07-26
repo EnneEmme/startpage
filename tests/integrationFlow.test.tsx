@@ -17,7 +17,7 @@ describe('App End-to-End Integration Flow', () => {
     const { container } = render(<App />);
     expect(container.textContent).toContain('Mail');
     expect(container.textContent).toContain('YouTube');
-    expect(container.textContent).toContain('Top');
+    expect(container.textContent).toContain('All');
   });
 
   it('filters columns when clicking category tab in JumpBar', () => {
