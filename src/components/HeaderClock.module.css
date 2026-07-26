@@ -1,36 +1,8 @@
 .header {
   width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 2rem;
-  gap: 1.25rem;
-}
-
-.clockContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.time {
-  font-family: var(--font-heading);
-  font-size: 3.8rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--text-primary);
-  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
-  line-height: 1;
-}
-
-.date {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-transform: capitalize;
-  margin-top: 0.4rem;
-  letter-spacing: 0.03em;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
 .actionsBar {
