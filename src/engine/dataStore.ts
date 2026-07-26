@@ -65,7 +65,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'vipm', title: 'VIPM Elearning', url: 'https://elearning.unimib.it/enrol/index.php?id=68845', aliases: ['vipm'], category: 'School' },
     { id: 'info_course', title: 'Info Elearning', url: 'https://elearning.unimib.it/course/view.php?id=62130', aliases: ['info_course'], category: 'School' },
 
-    // Single Unified AI & LLMs Category
+    // Single Unified AI & LLMs Category (Contains all LLM 1 & LLM 2 entries)
     { id: 'aistudio', title: 'Google AI Studio', url: 'https://aistudio.google.com/prompts/new_chat', aliases: ['aistudio', 'studio'], category: 'AI & LLMs' },
     { id: 'gemini', title: 'Gemini', url: 'https://gemini.google.com/app', aliases: ['gem', 'gemini'], category: 'AI & LLMs' },
     { id: 'chatgpt', title: 'ChatGPT', url: 'https://chat.openai.com', aliases: ['gpt', 'chatgpt'], category: 'AI & LLMs' },
@@ -112,17 +112,19 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'penpot', title: 'Penpot Design', url: 'https://design.penpot.app', aliases: ['penpot'], category: 'Programming' },
     { id: 'codewars', title: 'Codewars', url: 'https://www.codewars.com/dashboard', aliases: ['codewars'], category: 'Programming' },
 
-    // ImGen & Media (Untouched)
-    { id: 'recraft', title: 'Recraft AI', url: 'https://www.recraft.ai/projects', aliases: ['recraft'], category: 'ImGen & Media' },
-    { id: 'ideogram', title: 'Ideogram AI', url: 'https://ideogram.ai/t/explore', aliases: ['ideogram'], category: 'ImGen & Media' },
-    { id: 'kling', title: 'Kling AI', url: 'https://kling.ai/app', aliases: ['kling'], category: 'ImGen & Media' },
-    { id: 'leonardo', title: 'Leonardo AI', url: 'https://app.leonardo.ai', aliases: ['leo', 'leonardo'], category: 'ImGen & Media' },
-    { id: 'stablediffusion', title: 'Stable Diffusion', url: 'https://stablediffusionweb.com/app/image-generator', aliases: ['sd', 'stablediffusion'], category: 'ImGen & Media' },
-    { id: 'getimg', title: 'getimg.ai', url: 'https://getimg.ai/home', aliases: ['getimg'], category: 'ImGen & Media' },
-    { id: 'quiver', title: 'Quiver AI', url: 'https://app.quiver.ai/', aliases: ['quieverai'], category: 'ImGen & Media' },
-    { id: 'krea', title: 'Krea AI', url: 'https://www.krea.ai/app', aliases: ['krea'], category: 'ImGen & Media' },
-    { id: 'suno', title: 'Suno AI', url: 'https://suno.com', aliases: ['suno'], category: 'ImGen & Media' },
-    { id: 'elevenlabs', title: 'ElevenLabs', url: 'https://elevenlabs.io/app/home', aliases: ['audiogen', 'elevenlabs'], category: 'ImGen & Media' }
+    // ImGen (Separated Image Generation Category)
+    { id: 'recraft', title: 'Recraft AI', url: 'https://www.recraft.ai/projects', aliases: ['recraft'], category: 'ImGen' },
+    { id: 'ideogram', title: 'Ideogram AI', url: 'https://ideogram.ai/t/explore', aliases: ['ideogram'], category: 'ImGen' },
+    { id: 'kling', title: 'Kling AI', url: 'https://kling.ai/app', aliases: ['kling'], category: 'ImGen' },
+    { id: 'leonardo', title: 'Leonardo AI', url: 'https://app.leonardo.ai', aliases: ['leo', 'leonardo'], category: 'ImGen' },
+    { id: 'stablediffusion', title: 'Stable Diffusion', url: 'https://stablediffusionweb.com/app/image-generator', aliases: ['sd', 'stablediffusion'], category: 'ImGen' },
+    { id: 'getimg', title: 'getimg.ai', url: 'https://getimg.ai/home', aliases: ['getimg'], category: 'ImGen' },
+    { id: 'quiver', title: 'Quiver AI', url: 'https://app.quiver.ai/', aliases: ['quieverai'], category: 'ImGen' },
+    { id: 'krea', title: 'Krea AI', url: 'https://www.krea.ai/app', aliases: ['krea'], category: 'ImGen' },
+
+    // Media (Separated Audio & Media Generation Category)
+    { id: 'suno', title: 'Suno AI', url: 'https://suno.com', aliases: ['suno'], category: 'Media' },
+    { id: 'elevenlabs', title: 'ElevenLabs', url: 'https://elevenlabs.io/app/home', aliases: ['audiogen', 'elevenlabs'], category: 'Media' }
   ]
 };
 
@@ -144,6 +146,19 @@ export class DataStore {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && Array.isArray(parsed.commands)) {
+          // Auto-migrate legacy 'LLMs 2' or 'ImGen & Media' categories if present in user storage
+          parsed.commands.forEach((item: LinkItem) => {
+            if (item.category === 'LLMs 2') {
+              item.category = 'AI & LLMs';
+            }
+            if (item.category === 'ImGen & Media') {
+              if (item.id === 'suno' || item.id === 'elevenlabs') {
+                item.category = 'Media';
+              } else {
+                item.category = 'ImGen';
+              }
+            }
+          });
           this.config = parsed;
         }
       }
