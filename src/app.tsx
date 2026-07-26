@@ -25,6 +25,24 @@ export const App = () => {
   const [visualEditOpen, setVisualEditOpen] = useState<boolean>(false);
   const [editTargetLink, setEditTargetLink] = useState<LinkItem | null>(null);
 
+  const isAnyModalOpen = searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen;
+
+  // Lock body scrolling and interaction when any modal is open
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [isAnyModalOpen]);
+
   const refreshData = () => {
     setLinks(dataStore.getLinks());
     setCategories(dataStore.getCategories());
@@ -62,7 +80,6 @@ export const App = () => {
     setActiveCategoryFilter(catName);
     if (catName) {
       setHighlightedCategory(catName);
-      // Auto-clear highlight after pulse animation finishes
       setTimeout(() => setHighlightedCategory(null), 1400);
     } else {
       setHighlightedCategory(null);
@@ -97,7 +114,7 @@ export const App = () => {
         onSelectCategory={handleSelectCategory}
       />
 
-      <main style={{ width: '100%' }}>
+      <main style={{ width: '100%', pointerEvents: isAnyModalOpen ? 'none' : 'auto' }}>
         <ColumnGrid
           categories={categories}
           highlightedCategory={highlightedCategory}
