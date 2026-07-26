@@ -24,18 +24,22 @@ startpage/
 │       ├── queryParser.js     # Legacy query parser
 │       └── suggester.js       # Legacy suggestion engine
 ├── src/                       # Source code (TypeScript + Preact)
-│   ├── engine/                # Core Decoupled Data Architecture Engine
+│   ├── engine/                # Decoupled Data & Keyboard Engine
+│   │   ├── cheatsheetData.ts  # Shortcuts definition data for interactive modal
 │   │   ├── dataStore.ts       # Config loader, JSON validator, localStorage store
 │   │   ├── dynamicEvaluator.ts# Dynamic URL evaluator (Unimib schedules, date interpolation)
 │   │   ├── fuzzySearch.ts     # Fuse.js fuzzy search, command palette (g, yt, gh, w), rank sorting
 │   │   ├── iconResolver.ts    # Multi-tiered icon resolver (Custom URL -> Lucide -> Favicon API)
+│   │   ├── keyboardManager.ts # Global keystroke listener & shortcuts navigator
 │   │   └── rankStorage.ts     # LocalStorage usage counter & rank score generator
 │   └── types/                 # TypeScript interfaces & types
 │       └── startpage.ts       # Link, Category, Rank, Search, & Prefix types
 ├── tests/                     # Vitest test suites (100% passing)
+│   ├── cheatsheetData.test.ts
 │   ├── dynamicEvaluator.test.ts
 │   ├── fuzzySearch.test.ts
 │   ├── iconResolver.test.ts
+│   ├── keyboardManager.test.ts
 │   └── rankStorage.test.ts
 ├── bun.lock                   # Bun lockfile
 ├── gemini.md                  # AI agent guidelines & project standards
@@ -51,6 +55,6 @@ startpage/
 
 ## Module Responsibilities
 
-- **`src/engine/`**: Decoupled Data Architecture containing zero UI code. Pure, fully tested TypeScript logic handling configuration, storage, search, dynamic URLs, and icons.
+- **`src/engine/`**: Decoupled Data Architecture containing zero UI code. Pure, fully tested TypeScript logic handling configuration, storage, search, dynamic URLs, keyboard navigation, and icons.
 - **`src/types/startpage.ts`**: Strict TypeScript interfaces for all data structures.
-- **`tests/`**: Automated Vitest test suites running under Bun / Node with JSDOM.
+- **`tests/`**: Automated Vitest test suites running under Bun / Node with JSDOM (23/23 tests passing).

@@ -24,15 +24,16 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] Implement `dynamicEvaluator.ts` (Dynamic URL date/time interpolation & Unimib course/exam rules).
   - [x] Implement `rankStorage.ts` (LocalStorage click counter, recency scoring, export/import backup).
   - [x] Implement `iconResolver.ts` (Multi-tiered favicon engine: Custom Image -> Lucide Icons -> Favicon API).
-  - [x] Write Vitest unit tests for all engine modules (16/16 tests passing, 100% success rate).
+  - [x] Write Vitest unit tests for all engine modules.
 
-- [ ] **Phase 3: Fuzzy Search, Command Palette & Shortcuts System**
+- [x] **Phase 3: Fuzzy Search, Command Palette & Keyboard Manager Engine**
   - [x] Implement `fuzzySearch.ts` using Fuse.js (searching across titles, URLs, tags, and aliases).
   - [x] Implement **Command Palette** prefix engine (`g <query>` Google, `yt <query>` YouTube, `gh <query>` GitHub, `w <query>` Wikipedia, custom fallback search).
   - [x] Integrate usage ranking boost into fuzzy search results.
-  - [ ] Implement global Keystroke Listener & Shortcuts Manager.
-  - [ ] Build search results indexer and numerical quick-select shortcuts (`Ctrl+1`..`9` or `1`..`9`).
-  - [ ] Build **Interactive Shortcuts Cheatsheet modal** (`?` / `F1` / `Cmd+/`).
+  - [x] Implement global Keystroke Listener & Shortcuts Manager (`keyboardManager.ts`).
+  - [x] Implement numerical quick-select shortcuts parser (`Ctrl+1`..`9`).
+  - [x] Implement Interactive Shortcuts Cheatsheet data provider (`cheatsheetData.ts`).
+  - [x] Write Vitest unit tests for Phase 3 engine modules (23/23 tests passing).
 
 - [ ] **Phase 4: UI Development (Dark Premium Aesthetic & Features)**
   - [ ] Setup CSS design system (`variables.css`: dark theme palette, glassmorphism, typography, responsive grid).
