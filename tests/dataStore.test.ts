@@ -18,7 +18,7 @@ describe('DataStore Engine & Edge Cases', () => {
     const categories = dataStore.getCategories();
     expect(categories.length).toBeGreaterThan(0);
     expect(categories.some(c => c.name === 'Social')).toBe(true);
-    expect(categories.some(c => c.name === 'LLMs')).toBe(true);
+    expect(categories.some(c => c.name === 'AI & LLMs')).toBe(true);
   });
 
   it('adds a new link item and updates localStorage', () => {
@@ -46,7 +46,7 @@ describe('DataStore Engine & Edge Cases', () => {
   it('exports and imports valid JSON configuration', () => {
     const exportedJson = dataStore.exportJson();
     expect(typeof exportedJson).toBe('string');
-    expect(exportedJson).toContain('Gmail');
+    expect(exportedJson).toContain('Mail');
 
     const success = dataStore.importJson(exportedJson);
     expect(success).toBe(true);

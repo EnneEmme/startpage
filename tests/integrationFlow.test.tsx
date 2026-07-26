@@ -14,7 +14,7 @@ describe('App End-to-End Integration Flow', () => {
 
   it('renders full App UI with HeaderClock, JumpBar, and ColumnGrid', () => {
     const { container } = render(<App />);
-    expect(container.textContent).toContain('Gmail');
+    expect(container.textContent).toContain('Mail');
     expect(container.textContent).toContain('YouTube');
     expect(container.textContent).toContain('All Links');
   });
@@ -24,8 +24,8 @@ describe('App End-to-End Integration Flow', () => {
     const socialTab = getAllByText('Social')[0];
     fireEvent.click(socialTab);
 
-    expect(container.textContent).toContain('Gmail');
-    expect(container.textContent).not.toContain('Unimib Orario Lezioni');
+    expect(container.textContent).toContain('Mail');
+    expect(container.textContent).not.toContain('Orario Lezioni');
   });
 
   it('opens search overlay when clicking search button in header', () => {

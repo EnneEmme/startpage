@@ -1,63 +1,56 @@
 .gridContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem 1.5rem;
   width: 100%;
+  padding: 0.5rem 0;
 }
 
 .columnCard {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  backdrop-filter: var(--glass-backdrop);
+  background: transparent;
+  border: none; /* No explicit card border - seamless separation */
+  padding: 0;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-md);
-  transition: border-color var(--transition-normal);
-}
-
-.columnCard:hover {
-  border-color: var(--border-color-hover);
 }
 
 .columnHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Minimal subtle header underline */
 }
 
 .columnTitle {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
 .linkCountBadge {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.15rem 0.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.1rem 0.45rem;
   border-radius: var(--radius-full);
 }
 
 .linksList {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.25rem;
 }
 
 .linkRow {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0.75rem;
+  gap: 0.6rem;
+  padding: 0.4rem 0.5rem;
   border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text-primary);
@@ -67,18 +60,16 @@
 
 .linkRow:hover {
   background: var(--bg-card-hover);
-  transform: translateX(3px);
+  transform: translateX(2px);
 }
 
 .iconContainer {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--accent-primary);
   flex-shrink: 0;
 }
 
@@ -91,17 +82,16 @@
 }
 
 .linkTitle {
-  font-size: 0.92rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 400;
   color: var(--text-primary);
 }
 
 .aliasBadge {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.05);
-  padding: 0.15rem 0.45rem;
+  padding: 0.1rem 0.35rem;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
