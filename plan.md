@@ -8,7 +8,7 @@ This document outlines the detailed development roadmap for the Startpage projec
 
 - [x] **Phase 0: Project Setup & Guidelines Documentation**
   - [x] Initialize Git repository (`dev` branch active).
-  - [x] Create `gemini.md` (AI behavior & workflow rules).
+  - [x] Create `gemini.md` (AI behavior & workflow rules with Bun mandate).
   - [x] Create `structure.md` (Project directory & module structure).
   - [x] Create `plan.md` (Detailed roadmap & status tracker).
 
@@ -46,11 +46,12 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] Write Vitest UI component tests (42/42 total tests passing).
   - [x] Verify standalone single-file production build (`dist/index.html`).
 
-- [ ] **Phase 5: Legacy Homepage Migration & Production Release**
+- [x] **Phase 5: Legacy Homepage Migration & Production Release (v1.0.0)**
   - [x] Analyze user's legacy homepage files in `old_homepage/` (Tilde startpage with Unimib dynamic links & AI config).
-  - [ ] Parse old links and convert to `data/links.json` schema.
-  - [ ] Run full automated test suite (`vitest run`).
-  - [ ] Merge `dev` branch to `main` branch with compiled static build output.
+  - [x] Import legacy links and dynamic functions into `dataStore.ts` and `dynamicEvaluator.ts`.
+  - [x] Run full automated test suite under Bun (`42/42 tests passed`).
+  - [x] Compile serverless production distribution build (`dist/index.html`).
+  - [x] Deploy production build bundle to `main` branch ready for GitHub Pages or local disk execution (`file://`).
 
 ---
 
