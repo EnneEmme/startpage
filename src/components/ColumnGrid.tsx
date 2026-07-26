@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { CategoryGroup, LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
 import { rankStorage } from '../engine/rankStorage';
@@ -29,17 +29,10 @@ export const ColumnGrid = ({
     link: LinkItem;
   } | null>(null);
 
-  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 600);
   const [draggedLinkId, setDraggedLinkId] = useState<string | null>(null);
   const [draggedCategoryName, setDraggedCategoryName] = useState<string | null>(null);
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
   const [dragOverLinkId, setDragOverLinkId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 600);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
     if (draggedLinkId) {
@@ -156,15 +149,11 @@ export const ColumnGrid = ({
         const isHighlighted = highlightedCategory === cat.name;
         const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
 
-        // Dynamic Max Links Thresholds: 18 links on PC/Desktop, 8 links on Mobile
-        const maxThreshold = isMobile ? 8 : 18;
-        const isLargeCategory = cat.links.length > maxThreshold;
-
         return (
           <div
             key={cat.name}
             id={columnId}
-            class={`${styles.columnCard} ${isLargeCategory ? styles.doubleWidthCard : ''} ${isHighlighted ? styles.highlightPulse : ''} ${isDragOver ? styles.dragOver : ''}`}
+            class={`${styles.columnCard} ${isHighlighted ? styles.highlightPulse : ''} ${isDragOver ? styles.dragOver : ''}`}
             onDragOver={e => handleDragOver(e, cat.name)}
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, cat.name)}
@@ -180,8 +169,8 @@ export const ColumnGrid = ({
               <h2 class={styles.columnTitle}>{cat.name}</h2>
             </div>
 
-            {/* Links List (Auto 2-Subcolumn Layout if > 18 links on PC or > 8 links on Mobile) */}
-            <div class={`${styles.linksList} ${isLargeCategory ? styles.multiSubcolumn : ''}`}>
+            {/* Single Column Links List with Internal Scrollbar */}
+            <div class={styles.linksList}>
               {cat.links.map((link, linkIdx) => {
                 const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
                 const mainAlias = link.aliases && link.aliases.length > 0 ? link.aliases[0] : null;
