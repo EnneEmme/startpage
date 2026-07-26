@@ -26,19 +26,22 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [ ] Implement `iconResolver.ts` (Multi-tiered favicon engine: Custom Image -> Lucide/Simple Icons -> Favicon API).
   - [ ] Write Vitest unit tests for all engine modules (target 100% test coverage).
 
-- [ ] **Phase 3: Fuzzy Search & Keyboard Shortcut System**
+- [ ] **Phase 3: Fuzzy Search, Command Palette & Shortcuts System**
   - [ ] Implement `fuzzySearch.ts` using Fuse.js (searching across titles, URLs, tags, and aliases).
+  - [ ] Implement **Command Palette** prefix engine (`g <query>` Google, `yt <query>` YouTube, `gh <query>` GitHub, `w <query>` Wikipedia, custom fallback search).
   - [ ] Integrate usage ranking boost into fuzzy search results.
   - [ ] Implement global Keystroke Listener & Shortcuts Manager.
   - [ ] Build search results indexer and numerical quick-select shortcuts (`Ctrl+1`..`9` or `1`..`9`).
-  - [ ] Build Keyboard Shortcuts Cheatsheet modal (`?` / `F1` / `Cmd+/`).
+  - [ ] Build **Interactive Shortcuts Cheatsheet modal** (`?` / `F1` / `Cmd+/`).
 
-- [ ] **Phase 4: UI Development (Dark Premium Minimal Aesthetic)**
+- [ ] **Phase 4: UI Development (Dark Premium Aesthetic & Features)**
   - [ ] Setup CSS design system (`variables.css`: dark theme palette, glassmorphism, typography, responsive grid).
   - [ ] Build `ColumnGrid` component with section headers and lazy-loaded icons.
   - [ ] Build `JumpBar` / Column Section Switcher for instant section navigation.
-  - [ ] Build `SearchModal` component with instant fuzzy query results & shortcut badges.
+  - [ ] Build `SearchModal` component with instant fuzzy query results, command palette badges & shortcut badges.
   - [ ] Build `CheatsheetModal` component.
+  - [ ] Build **Import / Export Config Modal** (backup/sync `links.json` & ranking history).
+  - [ ] Build **Visual Edit Mode** (Add/Edit link modal directly in UI saving to LocalStorage).
   - [ ] Connect Preact UI to Data Engine APIs.
 
 - [ ] **Phase 5: Legacy Homepage Migration & Verification**
@@ -50,10 +53,7 @@ This document outlines the detailed development roadmap for the Startpage projec
 
 ---
 
-## Backlog / Future Improvements & Features (Suggestions)
+## Backlog / Future Improvements & Features (Optional Suggestions)
 
 - [ ] **Custom Weather & Clock Widget** (Minimalist dark widget at top of startpage).
-- [ ] **Import / Export Config Modal**: Easily backup or sync `links.json` and ranking history.
-- [ ] **Custom Link Modals / Direct Edit Mode**: Ability to add/edit links directly from the UI without manually editing JSON.
 - [ ] **Quick Notes / Scratchpad**: Embedded offline scratchpad saved in `localStorage`.
-- [ ] **Command Palette**: Type `g <query>` to search Google, `yt <query>` for YouTube, `gh <repo>` for GitHub directly from search bar.
