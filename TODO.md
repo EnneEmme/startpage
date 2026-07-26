@@ -20,10 +20,10 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ## 📋 Detailed Task Breakdown
 
 ### 🔹 Task 1: Viewport-Height Columns & Minimalist Down Indicator (`↓`)
-- [ ] **Dynamic Viewport Height**:
-  - Calculate column card height dynamically using `max-height: calc(100vh - 140px)` on desktop.
+- [x] **Dynamic Viewport Height**:
+  - Calculate column card height dynamically using `max-height: calc(100vh - 170px)` on desktop.
   - Ensures columns span exactly the available screen height so lower rows don't awkwardly peek out underneath.
-- [ ] **Minimalist Chevron Cue (`↓`)**:
+- [x] **Minimalist Chevron Cue (`↓`)**:
   - Add a sleek, floating bottom chevron indicator `↓` at the base of tall columns when un-scrolled content exists below.
   - Smoothly fades out when the user scrolls to the bottom of the column.
 

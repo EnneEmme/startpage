@@ -1,5 +1,6 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
+import { ChevronDown } from 'lucide-preact';
 import { CategoryGroup, LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
 import { rankStorage } from '../engine/rankStorage';
@@ -249,7 +250,7 @@ export const ColumnGrid = ({
 
         const state = scrollStates[cat.name] || {
           canScrollTop: false,
-          canScrollBottom: cat.links.length > 20
+          canScrollBottom: cat.links.length > 15
         };
 
         let fadeClass = '';
@@ -296,7 +297,7 @@ export const ColumnGrid = ({
               )}
             </div>
 
-            {/* Reactive Dynamic Top/Bottom Fade Masked Links List */}
+            {/* Viewport-Height Reactive Dynamic Top/Bottom Fade Masked Links List */}
             <div
               class={`${styles.linksList} ${fadeClass}`}
               onScroll={e => handleScroll(e, cat.name)}
@@ -351,6 +352,11 @@ export const ColumnGrid = ({
                   </div>
                 );
               })}
+            </div>
+
+            {/* Minimalist Down Chevron Indicator Pill (visible when content exists below) */}
+            <div class={`${styles.scrollDownIndicator} ${state.canScrollBottom ? styles.visibleIndicator : ''}`}>
+              <ChevronDown size={13} />
             </div>
           </div>
         );
