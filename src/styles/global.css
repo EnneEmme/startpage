@@ -42,14 +42,15 @@ html, body {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* Base App Layout Container */
+/* Base App Layout Container - Dynamic expansion for wide monitors */
 #app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.5rem 1.5rem 4rem;
-  max-width: 1320px;
+  padding: 2.5rem 2rem 4rem;
+  width: 100%;
+  max-width: 1840px;
   margin: 0 auto;
 }
 
@@ -78,15 +79,6 @@ input, textarea {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
   }
 }
 
