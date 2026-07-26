@@ -1,12 +1,12 @@
 /**
  * DataStore Engine
- * Handles links configuration, category grouping, dynamic link rules, and localStorage persistence.
- * Includes complete 1-to-1 migration of all legacy links from config.js and ai-config.js.
+ * Handles links configuration, category grouping, custom category ordering, dynamic link rules, and localStorage persistence.
  */
 
 import { LinkItem, CategoryGroup, StartpageConfig } from '../types/startpage';
 
 const STORAGE_LINKS_KEY = 'startpage_custom_links';
+const STORAGE_ORDER_KEY = 'startpage_category_order';
 
 export const DEFAULT_CONFIG: StartpageConfig = {
   defaultSearchEngine: 'g',
@@ -65,7 +65,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'vipm', title: 'VIPM Elearning', url: 'https://elearning.unimib.it/enrol/index.php?id=68845', aliases: ['vipm'], category: 'School' },
     { id: 'info_course', title: 'Info Elearning', url: 'https://elearning.unimib.it/course/view.php?id=62130', aliases: ['info_course'], category: 'School' },
 
-    // AI & LLMs (All entries from config.js & ai-config.js)
+    // AI & LLMs
     { id: 'aistudio', title: 'Google AI Studio', url: 'https://aistudio.google.com/prompts/new_chat', aliases: ['aistudio', 'studio'], category: 'AI & LLMs' },
     { id: 'gemini', title: 'Gemini', url: 'https://gemini.google.com/app', aliases: ['gem', 'gemini'], category: 'AI & LLMs' },
     { id: 'chatgpt', title: 'ChatGPT', url: 'https://chat.openai.com', aliases: ['gpt', 'chatgpt'], category: 'AI & LLMs' },
@@ -88,7 +88,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'llmstats', title: 'LLM Stats', url: 'https://llm-stats.com/leaderboards/llm-leaderboard', aliases: ['llmstats'], category: 'AI & LLMs' },
     { id: 'artificialanalysis', title: 'Artificial Analysis', url: 'https://artificialanalysis.ai', aliases: ['analysis'], category: 'AI & LLMs' },
 
-    // LLMs 2 & Specialized AI
+    // LLMs 2
     { id: 'stepfun', title: 'StepFun AI', url: 'https://stepfun.ai/chats/new', aliases: ['stepfun'], category: 'LLMs 2' },
     { id: 'upstage', title: 'Upstage AI', url: 'https://console.upstage.ai/playground/chat', aliases: ['upstage'], category: 'LLMs 2' },
     { id: 'arcee', title: 'Arcee AI', url: 'https://chat.arcee.ai/chat', aliases: ['arcee'], category: 'LLMs 2' },
@@ -114,7 +114,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'penpot', title: 'Penpot Design', url: 'https://design.penpot.app', aliases: ['penpot'], category: 'Programming' },
     { id: 'codewars', title: 'Codewars', url: 'https://www.codewars.com/dashboard', aliases: ['codewars'], category: 'Programming' },
 
-    // ImGen & AudioGen Media
+    // ImGen & Media
     { id: 'recraft', title: 'Recraft AI', url: 'https://www.recraft.ai/projects', aliases: ['recraft'], category: 'ImGen & Media' },
     { id: 'ideogram', title: 'Ideogram AI', url: 'https://ideogram.ai/t/explore', aliases: ['ideogram'], category: 'ImGen & Media' },
     { id: 'kling', title: 'Kling AI', url: 'https://kling.ai/app', aliases: ['kling'], category: 'ImGen & Media' },
@@ -134,6 +134,7 @@ const cloneConfig = (config: StartpageConfig): StartpageConfig => {
 
 export class DataStore {
   private config: StartpageConfig = cloneConfig(DEFAULT_CONFIG);
+  private categoryOrder: string[] = [];
 
   constructor() {
     this.load();
@@ -146,16 +147,19 @@ export class DataStore {
         const parsed = JSON.parse(stored);
         if (parsed && Array.isArray(parsed.commands)) {
           this.config = parsed;
-          return;
         }
       }
+      const storedOrder = localStorage.getItem(STORAGE_ORDER_KEY);
+      if (storedOrder) {
+        this.categoryOrder = JSON.parse(storedOrder);
+      }
     } catch {}
-    this.config = cloneConfig(DEFAULT_CONFIG);
   }
 
   public save(): void {
     try {
       localStorage.setItem(STORAGE_LINKS_KEY, JSON.stringify(this.config));
+      localStorage.setItem(STORAGE_ORDER_KEY, JSON.stringify(this.categoryOrder));
     } catch (err) {
       console.warn('Failed to save links to localStorage:', err);
     }
@@ -163,6 +167,15 @@ export class DataStore {
 
   public getLinks(): LinkItem[] {
     return [...this.config.commands];
+  }
+
+  public getCategoryOrder(): string[] {
+    return [...this.categoryOrder];
+  }
+
+  public setCategoryOrder(order: string[]): void {
+    this.categoryOrder = [...order];
+    this.save();
   }
 
   public getCategories(): CategoryGroup[] {
@@ -176,7 +189,21 @@ export class DataStore {
       groupsMap[cat].push(link);
     });
 
-    return Object.keys(groupsMap).map(categoryName => ({
+    const categoryNames = Object.keys(groupsMap);
+
+    // Sort categories according to custom categoryOrder preference if defined
+    if (this.categoryOrder.length > 0) {
+      categoryNames.sort((a, b) => {
+        const idxA = this.categoryOrder.indexOf(a);
+        const idxB = this.categoryOrder.indexOf(b);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return 0;
+      });
+    }
+
+    return categoryNames.map(categoryName => ({
       name: categoryName,
       links: groupsMap[categoryName]
     }));
@@ -194,7 +221,10 @@ export class DataStore {
   }
 
   public exportJson(): string {
-    return JSON.stringify(this.config, null, 2);
+    return JSON.stringify({
+      config: this.config,
+      categoryOrder: this.categoryOrder
+    }, null, 2);
   }
 
   public importJson(jsonString: string): boolean {
@@ -204,6 +234,13 @@ export class DataStore {
         this.config = parsed;
         this.save();
         return true;
+      } else if (parsed && parsed.config && Array.isArray(parsed.config.commands)) {
+        this.config = parsed.config;
+        if (Array.isArray(parsed.categoryOrder)) {
+          this.categoryOrder = parsed.categoryOrder;
+        }
+        this.save();
+        return true;
       }
     } catch {}
     return false;
@@ -211,8 +248,10 @@ export class DataStore {
 
   public resetToDefault(): void {
     this.config = cloneConfig(DEFAULT_CONFIG);
+    this.categoryOrder = [];
     try {
       localStorage.removeItem(STORAGE_LINKS_KEY);
+      localStorage.removeItem(STORAGE_ORDER_KEY);
     } catch {}
   }
 }

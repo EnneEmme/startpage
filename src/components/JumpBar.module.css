@@ -1,18 +1,26 @@
 .jumpBar {
+  position: sticky;
+  top: 1rem;
+  z-index: 100;
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.2rem;
   overflow-x: auto;
-  padding: 0.3rem;
-  background: var(--bg-card);
+  padding: 0.35rem 0.6rem;
+  background: var(--bg-glass);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full);
   backdrop-filter: var(--glass-backdrop);
+  box-shadow: var(--shadow-md);
+  max-width: 100%;
 }
 
 .tabBtn {
-  padding: 0.4rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 1rem;
   border-radius: var(--radius-full);
   font-size: 0.82rem;
   font-weight: 500;
@@ -23,12 +31,103 @@
 
 .tabBtn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .tabBtn.active {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: var(--text-primary);
   font-weight: 600;
+}
+
+.reorderBtn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.reorderBtn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.reorderPopup {
+  position: absolute;
+  top: 110%;
+  right: 1rem;
+  width: 260px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 0.85rem;
+  z-index: 105;
+}
+
+.reorderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.closePopupBtn {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+.reorderList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.reorderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.5rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+}
+
+.reorderName {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.reorderControls {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.moveBtn {
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+}
+
+.moveBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+}
+
+.moveBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }

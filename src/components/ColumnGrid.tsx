@@ -67,48 +67,52 @@ export const ColumnGrid = ({
 
   return (
     <div class={styles.gridContainer}>
-      {filteredCategories.map(cat => (
-        <div key={cat.name} class={styles.columnCard}>
-          <div class={styles.columnHeader}>
-            <h2 class={styles.columnTitle}>{cat.name}</h2>
-            <span class={styles.linkCountBadge}>{cat.links.length}</span>
+      {filteredCategories.map(cat => {
+        const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+
+        return (
+          <div key={cat.name} id={columnId} class={styles.columnCard}>
+            <div class={styles.columnHeader}>
+              <h2 class={styles.columnTitle}>{cat.name}</h2>
+              <span class={styles.linkCountBadge}>{cat.links.length}</span>
+            </div>
+
+            <div class={styles.linksList}>
+              {cat.links.map(link => {
+                const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
+                const mainAlias = link.aliases && link.aliases.length > 0 ? link.aliases[0] : null;
+
+                return (
+                  <a
+                    key={link.id}
+                    href={displayUrl || '#'}
+                    class={styles.linkRow}
+                    onClick={e => handleLinkClick(e, link)}
+                    onContextMenu={e => handleContextMenu(e, link)}
+                  >
+                    <div class={styles.iconContainer}>
+                      <LinkIcon
+                        url={displayUrl || 'https://example.com'}
+                        iconSpec={link.icon}
+                        title={link.title}
+                        size={18}
+                      />
+                    </div>
+
+                    <div class={styles.linkInfo}>
+                      <span class={styles.linkTitle}>{link.title}</span>
+                    </div>
+
+                    {mainAlias && (
+                      <span class={styles.aliasBadge}>{mainAlias}</span>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
           </div>
-
-          <div class={styles.linksList}>
-            {cat.links.map(link => {
-              const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
-              const mainAlias = link.aliases && link.aliases.length > 0 ? link.aliases[0] : null;
-
-              return (
-                <a
-                  key={link.id}
-                  href={displayUrl || '#'}
-                  class={styles.linkRow}
-                  onClick={e => handleLinkClick(e, link)}
-                  onContextMenu={e => handleContextMenu(e, link)}
-                >
-                  <div class={styles.iconContainer}>
-                    <LinkIcon
-                      url={displayUrl || 'https://example.com'}
-                      iconSpec={link.icon}
-                      title={link.title}
-                      size={18}
-                    />
-                  </div>
-
-                  <div class={styles.linkInfo}>
-                    <span class={styles.linkTitle}>{link.title}</span>
-                  </div>
-
-                  {mainAlias && (
-                    <span class={styles.aliasBadge}>{mainAlias}</span>
-                  )}
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+        );
+      })}
 
       {contextMenuState && (
         <ContextMenu

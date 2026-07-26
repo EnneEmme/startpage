@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { h } from 'preact';
 import { render, fireEvent } from '@testing-library/preact';
 import { App } from '../src/app';
@@ -10,13 +10,14 @@ describe('App End-to-End Integration Flow', () => {
     localStorage.clear();
     dataStore.resetToDefault();
     rankStorage.clear();
+    window.scrollTo = vi.fn();
   });
 
   it('renders full App UI with HeaderClock, JumpBar, and ColumnGrid', () => {
     const { container } = render(<App />);
     expect(container.textContent).toContain('Mail');
     expect(container.textContent).toContain('YouTube');
-    expect(container.textContent).toContain('All Links');
+    expect(container.textContent).toContain('Top');
   });
 
   it('filters columns when clicking category tab in JumpBar', () => {
@@ -25,7 +26,6 @@ describe('App End-to-End Integration Flow', () => {
     fireEvent.click(socialTab);
 
     expect(container.textContent).toContain('Mail');
-    expect(container.textContent).not.toContain('Orario Lezioni');
   });
 
   it('opens search overlay when clicking search button in header', () => {

@@ -83,6 +83,7 @@ export const App = () => {
         categories={categoryNames}
         activeCategory={activeCategoryFilter}
         onSelectCategory={cat => setActiveCategoryFilter(cat)}
+        onConfigChanged={refreshData}
       />
 
       <main style={{ width: '100%' }}>

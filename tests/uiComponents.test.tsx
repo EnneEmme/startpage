@@ -25,9 +25,10 @@ describe('UI Components Rendering', () => {
         categories={categories}
         activeCategory={null}
         onSelectCategory={() => {}}
+        onConfigChanged={() => {}}
       />
     );
-    expect(container.textContent).toContain('All Links');
+    expect(container.textContent).toContain('Top');
     expect(container.textContent).toContain('Social');
     expect(container.textContent).toContain('LLMs');
   });
