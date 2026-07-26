@@ -1,6 +1,5 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
-import { ArrowLeft, ArrowRight, ArrowUp, ArrowDown } from 'lucide-preact';
 import { CategoryGroup, LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
 import { rankStorage } from '../engine/rankStorage';
@@ -36,7 +35,6 @@ export const ColumnGrid = ({
   const [dragOverLinkId, setDragOverLinkId] = useState<string | null>(null);
 
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
-    // If user was dragging, do not open link
     if (draggedLinkId) {
       e.preventDefault();
       return;
@@ -71,35 +69,8 @@ export const ColumnGrid = ({
     }
   };
 
-  const handleMoveCategory = (index: number, direction: 'left' | 'right') => {
-    const categoryNames = categories.map(c => c.name);
-    const targetIdx = direction === 'left' ? index - 1 : index + 1;
-    if (targetIdx < 0 || targetIdx >= categoryNames.length) return;
-
-    const temp = categoryNames[index];
-    categoryNames[index] = categoryNames[targetIdx];
-    categoryNames[targetIdx] = temp;
-
-    dataStore.setCategoryOrder(categoryNames);
-    if (onConfigChanged) {
-      onConfigChanged();
-    }
-  };
-
-  const handleMoveLinkArrow = (e: MouseEvent, link: LinkItem, categoryLinks: LinkItem[], linkIndex: number, direction: 'up' | 'down') => {
-    e.preventDefault();
-    e.stopPropagation();
-    const targetIdx = direction === 'up' ? linkIndex - 1 : linkIndex + 1;
-    if (targetIdx >= 0 && targetIdx < categoryLinks.length) {
-      dataStore.moveLink(link.id, link.category, targetIdx);
-      if (onConfigChanged) {
-        onConfigChanged();
-      }
-    }
-  };
-
   /* --------------------------------------------------------------------------
-     Fluid Drag & Drop Handlers (Matching Column Drag & Drop Ease)
+     Fluid Drag & Drop Handlers (Columns & Links with LocalStorage Persistence)
      -------------------------------------------------------------------------- */
   const handleColumnDragStart = (e: DragEvent, categoryName: string) => {
     setDraggedCategoryName(categoryName);
@@ -142,7 +113,7 @@ export const ColumnGrid = ({
     setDragOverCategory(null);
     setDragOverLinkId(null);
 
-    // Drop Link
+    // Drop Link (Persists to localStorage via dataStore.moveLink)
     if (draggedLinkId) {
       dataStore.moveLink(draggedLinkId, targetCategoryName, targetLinkIndex);
       setDraggedLinkId(null);
@@ -150,7 +121,7 @@ export const ColumnGrid = ({
       return;
     }
 
-    // Drop Column
+    // Drop Column (Persists to localStorage via dataStore.setCategoryOrder)
     if (draggedCategoryName) {
       const categoryNames = categories.map(c => c.name);
       const fromIdx = categoryNames.indexOf(draggedCategoryName);
@@ -175,7 +146,7 @@ export const ColumnGrid = ({
 
   return (
     <div class={styles.gridContainer}>
-      {categories.map((cat, idx) => {
+      {categories.map(cat => {
         const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
         const isHighlighted = highlightedCategory === cat.name;
         const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
@@ -189,34 +160,16 @@ export const ColumnGrid = ({
             onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, cat.name)}
           >
-            {/* Draggable Column Header */}
+            {/* Draggable Column Header (Clean - No Arrows) */}
             <div
               class={styles.columnHeader}
               draggable={true}
               onDragStart={e => handleColumnDragStart(e, cat.name)}
               onDragEnd={handleDragEnd}
+              title="Drag to reorder column"
             >
               <h2 class={styles.columnTitle}>{cat.name}</h2>
               <span class={styles.linkCountBadge}>{cat.links.length}</span>
-
-              <div class={styles.reorderHeaderControls}>
-                <button
-                  disabled={idx === 0}
-                  onClick={() => handleMoveCategory(idx, 'left')}
-                  class={styles.reorderHeaderBtn}
-                  title="Move Column Left"
-                >
-                  <ArrowLeft size={13} />
-                </button>
-                <button
-                  disabled={idx === categories.length - 1}
-                  onClick={() => handleMoveCategory(idx, 'right')}
-                  class={styles.reorderHeaderBtn}
-                  title="Move Column Right"
-                >
-                  <ArrowRight size={13} />
-                </button>
-              </div>
             </div>
 
             <div class={styles.linksList}>
@@ -235,6 +188,7 @@ export const ColumnGrid = ({
                     onDragOver={e => handleDragOver(e, cat.name, link.id)}
                     onDrop={e => handleDrop(e, cat.name, linkIdx)}
                     onDragEnd={handleDragEnd}
+                    title="Drag to reorder link"
                   >
                     <a
                       href={displayUrl || '#'}
@@ -259,26 +213,6 @@ export const ColumnGrid = ({
                       {mainAlias && (
                         <span class={styles.aliasBadge}>{mainAlias}</span>
                       )}
-
-                      {/* Optional Hover Arrow Controls */}
-                      <div class={styles.linkHoverControls}>
-                        <button
-                          disabled={linkIdx === 0}
-                          onClick={e => handleMoveLinkArrow(e, link, cat.links, linkIdx, 'up')}
-                          class={styles.linkHoverBtn}
-                          title="Move Link Up"
-                        >
-                          <ArrowUp size={11} />
-                        </button>
-                        <button
-                          disabled={linkIdx === cat.links.length - 1}
-                          onClick={e => handleMoveLinkArrow(e, link, cat.links, linkIdx, 'down')}
-                          class={styles.linkHoverBtn}
-                          title="Move Link Down"
-                        >
-                          <ArrowDown size={11} />
-                        </button>
-                      </div>
                     </a>
                   </div>
                 );
