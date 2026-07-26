@@ -1,0 +1,9 @@
+.faviconImg {
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.lucideIcon {
+  flex-shrink: 0;
+}

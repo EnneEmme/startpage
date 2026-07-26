@@ -12,38 +12,47 @@ This document tracks the directory layout, module dependencies, and file organiz
 ```
 startpage/
 ├── .git/                      # Git repository data
-├── node_modules/              # Bun / NPM dependencies
-├── old_homepage/              # Legacy Tilde homepage files for migration & reference
-│   ├── ai.html                # Legacy AI dashboard
-│   ├── index.html             # Legacy main dashboard
-│   ├── css/
-│   │   └── style.css          # Legacy CSS styles
-│   └── js/
-│       ├── ai-config.js       # Legacy AI commands config
-│       ├── config.js          # Legacy commands config & Unimib dynamic functions
-│       ├── queryParser.js     # Legacy query parser
-│       └── suggester.js       # Legacy suggestion engine
+├── dist/                      # Production single-file static distribution build (dist/index.html)
+├── node_modules/              # Bun dependencies
+├── old_homepage/              # Legacy Tilde homepage files for reference
 ├── src/                       # Source code (TypeScript + Preact)
+│   ├── assets/                # Static assets & icons
+│   ├── components/            # Preact UI Components (Dark Premium Design)
+│   │   ├── CheatsheetModal.tsx# Interactive Keyboard Shortcuts Modal
+│   │   ├── ColumnGrid.tsx     # Categorized Multi-Column Links Grid
+│   │   ├── HeaderClock.tsx    # Real-time Clock, Date, & Quick Tools Header
+│   │   ├── ImportExportModal.tsx # JSON Backup / Sync Configuration Modal
+│   │   ├── JumpBar.tsx        # Column Section Switcher & Category Filter
+│   │   ├── LinkIcon.tsx       # Dynamic Multi-Tiered Icon Renderer
+│   │   ├── SearchModal.tsx    # Fuzzy Search Overlay & Command Palette Redirect
+│   │   └── VisualEditModal.tsx# Direct UI Add/Edit Link Modal
 │   ├── engine/                # Decoupled Data & Keyboard Engine
-│   │   ├── cheatsheetData.ts  # Shortcuts definition data for interactive modal
+│   │   ├── cheatsheetData.ts  # Shortcuts definition data
 │   │   ├── dataStore.ts       # Config loader, JSON validator, localStorage store
 │   │   ├── dynamicEvaluator.ts# Dynamic URL evaluator (Unimib schedules, date interpolation)
-│   │   ├── fuzzySearch.ts     # Fuse.js fuzzy search, command palette (g, yt, gh, w), rank sorting
-│   │   ├── iconResolver.ts    # Multi-tiered icon resolver (Custom URL -> Lucide -> Favicon API)
+│   │   ├── fuzzySearch.ts     # Fuse.js fuzzy search, command palette, rank sorting
+│   │   ├── iconResolver.ts    # Multi-tiered icon resolver (Custom -> Lucide -> Favicon API)
 │   │   ├── keyboardManager.ts # Global keystroke listener & shortcuts navigator
 │   │   └── rankStorage.ts     # LocalStorage usage counter & rank score generator
-│   └── types/                 # TypeScript interfaces & types
-│       └── startpage.ts       # Link, Category, Rank, Search, & Prefix types
-├── tests/                     # Vitest test suites (35/35 tests passing under Bun)
+│   ├── styles/                # CSS Design System
+│   │   ├── global.css         # Resets, animations, custom scrollbars, container
+│   │   └── variables.css      # Dark Premium color palette, glassmorphism, typography
+│   ├── types/                 # TypeScript interfaces & types
+│   │   └── startpage.ts       # Link, Category, Rank, Search, & Prefix types
+│   ├── app.tsx                # Main Application Component
+│   └── main.tsx               # Application Entry Point
+├── tests/                     # Vitest test suites (42/42 tests passing under Bun)
 │   ├── cheatsheetData.test.ts
 │   ├── dataStore.test.ts
 │   ├── dynamicEvaluator.test.ts
 │   ├── fuzzySearch.test.ts
 │   ├── iconResolver.test.ts
 │   ├── keyboardManager.test.ts
-│   └── rankStorage.test.ts
+│   ├── rankStorage.test.ts
+│   └── uiComponents.test.tsx
 ├── bun.lock                   # Bun lockfile
 ├── gemini.md                  # AI agent guidelines & project standards (Bun mandate)
+├── index.html                 # Root HTML document for Vite bundler
 ├── package.json               # Package dependencies & scripts
 ├── plan.md                    # Roadmap, task tracking, & implementation status
 ├── structure.md               # Project structure documentation
@@ -54,7 +63,8 @@ startpage/
 
 ---
 
-## Tooling Mandate
+## Tooling & Architecture Mandate
 
-- **Package & Test Execution**: Bun exclusively (`bun ./node_modules/vitest/vitest.mjs run`). `npm` and `npx` are strictly prohibited.
-- **Module Responsibilities**: `src/engine/` is completely decoupled from UI presentation, tested to 100% reliability across 35 test cases.
+- **Package & Test Execution**: Bun exclusively (`bun ./node_modules/vitest/vitest.mjs run`).
+- **Production Build**: Standalone `index.html` static bundle generated via Vite (`bun ./node_modules/vite/bin/vite.js build`).
+- **Decoupled Architecture**: Pure data engines in `src/engine/`, independent UI components in `src/components/`.

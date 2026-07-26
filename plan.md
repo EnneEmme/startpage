@@ -33,24 +33,24 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] Implement global Keystroke Listener & Shortcuts Manager (`keyboardManager.ts`).
   - [x] Implement numerical quick-select shortcuts parser (`Ctrl+1`..`9`).
   - [x] Implement Interactive Shortcuts Cheatsheet data provider (`cheatsheetData.ts`).
-  - [x] Write Vitest unit tests for Phase 3 engine modules (23/23 tests passing).
 
-- [ ] **Phase 4: UI Development (Dark Premium Aesthetic & Features)**
-  - [ ] Setup CSS design system (`variables.css`: dark theme palette, glassmorphism, typography, responsive grid).
-  - [ ] Build `ColumnGrid` component with section headers and lazy-loaded icons.
-  - [ ] Build `JumpBar` / Column Section Switcher for instant section navigation.
-  - [ ] Build `SearchModal` component with instant fuzzy query results, command palette badges & shortcut badges.
-  - [ ] Build `CheatsheetModal` component.
-  - [ ] Build **Import / Export Config Modal** (backup/sync `links.json` & ranking history).
-  - [ ] Build **Visual Edit Mode** (Add/Edit link modal directly in UI saving to LocalStorage).
-  - [ ] Connect Preact UI to Data Engine APIs.
+- [x] **Phase 4: UI Development (Dark Premium Aesthetic & Features)**
+  - [x] Setup CSS design system (`variables.css`: dark theme palette, glassmorphism, typography, responsive grid).
+  - [x] Build `ColumnGrid` component with section headers and lazy-loaded icons.
+  - [x] Build `JumpBar` / Column Section Switcher for instant section navigation.
+  - [x] Build `SearchModal` component with instant fuzzy query results, command palette badges & shortcut badges.
+  - [x] Build `CheatsheetModal` component.
+  - [x] Build **Import / Export Config Modal** (backup/sync `links.json` & ranking history).
+  - [x] Build **Visual Edit Mode** (Add/Edit link modal directly in UI saving to LocalStorage).
+  - [x] Connect Preact UI to Data Engine APIs in `src/app.tsx`.
+  - [x] Write Vitest UI component tests (42/42 total tests passing).
+  - [x] Verify standalone single-file production build (`dist/index.html`).
 
-- [ ] **Phase 5: Legacy Homepage Migration & Verification**
+- [ ] **Phase 5: Legacy Homepage Migration & Production Release**
   - [x] Analyze user's legacy homepage files in `old_homepage/` (Tilde startpage with Unimib dynamic links & AI config).
   - [ ] Parse old links and convert to `data/links.json` schema.
   - [ ] Run full automated test suite (`vitest run`).
-  - [ ] Validate static build execution (`npm run build`) locally via `file://`.
-  - [ ] Deploy production bundle to `main` branch.
+  - [ ] Merge `dev` branch to `main` branch with compiled static build output.
 
 ---
 

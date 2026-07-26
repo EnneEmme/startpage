@@ -1,0 +1,123 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-modal-overlay);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.modalContainer {
+  width: 100%;
+  max-width: 650px;
+  max-height: 85vh;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.titleIcon {
+  color: var(--accent-primary);
+}
+
+.titleGroup h2 {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.closeBtn {
+  color: var(--text-muted);
+  padding: 0.35rem;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.closeBtn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.contentBody {
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.groupSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.groupTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-accent);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.shortcutsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.shortcutRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.keysGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.kbdKey {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.55rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
