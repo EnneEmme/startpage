@@ -1,6 +1,6 @@
 /**
  * DataStore Engine
- * Handles links configuration, category grouping, custom category ordering, link reordering, dynamic link rules, and localStorage persistence.
+ * Handles links configuration, category grouping, custom category ordering, precise link reordering/insertion, dynamic link rules, and localStorage persistence.
  */
 
 import { LinkItem, CategoryGroup, StartpageConfig } from '../types/startpage';
@@ -177,14 +177,19 @@ export class DataStore {
   }
 
   public moveLink(linkId: string, targetCategoryId: string, targetIndex?: number): void {
-    const linkIdx = this.config.commands.findIndex(l => l.id === linkId);
-    if (linkIdx === -1) return;
+    const fromIdx = this.config.commands.findIndex(l => l.id === linkId);
+    if (fromIdx === -1) return;
 
-    const [draggedLink] = this.config.commands.splice(linkIdx, 1);
+    const [draggedLink] = this.config.commands.splice(fromIdx, 1);
     draggedLink.category = targetCategoryId;
 
-    if (typeof targetIndex === 'number' && targetIndex >= 0) {
-      this.config.commands.splice(targetIndex, 0, draggedLink);
+    // Get all target category links to find target insertion point in the master commands array
+    const targetCategoryLinks = this.config.commands.filter(l => l.category === targetCategoryId);
+
+    if (typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex < targetCategoryLinks.length) {
+      const referenceLink = targetCategoryLinks[targetIndex];
+      const insertMasterIndex = this.config.commands.indexOf(referenceLink);
+      this.config.commands.splice(insertMasterIndex, 0, draggedLink);
     } else {
       this.config.commands.push(draggedLink);
     }

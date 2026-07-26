@@ -34,6 +34,7 @@ export const ColumnGrid = ({
   const [draggedCategoryName, setDraggedCategoryName] = useState<string | null>(null);
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
   const [dragOverLinkId, setDragOverLinkId] = useState<string | null>(null);
+  const [dropPosition, setDropPosition] = useState<'above' | 'below'>('above');
 
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
     if (draggedLinkId) {
@@ -88,7 +89,7 @@ export const ColumnGrid = ({
   };
 
   /* --------------------------------------------------------------------------
-     Fluid Drag & Drop Handlers
+     Fluid Drag & Drop Handlers with Precise Top/Bottom Half Insertion
      -------------------------------------------------------------------------- */
   const handleColumnDragStart = (e: DragEvent, categoryName: string) => {
     setDraggedCategoryName(categoryName);
@@ -115,8 +116,17 @@ export const ColumnGrid = ({
     if (dragOverCategory !== categoryName) {
       setDragOverCategory(categoryName);
     }
-    if (linkId && dragOverLinkId !== linkId) {
-      setDragOverLinkId(linkId);
+
+    if (linkId) {
+      if (dragOverLinkId !== linkId) {
+        setDragOverLinkId(linkId);
+      }
+      // Calculate whether mouse is in top or bottom half of the target link row
+      const targetElement = e.currentTarget as HTMLElement;
+      const rect = targetElement.getBoundingClientRect();
+      const relativeY = e.clientY - rect.top;
+      const isBottomHalf = relativeY > rect.height / 2;
+      setDropPosition(isBottomHalf ? 'below' : 'above');
     }
   };
 
@@ -132,7 +142,12 @@ export const ColumnGrid = ({
     setDragOverLinkId(null);
 
     if (draggedLinkId) {
-      dataStore.moveLink(draggedLinkId, targetCategoryName, targetLinkIndex);
+      let finalIndex = targetLinkIndex;
+      if (typeof targetLinkIndex === 'number' && dropPosition === 'below') {
+        finalIndex = targetLinkIndex + 1;
+      }
+
+      dataStore.moveLink(draggedLinkId, targetCategoryName, finalIndex);
       setDraggedLinkId(null);
       if (onConfigChanged) onConfigChanged();
       return;
@@ -212,10 +227,15 @@ export const ColumnGrid = ({
                 const isItemDragOver = dragOverLinkId === link.id;
                 const isBeingDragged = draggedLinkId === link.id;
 
+                let dragOverClass = '';
+                if (isItemDragOver) {
+                  dragOverClass = dropPosition === 'below' ? styles.dragOverBelow : styles.dragOverAbove;
+                }
+
                 return (
                   <div
                     key={link.id}
-                    class={`${styles.linkCardDragWrapper} ${isItemDragOver ? styles.dragOverLink : ''} ${isBeingDragged ? styles.linkBeingDragged : ''}`}
+                    class={`${styles.linkCardDragWrapper} ${dragOverClass} ${isBeingDragged ? styles.linkBeingDragged : ''}`}
                     draggable={true}
                     onDragStart={e => handleLinkDragStart(e, link)}
                     onDragOver={e => handleDragOver(e, cat.name, link.id)}
