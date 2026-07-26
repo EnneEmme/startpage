@@ -89,7 +89,7 @@ export const ColumnGrid = ({
   };
 
   /* --------------------------------------------------------------------------
-     Fluid Drag & Drop Handlers with Precise Top/Bottom Half Insertion
+     Fluid & Premium UI/UX Drag & Drop Handlers
      -------------------------------------------------------------------------- */
   const handleColumnDragStart = (e: DragEvent, categoryName: string) => {
     setDraggedCategoryName(categoryName);
@@ -105,6 +105,24 @@ export const ColumnGrid = ({
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'LINK', id: link.id }));
+
+      // Create a sleek dark ghost element for drag feedback
+      const dragGhost = document.createElement('div');
+      dragGhost.style.position = 'absolute';
+      dragGhost.style.top = '-9999px';
+      dragGhost.style.padding = '6px 14px';
+      dragGhost.style.background = '#18181b';
+      dragGhost.style.border = '1px solid #10b981';
+      dragGhost.style.borderRadius = '8px';
+      dragGhost.style.color = '#f4f4f5';
+      dragGhost.style.fontSize = '13px';
+      dragGhost.style.fontWeight = '500';
+      dragGhost.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(16,185,129,0.3)';
+      dragGhost.innerText = `Moving ${link.title}`;
+      document.body.appendChild(dragGhost);
+      e.dataTransfer.setDragImage(dragGhost, 20, 20);
+
+      setTimeout(() => document.body.removeChild(dragGhost), 0);
     }
   };
 
@@ -117,11 +135,22 @@ export const ColumnGrid = ({
       setDragOverCategory(categoryName);
     }
 
+    // Auto-scroll column container when dragging near top or bottom boundaries
+    const listContainer = (e.currentTarget as HTMLElement).closest(`.${styles.linksList}`) as HTMLDivElement;
+    if (listContainer) {
+      const containerRect = listContainer.getBoundingClientRect();
+      const relativePointerY = e.clientY - containerRect.top;
+      if (relativePointerY < 35) {
+        listContainer.scrollBy({ top: -12, behavior: 'auto' });
+      } else if (containerRect.height - relativePointerY < 35) {
+        listContainer.scrollBy({ top: 12, behavior: 'auto' });
+      }
+    }
+
     if (linkId) {
       if (dragOverLinkId !== linkId) {
         setDragOverLinkId(linkId);
       }
-      // Calculate whether mouse is in top or bottom half of the target link row
       const targetElement = e.currentTarget as HTMLElement;
       const rect = targetElement.getBoundingClientRect();
       const relativeY = e.clientY - rect.top;

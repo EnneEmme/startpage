@@ -53,9 +53,9 @@
 }
 
 .columnCard.dragOver {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.04);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
 }
 
 /* Highlight Pulse Animation when jumping to section */
@@ -114,6 +114,7 @@
   scrollbar-width: none; /* Hide scrollbar Firefox */
   -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
   transition: mask-image 0.2s ease, -webkit-mask-image 0.2s ease;
+  scroll-behavior: smooth;
 }
 
 /* Hide scrollbar Chrome/Safari/Blink */
@@ -141,7 +142,7 @@
   width: 100%;
   border-radius: var(--radius-md);
   border: 1px dashed transparent;
-  transition: all var(--transition-fast);
+  transition: transform 0.15s ease, margin 0.15s ease, opacity 0.15s ease, background 0.15s ease;
   cursor: grab;
   position: relative;
 }
@@ -150,20 +151,59 @@
   cursor: grabbing;
 }
 
-/* Drop target insertion indicators */
+/* Glowing Insertion Slot Lines with Smooth Item Gap Opening */
 .linkCardDragWrapper.dragOverAbove {
-  border-top: 2px solid var(--accent-highlight);
+  margin-top: 8px;
   background: rgba(16, 185, 129, 0.08);
+}
+
+.linkCardDragWrapper.dragOverAbove::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #10b981;
+  border-radius: 3px;
+  box-shadow: 0 0 10px #10b981, 0 0 4px #10b981;
+  z-index: 10;
+  animation: pulseGlow 1s infinite alternate;
 }
 
 .linkCardDragWrapper.dragOverBelow {
-  border-bottom: 2px solid var(--accent-highlight);
+  margin-bottom: 8px;
   background: rgba(16, 185, 129, 0.08);
 }
 
+.linkCardDragWrapper.dragOverBelow::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #10b981;
+  border-radius: 3px;
+  box-shadow: 0 0 10px #10b981, 0 0 4px #10b981;
+  z-index: 10;
+  animation: pulseGlow 1s infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.8;
+    box-shadow: 0 0 6px #10b981;
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 14px #10b981, 0 0 6px #10b981;
+  }
+}
+
 .linkCardDragWrapper.linkBeingDragged {
-  opacity: 0.35;
-  transform: scale(0.97);
+  opacity: 0.25;
+  transform: scale(0.96);
 }
 
 .linkRow {
