@@ -40,10 +40,35 @@
 
 .columnCard {
   background: transparent;
-  border: none; /* No explicit card border - seamless separation */
-  padding: 0;
+  border: none;
+  padding: 0.4rem;
   display: flex;
   flex-direction: column;
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+/* Highlight Pulse Animation when jumping to section */
+@keyframes highlightPulseKeyframe {
+  0% {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 0 20px rgba(255, 255, 255, 0.15);
+    transform: scale(1.02);
+  }
+  50% {
+    background: rgba(16, 185, 129, 0.12);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4), 0 0 25px rgba(16, 185, 129, 0.2);
+    transform: scale(1.02);
+  }
+  100% {
+    background: transparent;
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+.highlightPulse {
+  animation: highlightPulseKeyframe 1.4s ease-out forwards;
 }
 
 .columnHeader {
@@ -52,7 +77,8 @@
   gap: 0.5rem;
   margin-bottom: 0.85rem;
   padding-bottom: 0.4rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Minimal subtle header line */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
 }
 
 .columnTitle {
@@ -70,6 +96,42 @@
   background: rgba(255, 255, 255, 0.06);
   padding: 0.1rem 0.45rem;
   border-radius: var(--radius-full);
+}
+
+.reorderHeaderControls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  opacity: 0.3;
+  transition: opacity var(--transition-fast);
+}
+
+.columnCard:hover .reorderHeaderControls,
+.reorderHeaderControls.active {
+  opacity: 1;
+}
+
+.reorderHeaderBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.reorderHeaderBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--text-primary);
+}
+
+.reorderHeaderBtn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
 }
 
 .linksList {

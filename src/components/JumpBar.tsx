@@ -1,19 +1,17 @@
 import { h } from 'preact';
-import { ArrowUp, Settings2 } from 'lucide-preact';
+import { ArrowUp } from 'lucide-preact';
 import styles from './JumpBar.module.css';
 
 interface JumpBarProps {
   categories: string[];
   activeCategory: string | null;
   onSelectCategory: (category: string | null) => void;
-  onOpenReorder: () => void;
 }
 
 export const JumpBar = ({
   categories,
   activeCategory,
-  onSelectCategory,
-  onOpenReorder
+  onSelectCategory
 }: JumpBarProps) => {
   const handleTabClick = (categoryName: string | null) => {
     onSelectCategory(categoryName);
@@ -27,7 +25,7 @@ export const JumpBar = ({
     const targetEl = document.getElementById(columnId);
 
     if (targetEl) {
-      const yOffset = -75; // Offset so sticky nav doesn't cover column title
+      const yOffset = -75;
       const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -53,14 +51,6 @@ export const JumpBar = ({
             {cat}
           </button>
         ))}
-
-        <button
-          class={styles.reorderBtn}
-          onClick={onOpenReorder}
-          title="Reorder Columns"
-        >
-          <Settings2 size={16} /> Reorder
-        </button>
       </nav>
     </div>
   );

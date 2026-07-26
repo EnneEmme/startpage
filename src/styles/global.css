@@ -10,6 +10,7 @@
   box-sizing: border-box;
 }
 
+/* IMPORTANT: Do NOT place overflow: hidden on html or body, as it breaks CSS position: sticky */
 html, body {
   width: 100%;
   min-height: 100vh;
@@ -20,7 +21,6 @@ html, body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
 }
 
 /* Custom Scrollbar */
@@ -42,13 +42,13 @@ html, body {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* Base App Layout Container - Dynamic expansion for wide monitors */
+/* Base App Layout Container */
 #app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.5rem 2rem 4rem;
+  padding: 2rem 1.5rem 4rem;
   width: 100%;
   max-width: 1840px;
   margin: 0 auto;

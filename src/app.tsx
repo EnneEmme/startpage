@@ -9,13 +9,13 @@ import { SearchModal } from './components/SearchModal';
 import { CheatsheetModal } from './components/CheatsheetModal';
 import { ImportExportModal } from './components/ImportExportModal';
 import { VisualEditModal } from './components/VisualEditModal';
-import { ReorderModal } from './components/ReorderModal';
 import { LinkItem, CategoryGroup } from './types/startpage';
 
 export const App = () => {
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [categories, setCategories] = useState<CategoryGroup[]>([]);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string | null>(null);
+  const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null);
 
   // Modals state
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
@@ -23,7 +23,6 @@ export const App = () => {
   const [cheatsheetOpen, setCheatsheetOpen] = useState<boolean>(false);
   const [importExportOpen, setImportExportOpen] = useState<boolean>(false);
   const [visualEditOpen, setVisualEditOpen] = useState<boolean>(false);
-  const [reorderOpen, setReorderOpen] = useState<boolean>(false);
   const [editTargetLink, setEditTargetLink] = useState<LinkItem | null>(null);
 
   const refreshData = () => {
@@ -37,7 +36,7 @@ export const App = () => {
     // Attach global keyboard shortcuts handlers
     keyboardManager.setHandlers({
       onOpenSearch: (char?: string) => {
-        if (!cheatsheetOpen && !importExportOpen && !visualEditOpen && !reorderOpen) {
+        if (!cheatsheetOpen && !importExportOpen && !visualEditOpen) {
           setInitialSearchChar(char || '');
           setSearchOpen(true);
         }
@@ -47,7 +46,6 @@ export const App = () => {
         setCheatsheetOpen(false);
         setImportExportOpen(false);
         setVisualEditOpen(false);
-        setReorderOpen(false);
         setEditTargetLink(null);
       },
       onOpenCheatsheet: () => {
@@ -58,7 +56,18 @@ export const App = () => {
 
     keyboardManager.attach();
     return () => keyboardManager.detach();
-  }, [cheatsheetOpen, importExportOpen, visualEditOpen, reorderOpen]);
+  }, [cheatsheetOpen, importExportOpen, visualEditOpen]);
+
+  const handleSelectCategory = (catName: string | null) => {
+    setActiveCategoryFilter(catName);
+    if (catName) {
+      setHighlightedCategory(catName);
+      // Auto-clear highlight after pulse animation finishes
+      setTimeout(() => setHighlightedCategory(null), 1400);
+    } else {
+      setHighlightedCategory(null);
+    }
+  };
 
   const handleEditLinkFromContext = (link: LinkItem) => {
     setEditTargetLink(link);
@@ -85,14 +94,13 @@ export const App = () => {
       <JumpBar
         categories={categoryNames}
         activeCategory={activeCategoryFilter}
-        onSelectCategory={cat => setActiveCategoryFilter(cat)}
-        onOpenReorder={() => setReorderOpen(true)}
+        onSelectCategory={handleSelectCategory}
       />
 
       <main style={{ width: '100%' }}>
         <ColumnGrid
           categories={categories}
-          activeCategoryFilter={activeCategoryFilter}
+          highlightedCategory={highlightedCategory}
           onEditLink={handleEditLinkFromContext}
           onConfigChanged={refreshData}
         />
@@ -124,13 +132,6 @@ export const App = () => {
           setVisualEditOpen(false);
           setEditTargetLink(null);
         }}
-        onConfigChanged={refreshData}
-      />
-
-      <ReorderModal
-        isOpen={reorderOpen}
-        categories={categoryNames}
-        onClose={() => setReorderOpen(false)}
         onConfigChanged={refreshData}
       />
     </div>

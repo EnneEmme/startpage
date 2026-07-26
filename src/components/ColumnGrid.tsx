@@ -1,5 +1,6 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
+import { ArrowLeft, ArrowRight } from 'lucide-preact';
 import { CategoryGroup, LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
 import { rankStorage } from '../engine/rankStorage';
@@ -10,7 +11,7 @@ import styles from './ColumnGrid.module.css';
 
 interface ColumnGridProps {
   categories: CategoryGroup[];
-  activeCategoryFilter: string | null;
+  highlightedCategory?: string | null;
   onLinkClick?: (link: LinkItem) => void;
   onEditLink?: (link: LinkItem) => void;
   onConfigChanged?: () => void;
@@ -18,7 +19,7 @@ interface ColumnGridProps {
 
 export const ColumnGrid = ({
   categories,
-  activeCategoryFilter,
+  highlightedCategory,
   onLinkClick,
   onEditLink,
   onConfigChanged
@@ -29,19 +30,13 @@ export const ColumnGrid = ({
     link: LinkItem;
   } | null>(null);
 
-  const filteredCategories = activeCategoryFilter
-    ? categories.filter(c => c.name === activeCategoryFilter)
-    : categories;
-
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
-    // Record usage ranking
     rankStorage.recordUsage(link.id);
 
     if (onLinkClick) {
       onLinkClick(link);
     }
 
-    // Determine target URL
     const targetUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
     if (targetUrl) {
       window.location.href = targetUrl;
@@ -65,16 +60,56 @@ export const ColumnGrid = ({
     }
   };
 
+  const handleMoveCategory = (index: number, direction: 'left' | 'right') => {
+    const categoryNames = categories.map(c => c.name);
+    const targetIdx = direction === 'left' ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= categoryNames.length) return;
+
+    const temp = categoryNames[index];
+    categoryNames[index] = categoryNames[targetIdx];
+    categoryNames[targetIdx] = temp;
+
+    dataStore.setCategoryOrder(categoryNames);
+    if (onConfigChanged) {
+      onConfigChanged();
+    }
+  };
+
   return (
     <div class={styles.gridContainer}>
-      {filteredCategories.map(cat => {
+      {categories.map((cat, idx) => {
         const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+        const isHighlighted = highlightedCategory === cat.name;
 
         return (
-          <div key={cat.name} id={columnId} class={styles.columnCard}>
+          <div
+            key={cat.name}
+            id={columnId}
+            class={`${styles.columnCard} ${isHighlighted ? styles.highlightPulse : ''}`}
+          >
             <div class={styles.columnHeader}>
               <h2 class={styles.columnTitle}>{cat.name}</h2>
               <span class={styles.linkCountBadge}>{cat.links.length}</span>
+
+              {/* Direct Visual Reordering Controls */}
+              <div class={styles.reorderHeaderControls}>
+                <button
+                  disabled={idx === 0}
+                  onClick={() => handleMoveCategory(idx, 'left')}
+                  class={styles.reorderHeaderBtn}
+                  title="Move Column Left"
+                >
+                  <ArrowLeft size={13} />
+                </button>
+                <button
+                  disabled={idx === categories.length - 1}
+                  onClick={() => handleMoveCategory(idx, 'right')}
+                  class={styles.reorderHeaderBtn}
+                  title="Move Column Right"
+                >
+                  <ArrowRight size={13} />
+                </button>
+              </div>
             </div>
 
             <div class={styles.linksList}>

@@ -25,7 +25,6 @@ describe('UI Components Rendering', () => {
         categories={categories}
         activeCategory={null}
         onSelectCategory={() => {}}
-        onConfigChanged={() => {}}
       />
     );
     expect(container.textContent).toContain('Top');
@@ -46,7 +45,6 @@ describe('UI Components Rendering', () => {
     const { container } = render(
       <ColumnGrid
         categories={sampleCategories}
-        activeCategoryFilter={null}
       />
     );
     expect(container.textContent).toContain('Dev');
