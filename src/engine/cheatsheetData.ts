@@ -19,7 +19,8 @@ export const BASE_CHEATSHEET_SHORTCUTS: ShortcutGroup[] = [
     category: 'Search & Navigation',
     items: [
       { keys: ['Any Key'], description: 'Start typing anywhere to activate fuzzy search' },
-      { keys: ['Alt', 'or', '[⌨️]'], description: 'Toggle Aliases & Category Number Shortcuts (1..9)' },
+      { keys: ['Shift', 'N'], description: 'Open Add New Link modal' },
+      { keys: ['Alt', 'or', 'Shift+Space'], description: 'Toggle Aliases & Category Number Shortcuts (1..9)' },
       { keys: ['1..9'], description: 'Instantly jump to category #1 through #9' },
       { keys: ['↑', '↓'], description: 'Navigate search result candidates' },
       { keys: ['Enter'], description: 'Open highlighted search result or URL' },

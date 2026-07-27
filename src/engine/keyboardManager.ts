@@ -1,13 +1,15 @@
 /**
  * Global Keyboard Manager & Shortcuts Engine
  * Handles keystroke listeners, input field filtering, shortcuts cheatsheet triggers,
- * search auto-activation on typing, shortcut view toggle mode, and numerical category selection (1..9).
+ * search auto-activation on typing, shortcut view toggle mode, link creation shortcut (Shift+N / n),
+ * and numerical category selection (1..9).
  */
 
 export interface KeyboardActionHandlers {
   onOpenSearch?: (initialChar?: string) => void;
   onCloseModals?: () => void;
   onOpenCheatsheet?: () => void;
+  onOpenVisualEdit?: () => void;
   onSelectQuickResult?: (index: number) => void;
   onNavigateSearch?: (direction: 'up' | 'down' | 'enter') => void;
   onToggleShortcutsView?: () => void;
@@ -59,10 +61,17 @@ export class KeyboardManager {
       return;
     }
 
-    // Toggle Shortcuts View mode: 'Alt' key tap, 'Shift+Space', or 'Ctrl+Shift'
+    // Toggle Shortcuts View mode: 'Alt' key tap, or 'Shift+Space'
     if (!isInput && (e.key === 'Alt' || (e.shiftKey && e.key === ' '))) {
       e.preventDefault();
       this.handlers.onToggleShortcutsView?.();
+      return;
+    }
+
+    // Shortcut to Create New Link: Shift+N or 'n' key outside inputs
+    if (!isInput && ((e.shiftKey && (e.key === 'N' || e.key === 'n')) || e.key === 'n')) {
+      e.preventDefault();
+      this.handlers.onOpenVisualEdit?.();
       return;
     }
 
@@ -106,7 +115,7 @@ export class KeyboardManager {
     if (e.ctrlKey || e.altKey || e.metaKey) return;
 
     // Single printable character (length == 1) auto-opens search
-    if (e.key.length === 1 && e.key !== ' ') {
+    if (e.key.length === 1 && e.key !== ' ' && e.key.toLowerCase() !== 'n') {
       this.handlers.onOpenSearch?.(e.key);
     }
   }

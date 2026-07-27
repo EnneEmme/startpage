@@ -140,6 +140,9 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
   - Modern glassmorphic dark design, clear field helper tooltips, focus rings, and live visual previews.
   - Smooth entrance/exit animations and responsive mobile bottom-sheet adaptation.
 
+
+## task 13
+densità colonne nelle impostaizone non fa molto non si vedono differenze risovli, inoltre anceh il testo voglio che ci sia possiible sceglierr edimensione, ppicoclo medio grande ad esempio, in inglese ovviamente
 ---
 
 ## 🛠️ Execution & Testing Strategy

@@ -47,7 +47,7 @@ describe('App End-to-End Integration Flow', () => {
 
   it('opens visual edit modal and adds a new link successfully', () => {
     const { container, getByTitle, getByPlaceholderText, getByText } = render(<App />);
-    const editBtn = getByTitle('Add or Edit Links');
+    const editBtn = getByTitle('Add or Edit Links (Shift+N or n)');
     fireEvent.click(editBtn);
 
     expect(container.textContent).toContain('Add New Link');

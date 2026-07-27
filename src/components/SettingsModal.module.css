@@ -162,6 +162,34 @@
   font-weight: 600;
 }
 
+.backupBtnRow {
+  display: flex;
+  width: 100%;
+}
+
+.backupActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  min-height: 44px;
+}
+
+.backupActionBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--border-color-hover);
+  color: var(--accent-highlight);
+}
+
 .modalFooter {
   display: flex;
   align-items: center;

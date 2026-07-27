@@ -95,6 +95,10 @@ export const App = () => {
         setSearchOpen(false);
         setCheatsheetOpen(prev => !prev);
       },
+      onOpenVisualEdit: () => {
+        setEditTargetLink(null);
+        setVisualEditOpen(true);
+      },
       onToggleShortcutsView: () => {
         setShowShortcuts(prev => !prev);
       },
@@ -138,10 +142,7 @@ export const App = () => {
             setEditTargetLink(null);
             setVisualEditOpen(true);
           }}
-          onOpenImportExport={() => setImportExportOpen(true)}
           onOpenSettings={() => setSettingsOpen(true)}
-          showShortcuts={showShortcuts}
-          onToggleShortcuts={() => setShowShortcuts(prev => !prev)}
         />
       </header>
 
@@ -188,6 +189,7 @@ export const App = () => {
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         onConfigChanged={refreshData}
+        onOpenImportExport={() => setImportExportOpen(true)}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
-import { X, Check, Sliders, Palette, LayoutGrid, Search } from 'lucide-preact';
+import { X, Check, Sliders, Palette, LayoutGrid, Search, Download } from 'lucide-preact';
 import { themeEngine, ACCENT_COLORS, ThemeConfig } from '../engine/themeEngine';
 import styles from './SettingsModal.module.css';
 
@@ -8,9 +8,15 @@ interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfigChanged?: () => void;
+  onOpenImportExport?: () => void;
 }
 
-export const SettingsModal = ({ isOpen, onClose, onConfigChanged }: SettingsModalProps) => {
+export const SettingsModal = ({
+  isOpen,
+  onClose,
+  onConfigChanged,
+  onOpenImportExport
+}: SettingsModalProps) => {
   if (!isOpen) return null;
 
   const [config, setConfig] = useState<ThemeConfig>(themeEngine.getConfig());
@@ -137,6 +143,27 @@ export const SettingsModal = ({ isOpen, onClose, onConfigChanged }: SettingsModa
                 onClick={() => handleSelectEngine('gh')}
               >
                 GitHub (gh)
+              </button>
+            </div>
+          </div>
+
+          {/* Backup & Import/Export Section */}
+          <div class={styles.sectionGroup}>
+            <label class={styles.sectionLabel}>
+              <Download size={15} class={styles.sectionIcon} />
+              Backup & Sincronizzazione Dati
+            </label>
+            <div class={styles.backupBtnRow}>
+              <button
+                type="button"
+                class={styles.backupActionBtn}
+                onClick={() => {
+                  onClose();
+                  if (onOpenImportExport) onOpenImportExport();
+                }}
+              >
+                <Download size={15} />
+                <span>Esporta / Importa Backup JSON</span>
               </button>
             </div>
           </div>
