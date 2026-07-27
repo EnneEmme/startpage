@@ -6,9 +6,10 @@ This document specifies the operational rules, coding standards, git workflow, a
 
 ## 1. Core Architecture & Tooling Principles
 
-1. **Bun Tooling Mandate**:
-   - MUST use `bun` exclusively for package installation, script execution, and testing (`bun ./node_modules/vitest/vitest.mjs run`).
-   - NEVER use `npm` or `npx`.
+1. **STRICT Bun Tooling Mandate (ABSOLUTE MANDATE)**:
+   - MUST use `bun` exclusively for package installation (`bun install`), script execution, building (`bun ./node_modules/vite/bin/vite.js build`), and testing (`bun ./node_modules/vitest/vitest.mjs run`).
+   - **NEVER use `npm`, `npx`, `yarn`, or `pnpm` under any circumstances**.
+   - All shell executions MUST use `bun` or direct node module scripts via `bun`.
 
 2. **Serverless & Standalone Output**:
    - The final production build on the `main` branch MUST consist solely of static `index.html`, JavaScript, and CSS assets.
@@ -30,7 +31,7 @@ This document specifies the operational rules, coding standards, git workflow, a
 
 1. **Branch Management**:
    - `main`: Contains ONLY production build artifacts (compiled static files ready to use). NO source files or markdown docs here (except `README.md` and `assets/` for screenshots).
-   - `dev`: Active development branch containing source code, test suites, build configs, and developer documentation (`gemini.md`, `structure.md`, `plan.md`).
+   - `dev`: Active development branch containing source code, test suites, build configs, and developer documentation (`gemini.md`, `structure.md`, `plan.md`, `TODO.md`).
    - Feature branches: `feature/<feature-name>` branched off `dev`.
 
 2. **Main Branch Squash Policy (CRITICAL)**:
@@ -62,7 +63,7 @@ This document specifies the operational rules, coding standards, git workflow, a
 
 5. **Mandatory Documentation Updates**:
    - Whenever files/folders are added, removed, or moved, `structure.md` MUST be updated in the same commit or step.
-   - Whenever a task/feature is started or completed, `plan.md` MUST be updated immediately.
+   - Whenever a task/feature is started or completed, `plan.md` and `TODO.md` MUST be updated immediately.
 
 6. **GitHub Pages Deployment**:
    - The site is served via GitHub Pages from `main` branch, root directory (`/`).
