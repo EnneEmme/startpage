@@ -59,13 +59,48 @@ export const ColumnGrid = ({
     setHasPageScrollDown(isUnscrolledPage && hasMorePageContent);
   };
 
+  // Measure all column link lists to initialize gradient fade masks immediately on load
+  const checkAllColumnScrollMasks = () => {
+    const newScrollStates: Record<string, { canScrollUp: boolean; canScrollDown: boolean }> = {};
+    const columnElements = document.querySelectorAll(`.${styles.columnCard}`);
+
+    columnElements.forEach(colEl => {
+      const titleEl = colEl.querySelector(`.${styles.columnTitle}`);
+      const listEl = colEl.querySelector(`.${styles.linksList}`) as HTMLDivElement | null;
+      if (titleEl && listEl) {
+        const colName = titleEl.textContent || '';
+        const { scrollTop, scrollHeight, clientHeight } = listEl;
+        newScrollStates[colName] = {
+          canScrollUp: scrollTop > 4,
+          canScrollDown: scrollTop + clientHeight < scrollHeight - 4
+        };
+      }
+    });
+
+    setScrollStates(newScrollStates);
+  };
+
   useEffect(() => {
     checkPageScroll();
+    checkAllColumnScrollMasks();
+
+    // Secondary measurement after DOM paint to ensure accurate height calculations on startup
+    const timer = setTimeout(() => {
+      checkPageScroll();
+      checkAllColumnScrollMasks();
+    }, 60);
+
+    const handleResize = () => {
+      checkPageScroll();
+      checkAllColumnScrollMasks();
+    };
+
     window.addEventListener('scroll', checkPageScroll, { passive: true });
-    window.addEventListener('resize', checkPageScroll, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('scroll', checkPageScroll);
-      window.removeEventListener('resize', checkPageScroll);
+      window.removeEventListener('resize', handleResize);
     };
   }, [categories]);
 
