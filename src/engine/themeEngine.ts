@@ -73,7 +73,7 @@ const STORAGE_KEY = 'startpage_theme_settings';
 
 const DEFAULT_THEME_CONFIG: ThemeConfig = {
   accentColorId: 'silver', // Default accent is silver/platinum gray
-  gridDensity: 'normal',
+  gridDensity: 'normal',   // Default density is balanced 185px (previously compact)
   defaultSearchEngine: 'g'
 };
 
@@ -123,12 +123,24 @@ export class ThemeEngine {
     root.style.setProperty('--accent-glow', accent.glow);
     root.style.setProperty('--border-color-hover', accent.borderHover);
 
-    // Apply grid column width according to density
-    let minColWidth = '210px';
-    if (config.gridDensity === 'compact') minColWidth = '180px';
-    if (config.gridDensity === 'spaced') minColWidth = '240px';
+    // Apply 3-tier grid density scale
+    let minColWidth = '185px';      // DEFAULT ('normal')
+    let gridGap = '5rem 1.25rem';
+    let linkPadding = '0.34rem 0.45rem';
+
+    if (config.gridDensity === 'compact') {
+      minColWidth = '155px';       // ULTRA COMPACT
+      gridGap = '4.5rem 0.85rem';
+      linkPadding = '0.26rem 0.38rem';
+    } else if (config.gridDensity === 'spaced') {
+      minColWidth = '230px';       // WIDE / SPACED
+      gridGap = '6rem 1.8rem';
+      linkPadding = '0.45rem 0.6rem';
+    }
 
     root.style.setProperty('--grid-col-min-width', minColWidth);
+    root.style.setProperty('--grid-gap', gridGap);
+    root.style.setProperty('--link-row-padding', linkPadding);
   }
 
   private saveAndApply(): void {

@@ -1,7 +1,7 @@
 .gridContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 210px), 1fr));
-  gap: 5.5rem 1.6rem;
+  grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 185px), 1fr));
+  gap: var(--grid-gap, 5rem 1.25rem);
   width: 100%;
   padding: 0.5rem 0 3.5rem;
 }
@@ -9,8 +9,8 @@
 /* Mobile Screens (< 600px): 1-2 columns */
 @media (max-width: 599px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 4rem 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 3.5rem 0.75rem;
     padding: 0.5rem 0 3.5rem;
   }
 
@@ -26,8 +26,8 @@
 /* Medium Screens / Tablets (600px - 1024px): 2-4 columns */
 @media (min-width: 600px) and (max-width: 1024px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 190px), 1fr));
-    gap: 4.5rem 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 175px), 1fr));
+    gap: var(--grid-gap, 4.5rem 1.1rem);
     padding: 0.5rem 0 3.5rem;
   }
 
@@ -40,20 +40,20 @@
   }
 }
 
-/* Laptop / Standard Desktop (1025px - 1599px): 4-5 columns */
+/* Laptop / Standard Desktop (1025px - 1599px): 4-6 columns */
 @media (min-width: 1025px) and (max-width: 1599px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 210px), 1fr));
-    gap: 5.5rem 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 185px), 1fr));
+    gap: var(--grid-gap, 5rem 1.25rem);
     padding: 0.5rem 0 3.5rem;
   }
 }
 
-/* Large Monitors & Ultrawide (> 1600px): 5-8 columns */
+/* Large Monitors & Ultrawide (> 1600px): 6-9 columns */
 @media (min-width: 1600px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 220px), 1fr));
-    gap: 6rem 1.8rem;
+    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 190px), 1fr));
+    gap: var(--grid-gap, 5.5rem 1.4rem);
     padding: 0.5rem 0 4rem;
   }
 }
@@ -306,7 +306,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.38rem 0.5rem;
+  padding: var(--link-row-padding, 0.34rem 0.45rem);
   border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text-primary);
