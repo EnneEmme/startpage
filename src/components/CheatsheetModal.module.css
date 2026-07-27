@@ -1,8 +1,8 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: var(--bg-modal-overlay);
-  backdrop-filter: blur(12px);
+  background: var(--bg-modal-overlay, rgba(0, 0, 0, 0.75));
+  backdrop-filter: blur(14px);
   z-index: 1000;
   display: flex;
   justify-content: center;
@@ -12,112 +12,253 @@
 
 .modalContainer {
   width: 100%;
-  max-width: 650px;
+  max-width: 680px;
   max-height: 85vh;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color-hover);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.header {
+.modalHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 1.5rem;
+  padding: 1.1rem 1.4rem;
   border-bottom: 1px solid var(--border-color);
   background: rgba(255, 255, 255, 0.02);
 }
 
-.titleGroup {
+.headerTitleGroup {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.titleIcon {
-  color: var(--accent-primary);
+.headerIconBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--accent-glow, rgba(226, 232, 240, 0.12));
+  border: 1px solid var(--border-color-hover);
+  color: var(--accent-highlight);
 }
 
-.titleGroup h2 {
+.keyboardIcon {
+  color: var(--accent-highlight);
+}
+
+.modalTitle {
   font-family: var(--font-heading);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.modalSubtitle {
+  font-size: 0.76rem;
+  color: var(--text-muted);
 }
 
 .closeBtn {
-  color: var(--text-muted);
-  padding: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-md);
+  color: var(--text-muted);
   transition: all var(--transition-fast);
 }
 
 .closeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* Search Bar Filter Input */
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.4rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.searchIcon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.clearSearchBtn {
+  color: var(--text-muted);
+  padding: 0.2rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearSearchBtn:hover {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.1);
 }
 
-.contentBody {
-  padding: 1.5rem;
+.modalContent {
+  padding: 1.4rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.5rem;
+  -webkit-overflow-scrolling: touch;
 }
 
-.groupSection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.groupTitle {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-accent);
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.shortcutsGrid {
+.shortcutSection {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
-.shortcutRow {
+.categoryHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.categorySparkle {
+  color: var(--accent-highlight);
+}
+
+.categoryHeader {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-highlight);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.shortcutGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.5rem;
+}
+
+.shortcutCard {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.75rem;
-  background: var(--bg-card);
+  padding: 0.55rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
 }
 
-.keysGroup {
+.shortcutCard:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color-hover);
+  transform: translateY(-1px);
+}
+
+.shortcutDesc {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.keysBadgeContainer {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.25rem;
+  flex-shrink: 0;
 }
 
-.kbdKey {
+.keyBadge {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-sm);
-  padding: 0.2rem 0.55rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color: var(--accent-highlight);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border: 1px solid var(--border-color-hover);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  letter-spacing: 0.02em;
 }
 
-.description {
-  font-size: 0.88rem;
-  color: var(--text-secondary);
+.noResultsState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.noResultsIcon {
+  opacity: 0.4;
+}
+
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.4rem;
+  border-top: 1px solid var(--border-color);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.footerHint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.miniKbd {
+  font-family: var(--font-mono);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--accent-highlight);
+  border: 1px solid var(--border-color-hover);
+}
+
+@media (max-width: 600px) {
+  .overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modalContainer {
+    max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    max-height: 85vh;
+  }
+
+  .shortcutGrid {
+    grid-template-columns: 1fr;
+  }
 }
