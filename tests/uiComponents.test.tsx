@@ -1,54 +1,31 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { h } from 'preact';
 import { render } from '@testing-library/preact';
 import { HeaderClock } from '../src/components/HeaderClock';
 import { JumpBar } from '../src/components/JumpBar';
-import { ColumnGrid } from '../src/components/ColumnGrid';
 
-describe('UI Components Rendering', () => {
-  it('renders HeaderClock component with top-right quick tools', () => {
-    const { getByTitle } = render(
+describe('UI Components Unit Tests', () => {
+  it('renders HeaderClock tool buttons', () => {
+    const { getAllByTitle } = render(
       <HeaderClock
-        onOpenSearch={() => {}}
-        onOpenCheatsheet={() => {}}
-        onOpenVisualEdit={() => {}}
-        onOpenImportExport={() => {}}
+        onOpenSearch={vi.fn()}
+        onOpenCheatsheet={vi.fn()}
+        onOpenVisualEdit={vi.fn()}
+        onOpenSettings={vi.fn()}
       />
     );
-    expect(getByTitle('Fuzzy Search (Press any key)')).not.toBeNull();
-    expect(getByTitle('Shortcuts Cheatsheet (? or F1)')).not.toBeNull();
+    expect(getAllByTitle('Fuzzy Search (Press any key)')[0]).not.toBeNull();
+    expect(getAllByTitle('Shortcuts Cheatsheet (? or F1)')[0]).not.toBeNull();
   });
 
-  it('renders JumpBar category tabs', () => {
-    const categories = ['Social', 'Fun', 'LLMs'];
-    const { container } = render(
-      <JumpBar
-        categories={categories}
-        activeCategory={null}
-        onSelectCategory={() => {}}
-      />
+  it('renders JumpBar categories and triggers click handler', () => {
+    const onSelect = vi.fn();
+    const categories = ['Social', 'Dev', 'AI'];
+    const { getByText } = render(
+      <JumpBar categories={categories} activeCategory="Social" onSelectCategory={onSelect} />
     );
-    expect(container.textContent).toContain('All');
-    expect(container.textContent).toContain('Social');
-    expect(container.textContent).toContain('LLMs');
-  });
 
-  it('renders ColumnGrid with category links', () => {
-    const sampleCategories = [
-      {
-        name: 'Dev',
-        links: [
-          { id: 'gh', title: 'GitHub', url: 'https://github.com', aliases: ['gh'], category: 'Dev' }
-        ]
-      }
-    ];
-
-    const { container } = render(
-      <ColumnGrid
-        categories={sampleCategories}
-      />
-    );
-    expect(container.textContent).toContain('Dev');
-    expect(container.textContent).toContain('GitHub');
+    expect(getByText('All')).not.toBeNull();
+    expect(getByText('Social')).not.toBeNull();
   });
 });

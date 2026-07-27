@@ -29,8 +29,8 @@ describe('App End-to-End Integration Flow', () => {
   });
 
   it('opens search overlay when clicking search button in header', () => {
-    const { getByTitle, getByPlaceholderText } = render(<App />);
-    const searchBtn = getByTitle('Fuzzy Search (Press any key)');
+    const { getAllByTitle, getByPlaceholderText } = render(<App />);
+    const searchBtn = getAllByTitle('Fuzzy Search (Press any key)')[0];
     fireEvent.click(searchBtn);
 
     const input = getByPlaceholderText('Type link name, alias, or command (e.g. g meteo)...');
@@ -38,16 +38,16 @@ describe('App End-to-End Integration Flow', () => {
   });
 
   it('opens keyboard cheatsheet modal when clicking help button', () => {
-    const { container, getByTitle } = render(<App />);
-    const helpBtn = getByTitle('Shortcuts Cheatsheet (? or F1)');
+    const { container, getAllByTitle } = render(<App />);
+    const helpBtn = getAllByTitle('Shortcuts Cheatsheet (? or F1)')[0];
     fireEvent.click(helpBtn);
 
     expect(container.textContent).toContain('Keyboard Shortcuts Cheatsheet');
   });
 
   it('opens visual edit modal and adds a new link successfully', () => {
-    const { container, getByTitle, getByPlaceholderText, getByText } = render(<App />);
-    const editBtn = getByTitle('Add or Edit Links (Shift+N or n)');
+    const { container, getAllByTitle, getByPlaceholderText, getByText } = render(<App />);
+    const editBtn = getAllByTitle('Add or Edit Links (Shift+N or n)')[0];
     fireEvent.click(editBtn);
 
     expect(container.textContent).toContain('Add New Link');

@@ -15,15 +15,15 @@ export const HeaderClock = ({
   onOpenVisualEdit,
   onOpenSettings
 }: HeaderClockProps) => {
-  return (
-    <div class={styles.topRightTools}>
+  const tools = (
+    <>
       {/* Fuzzy Search Button */}
       <button
         class={styles.iconBtn}
         onClick={onOpenSearch}
         title="Fuzzy Search (Press any key)"
       >
-        <Search size={16} />
+        <Search size={18} />
       </button>
 
       {/* Shortcuts Cheatsheet Modal */}
@@ -32,7 +32,7 @@ export const HeaderClock = ({
         onClick={onOpenCheatsheet}
         title="Shortcuts Cheatsheet (? or F1)"
       >
-        <CircleQuestionMark size={16} />
+        <CircleQuestionMark size={18} />
       </button>
 
       {/* Settings Modal Button */}
@@ -41,7 +41,7 @@ export const HeaderClock = ({
         onClick={onOpenSettings}
         title="Settings & Themes"
       >
-        <Settings size={16} />
+        <Settings size={18} />
       </button>
 
       {/* Visual Edit Button (Add or Edit Link) */}
@@ -50,8 +50,22 @@ export const HeaderClock = ({
         onClick={onOpenVisualEdit}
         title="Add or Edit Links (Shift+N or n)"
       >
-        <PenLine size={16} />
+        <PenLine size={18} />
       </button>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Top Header Toolbar (Desktop >= 860px) */}
+      <div class={styles.topRightTools}>
+        {tools}
+      </div>
+
+      {/* Floating Bottom Nav Bar (Mobile & Tablet < 860px) */}
+      <nav class={styles.floatingBottomNav} aria-label="Mobile Navigation">
+        {tools}
+      </nav>
+    </>
   );
 };
