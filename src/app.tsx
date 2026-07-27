@@ -11,6 +11,7 @@ import { CheatsheetModal } from './components/CheatsheetModal';
 import { ImportExportModal } from './components/ImportExportModal';
 import { VisualEditModal } from './components/VisualEditModal';
 import { SettingsModal } from './components/SettingsModal';
+import { MobileBottomNav } from './components/MobileBottomNav';
 import { LinkItem, CategoryGroup } from './types/startpage';
 
 export const App = () => {
@@ -123,7 +124,7 @@ export const App = () => {
 
   return (
     <div id="app">
-      {/* Unified Non-Overlapping Header */}
+      {/* Unified Header */}
       <header class="unifiedHeader">
         <JumpBar
           categories={categoryNames}
@@ -155,6 +156,20 @@ export const App = () => {
           onConfigChanged={refreshData}
         />
       </main>
+
+      {/* Standalone Bottom Navigation Bar for Mobile & Tablet (< 1024px) */}
+      <MobileBottomNav
+        onOpenSearch={() => {
+          setInitialSearchChar('');
+          setSearchOpen(true);
+        }}
+        onOpenCheatsheet={() => setCheatsheetOpen(true)}
+        onOpenVisualEdit={() => {
+          setEditTargetLink(null);
+          setVisualEditOpen(true);
+        }}
+        onOpenSettings={() => setSettingsOpen(true)}
+      />
 
       {/* Modals */}
       <SearchModal

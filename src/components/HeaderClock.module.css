@@ -11,10 +11,6 @@
   flex-shrink: 0;
 }
 
-.floatingBottomNav {
-  display: none;
-}
-
 .iconBtn {
   display: flex;
   align-items: center;
@@ -38,43 +34,9 @@
   border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
-/* Hide top bubble and show bottom floating bar on any screen < 1024px */
+/* Hide top bubble on screens < 1024px */
 @media (max-width: 1023px) {
   .topRightTools {
     display: none !important;
-  }
-
-  .floatingBottomNav {
-    position: fixed !important;
-    bottom: 1.25rem !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    top: auto !important;
-    z-index: 9999 !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 1.25rem;
-    background: rgba(12, 14, 20, 0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    padding: 0.5rem 1.2rem;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--border-color-hover);
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
-    animation: fadeIn var(--transition-normal) forwards;
-  }
-
-  .floatingBottomNav .iconBtn {
-    width: 44px;
-    height: 44px;
-    color: var(--text-primary);
-  }
-
-  .floatingBottomNav .iconBtn:hover,
-  .floatingBottomNav .iconBtn:active {
-    background: rgba(255, 255, 255, 0.15);
-    color: var(--accent-highlight);
-    transform: scale(1.08);
   }
 }
