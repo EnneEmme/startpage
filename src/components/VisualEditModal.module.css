@@ -74,6 +74,47 @@
   color: var(--text-secondary);
 }
 
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--accent-highlight);
+  cursor: pointer;
+  user-select: none;
+  margin-top: 0.2rem;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  accent-color: var(--accent-highlight);
+  width: 16px;
+  height: 16px;
+}
+
+.searchTemplateSubGroup {
+  margin-top: 0.4rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.helperText {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.helperText code {
+  color: var(--accent-highlight);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+}
+
 .input {
   width: 100%;
   padding: 0.6rem 0.85rem;

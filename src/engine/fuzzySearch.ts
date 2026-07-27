@@ -1,6 +1,6 @@
 /**
  * Fuzzy Search & Command Palette Engine
- * Combines Fuse.js fuzzy matching, usage rank weighting, and search engine command prefixes (g, yt, gh, w).
+ * Combines Fuse.js fuzzy matching, usage rank weighting, and search engine command prefixes (g, yt, gh, w, ddg, custom).
  */
 
 import Fuse from 'fuse.js';
@@ -8,11 +8,11 @@ import { LinkItem, SearchResult, CommandPrefixRule } from '../types/startpage';
 import { rankStorage } from './rankStorage';
 
 export const DEFAULT_PREFIX_RULES: CommandPrefixRule[] = [
-  { key: 'g', name: 'Google Search', searchUrlTemplate: 'https://www.google.com/search?q={}' },
-  { key: 'yt', name: 'YouTube Search', searchUrlTemplate: 'https://www.youtube.com/results?search_query={}' },
-  { key: 'gh', name: 'GitHub Search', searchUrlTemplate: 'https://github.com/search?q={}' },
-  { key: 'w', name: 'Wikipedia Search', searchUrlTemplate: 'https://wikipedia.org/w/index.php?search={}' },
-  { key: 'ddg', name: 'DuckDuckGo Search', searchUrlTemplate: 'https://duckduckgo.com/?q={}' }
+  { key: 'g', name: 'Google Search', searchUrlTemplate: 'https://www.google.com/search?q={q}' },
+  { key: 'yt', name: 'YouTube Search', searchUrlTemplate: 'https://www.youtube.com/results?search_query={q}' },
+  { key: 'gh', name: 'GitHub Search', searchUrlTemplate: 'https://github.com/search?q={q}' },
+  { key: 'w', name: 'Wikipedia Search', searchUrlTemplate: 'https://wikipedia.org/w/index.php?search={q}' },
+  { key: 'ddg', name: 'DuckDuckGo Search', searchUrlTemplate: 'https://duckduckgo.com/?q={q}' }
 ];
 
 export interface ParsedCommand {
@@ -53,14 +53,43 @@ export class FuzzySearchEngine {
       const prefix = trimmed.substring(0, firstSpaceIndex).toLowerCase();
       const query = trimmed.substring(firstSpaceIndex + 1).trim();
 
-      const matchedRule = DEFAULT_PREFIX_RULES.find(r => r.key === prefix);
-      if (matchedRule) {
+      // Check default built-in prefix rules first
+      const matchedDefault = DEFAULT_PREFIX_RULES.find(r => r.key === prefix);
+      if (matchedDefault) {
+        const template = matchedDefault.searchUrlTemplate.includes('{q}')
+          ? matchedDefault.searchUrlTemplate
+          : matchedDefault.searchUrlTemplate.replace('{}', '{q}');
+
         return {
           isPrefixCommand: true,
           prefix,
           query,
-          engineName: matchedRule.name,
-          redirectUrl: matchedRule.searchUrlTemplate.replace('{}', encodeURIComponent(query))
+          engineName: matchedDefault.name,
+          redirectUrl: template.replace('{q}', encodeURIComponent(query))
+        };
+      }
+
+      // Check user-created dynamic search engine links
+      const matchedCustomLink = this.links.find(link => {
+        const hasTemplate = Boolean(link.searchTemplate || link.searchPath);
+        const matchesAlias = link.aliases.some(a => a.toLowerCase() === prefix);
+        return hasTemplate && matchesAlias;
+      });
+
+      if (matchedCustomLink) {
+        const template = matchedCustomLink.searchTemplate || matchedCustomLink.searchPath || '';
+        let fullTemplate = template;
+        if (!template.startsWith('http')) {
+          fullTemplate = matchedCustomLink.url.replace(/\/$/, '') + (template.startsWith('/') ? template : '/' + template);
+        }
+        const targetTemplate = fullTemplate.includes('{q}') ? fullTemplate : fullTemplate.replace('{}', '{q}');
+
+        return {
+          isPrefixCommand: true,
+          prefix,
+          query,
+          engineName: `${matchedCustomLink.title} Search`,
+          redirectUrl: targetTemplate.replace('{q}', encodeURIComponent(query))
         };
       }
     }

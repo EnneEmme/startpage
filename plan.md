@@ -54,11 +54,12 @@ This document outlines the detailed development roadmap for the Startpage projec
 
 - [ ] **Phase 6: Master TODO Roadmap Execution (Refer to `TODO.md`)**
   - [x] **Task 1**: Full Viewport-Height Columns with Minimalist Down Indicator (`↓`).
-  - [ ] **Task 2**: Hidden Aliases by default, Key-Hold Trigger (`Alt`/`Space`), and Category Number Shortcuts (`1`..`9`).
-  - [ ] **Task 3**: Settings Modal (`Impostazioni`) with Theme Color customization (Emerald, Sapphire, Violet, Amber, Silver).
-  - [ ] **Task 4**: Custom Search Engine Creator with Cheatsheet Auto-Registration.
+  - [x] **Task 2**: Hidden Aliases by default, Key-Hold Trigger (`Alt`/`Space`), and Category Number Shortcuts (`1`..`9`).
+  - [x] **Task 3**: Settings Modal (`Impostazioni`) with Theme Color customization (Silver Platinum default).
+  - [x] **Task 4**: Custom Search Engine Creator with Cheatsheet Auto-Registration.
   - [ ] **Task 5**: Ultra-Minimalist Search Overlay.
   - [ ] **Task 6**: Top Spacing Reduction & JumpBar Horizontal Mask.
   - [ ] **Task 7**: Mobile Touch & Smartphone UX Refinements.
   - [ ] **Task 8**: Dynamic Responsive Column Grid Geometry & Side Padding.
   - [ ] **Task 9**: Custom JavaScript Script & Bookmarklet Links Support.
+  - [ ] **Task 10**: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching.

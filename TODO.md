@@ -16,6 +16,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 7. **Enhanced Mobile Phone Experience** (Bottom sheets & touch optimization).
 8. **Dynamic Responsive Column Grid Geometry** with **Side Padding**.
 9. **Custom JavaScript Script & Bookmarklet Link Support**.
+10. **Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching**.
 
 ---
 
@@ -62,10 +63,10 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ---
 
 ### 🔹 Task 4: Advanced Search Engine Link Creator & Cheatsheet Integration
-- [ ] **Advanced Tab in `VisualEditModal.tsx`**:
+- [x] **Advanced Tab in `VisualEditModal.tsx`**:
   - Add "Advanced Search Engine / Custom Query" toggle.
   - Fields: `Search Query Template` (e.g. `https://youtube.com/results?search_query={q}` or `https://duckduckgo.com/?q={q}`) and `Trigger Aliases` (e.g. `yt`, `ddg`, `g`).
-- [ ] **Engine Auto-Registration**:
+- [x] **Engine Auto-Registration**:
   - Update `fuzzySearch.ts` command palette engine to recognize custom search engine query templates automatically.
   - Update `CheatsheetModal.tsx` so user-created search commands automatically appear in the Keyboard Shortcuts Cheatsheet (`?`).
 
@@ -110,6 +111,14 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 - [ ] **Script Editor in Visual Edit Modal (`VisualEditModal.tsx`)**:
   - Add a dedicated "Custom Script / Bookmarklet Code" field in the link creation/editing modal with guide and syntax hints.
   - Handle safe execution without breaking page navigation.
+
+---
+
+### 🔹 Task 10: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching
+- [ ] **Improved Fuzzy Algorithm & Relevance Scoring**:
+  - Fine-tune Fuse.js weights, distance metrics, and prefix matching for instant pinpoint search.
+  - Exact alias matches gain absolute priority score (top of list).
+  - Add support for partial word searches, typo tolerance, and sub-string category matching.
 
 ---
 

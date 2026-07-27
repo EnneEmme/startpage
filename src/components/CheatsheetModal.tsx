@@ -1,6 +1,6 @@
 import { h } from 'preact';
-import { X, Keyboard, HelpCircle } from 'lucide-preact';
-import { CHEATSHEET_SHORTCUTS } from '../engine/cheatsheetData';
+import { X, Keyboard } from 'lucide-preact';
+import { getDynamicCheatsheetShortcuts } from '../engine/cheatsheetData';
 import styles from './CheatsheetModal.module.css';
 
 interface CheatsheetModalProps {
@@ -11,34 +11,36 @@ interface CheatsheetModalProps {
 export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
   if (!isOpen) return null;
 
+  const shortcutGroups = getDynamicCheatsheetShortcuts();
+
   return (
     <div class={styles.overlay} onClick={onClose}>
       <div class={`${styles.modalContainer} fade-in`} onClick={e => e.stopPropagation()}>
-        <div class={styles.header}>
-          <div class={styles.titleGroup}>
-            <Keyboard size={24} class={styles.titleIcon} />
-            <h2>Keyboard Shortcuts Cheatsheet</h2>
+        <div class={styles.modalHeader}>
+          <div class={styles.headerTitleGroup}>
+            <Keyboard size={18} class={styles.keyboardIcon} />
+            <h2 class={styles.modalTitle}>Keyboard Shortcuts Cheatsheet</h2>
           </div>
-          <button class={styles.closeBtn} onClick={onClose} title="Close">
-            <X size={20} />
+          <button class={styles.closeBtn} onClick={onClose}>
+            <X size={18} />
           </button>
         </div>
 
-        <div class={styles.contentBody}>
-          {CHEATSHEET_SHORTCUTS.map(group => (
-            <div key={group.category} class={styles.groupSection}>
-              <h3 class={styles.groupTitle}>{group.category}</h3>
-              <div class={styles.shortcutsGrid}>
-                {group.items.map((item, i) => (
-                  <div key={i} class={styles.shortcutRow}>
-                    <div class={styles.keysGroup}>
+        <div class={styles.modalContent}>
+          {shortcutGroups.map(group => (
+            <div key={group.category} class={styles.shortcutSection}>
+              <h3 class={styles.categoryHeader}>{group.category}</h3>
+              <div class={styles.shortcutGrid}>
+                {group.items.map((item, idx) => (
+                  <div key={idx} class={styles.shortcutRow}>
+                    <div class={styles.keysBadgeContainer}>
                       {item.keys.map((k, kIdx) => (
-                        <kbd key={kIdx} class={styles.kbdKey}>
+                        <span key={kIdx} class={styles.keyBadge}>
                           {k}
-                        </kbd>
+                        </span>
                       ))}
                     </div>
-                    <span class={styles.description}>{item.description}</span>
+                    <span class={styles.shortcutDesc}>{item.description}</span>
                   </div>
                 ))}
               </div>

@@ -124,6 +124,10 @@ export const VisualEditModal = ({
   const [icon, setIcon] = useState(targetLink?.icon || '');
   const [category, setCategory] = useState(targetLink?.category || 'General');
 
+  // Custom Search Engine State
+  const [isSearchEngineMode, setIsSearchEngineMode] = useState(Boolean(targetLink?.searchTemplate || targetLink?.searchPath));
+  const [searchTemplate, setSearchTemplate] = useState(targetLink?.searchTemplate || targetLink?.searchPath || '');
+
   // Custom Category State
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -170,7 +174,8 @@ export const VisualEditModal = ({
       url: url.trim(),
       aliases: parsedAliases,
       category: targetCat || 'General',
-      icon: icon.trim() || undefined
+      icon: icon.trim() || undefined,
+      searchTemplate: isSearchEngineMode && searchTemplate.trim() ? searchTemplate.trim() : undefined
     };
 
     dataStore.addLink(updatedLink);
@@ -297,10 +302,38 @@ export const VisualEditModal = ({
             <input
               type="text"
               class={styles.input}
-              placeholder="e.g. g, gh, github"
+              placeholder="e.g. g, gh, github, yt"
               value={aliases}
               onInput={e => setAliases((e.target as HTMLInputElement).value)}
             />
+          </div>
+
+          {/* Advanced Search Engine Toggle & Field */}
+          <div class={styles.fieldGroup}>
+            <label class={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={isSearchEngineMode}
+                onChange={e => setIsSearchEngineMode((e.target as HTMLInputElement).checked)}
+              />
+              <span>Enable Custom Search Engine / Command Prefix Mode</span>
+            </label>
+
+            {isSearchEngineMode && (
+              <div class={styles.searchTemplateSubGroup}>
+                <label class={styles.label}>Search Query URL Template (use {"{q}"} for query)</label>
+                <input
+                  type="text"
+                  class={styles.input}
+                  placeholder="e.g. https://youtube.com/results?search_query={q}"
+                  value={searchTemplate}
+                  onInput={e => setSearchTemplate((e.target as HTMLInputElement).value)}
+                />
+                <span class={styles.helperText}>
+                  Type alias + query in search bar (e.g. <code>{aliases.split(',')[0] || 'yt'} lo-fi</code>) to search directly!
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Clean Non-Invasive Icon Dropdown Picker */}
