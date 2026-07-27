@@ -26,7 +26,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ### 🔹 Task 1: Viewport-Height Columns & Minimalist Down Indicator (`↓`)
 - [x] **Dynamic Viewport Height**:
-  - Calculate column card height dynamically using `max-height: calc(100vh - 220px)` on desktop.
+  - Calculate column card height dynamically using `max-height: calc(100vh - 160px)` on desktop.
   - Ensures columns span exactly the available screen height so lower rows don't awkwardly peek out underneath.
 - [x] **Minimalist Page-Wide Down Cue (`↓`)**:
   - Add a sleek, floating bottom chevron indicator `↓` fixed at bottom center of the page when un-scrolled content exists below.
@@ -101,10 +101,12 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ---
 
 ### 🔹 Task 8: Dynamic Responsive Column Grid & Balanced Side Padding
-- [ ] **Dynamic Window-Based Column Columns**:
-  - Configure `grid-template-columns: repeat(auto-fit, minmax(210px, 1fr))` in `ColumnGrid.module.css` so the number of columns per row adapts fluidly and dynamically to window resizing.
-- [ ] **Balanced Lateral Side Padding**:
-  - Apply clean horizontal outer padding (`padding: 0.5rem 1.75rem 3.5rem`) to ensure columns never touch screen edges and maintain a polished margin on all monitors.
+- [x] **Dynamic Window-Based Column Columns**:
+  - Configure `grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 210px), 1fr))` in `ColumnGrid.module.css` so the number of columns per row adapts fluidly and dynamically to window resizing.
+- [x] **Balanced Lateral Side Padding**:
+  - Apply clean horizontal outer padding (`padding: 0.5rem 2.25rem 3.5rem`) to ensure columns never touch screen edges and maintain a polished margin on all monitors.
+- [x] **Extended Vertical Link Height**:
+  - Increased `.linksList` max-height to `calc(100vh - 160px)`, displaying 1-2 additional link items per column to fill reclaimed vertical space.
 
 ---
 
@@ -139,12 +141,6 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
   - Organize fields into clean tabs (*Generale*, *Motore di Ricerca*, *Icona & Stile*).
   - Modern glassmorphic dark design, clear field helper tooltips, focus rings, and live visual previews.
   - Smooth entrance/exit animations and responsive mobile bottom-sheet adaptation.
-
-### task 12
-- [] qunado faccio toggle degli alias il colore accento è ancora un verde smeraldo sbiatido e non quello scelto nelle impostazioni
-
-### task 14
-- [] densità colonne nelle impostaizone non fa molto non si vedono differenze risovli, inoltre anceh il testo voglio che ci sia possiible sceglierr edimensione, ppicoclo medio grande ad esempio, in inglese ovviamente
 
 ---
 

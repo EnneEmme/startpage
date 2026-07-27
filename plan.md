@@ -60,7 +60,7 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [ ] **Task 5**: Ultra-Minimalist Search Overlay.
   - [x] **Task 6**: Top Spacing Reduction & JumpBar Horizontal Mask.
   - [x] **Task 7**: Mobile Touch & Smartphone UX Refinements (Unified Non-Overlapping Header & Bottom Sheets).
-  - [ ] **Task 8**: Dynamic Responsive Column Grid Geometry & Side Padding.
+  - [x] **Task 8**: Dynamic Responsive Column Grid Geometry, Extended Link Capacity (+1-2 links), & Balanced Side Padding.
   - [ ] **Task 9**: Custom JavaScript Script & Bookmarklet Links Support.
   - [ ] **Task 10**: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching.
   - [ ] **Task 11**: Refined Drag & Drop Link Relocation & Context Menu Category Move.
