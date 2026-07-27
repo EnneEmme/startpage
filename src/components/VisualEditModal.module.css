@@ -2,8 +2,8 @@
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: var(--bg-modal-overlay, rgba(0, 0, 0, 0.75));
-  backdrop-filter: blur(14px);
+  background: var(--bg-modal-overlay, rgba(0, 0, 0, 0.7));
+  backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,10 +13,10 @@
 .modalContainer {
   width: 100%;
   max-width: 560px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color-hover);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  background: rgba(18, 20, 28, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -27,9 +27,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.1rem 1.4rem;
-  border-bottom: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.02);
+  padding: 1.2rem 1.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .headerTitleGroup {
@@ -42,17 +41,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-md);
-  background: var(--accent-glow, rgba(226, 232, 240, 0.12));
-  border: 1px solid var(--border-color-hover);
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--accent-highlight);
 }
 
 .modalTitle {
   font-family: var(--font-heading);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.2;
@@ -69,7 +68,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   color: var(--text-muted);
   transition: all var(--transition-fast);
 }
@@ -80,7 +79,7 @@
 }
 
 .formContent {
-  padding: 1.4rem;
+  padding: 1.5rem 1.6rem;
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
@@ -90,14 +89,13 @@
 
 /* Live Preview Box */
 .previewBox {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--border-color-hover);
-  border-radius: var(--radius-lg);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   padding: 0.75rem 0.85rem;
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .previewHeader {
@@ -117,10 +115,10 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.45rem 0.6rem;
-  background: var(--bg-card-hover);
-  border: 1px solid var(--border-color-hover);
-  border-radius: var(--radius-md);
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
 }
 
 .previewIconContainer {
@@ -145,20 +143,20 @@
 .previewAliasBadge {
   font-family: var(--font-mono);
   font-size: var(--font-size-badge, 0.68rem);
-  color: var(--accent-highlight);
-  background: var(--accent-glow, rgba(226, 232, 240, 0.18));
-  border: 1px solid var(--border-color-hover);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 0.1rem 0.35rem;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
 }
 
 /* Mode Segmented Tab Switcher */
 .segmentedTabsWrapper {
   display: flex;
   align-items: center;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
   padding: 0.2rem;
   gap: 0.2rem;
 }
@@ -173,7 +171,7 @@
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-secondary);
-  border-radius: var(--radius-sm);
+  border-radius: 10px;
   background: transparent;
   transition: all var(--transition-fast);
   white-space: nowrap;
@@ -184,10 +182,10 @@
 }
 
 .activeTabSegment {
-  background: var(--accent-glow, rgba(226, 232, 240, 0.18));
+  background: rgba(255, 255, 255, 0.08);
   color: var(--accent-highlight);
   font-weight: 600;
-  border: 1px solid var(--border-color-hover);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .fieldGroup {
@@ -211,15 +209,15 @@
   color: var(--accent-highlight);
   background: rgba(255, 255, 255, 0.08);
   padding: 0.1rem 0.3rem;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .input {
   width: 100%;
   padding: 0.6rem 0.85rem;
-  border-radius: var(--radius-md);
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
   font-size: 0.9rem;
   transition: all var(--transition-fast);
@@ -243,9 +241,9 @@
   justify-content: space-between;
   width: 100%;
   padding: 0.6rem 0.85rem;
-  border-radius: var(--radius-md);
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
   font-size: 0.9rem;
   cursor: pointer;
@@ -254,8 +252,8 @@
 }
 
 .customSelectTrigger:hover {
-  border-color: var(--border-color-hover);
-  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .selectedCategoryText {
@@ -279,10 +277,10 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color-hover);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  background: rgba(22, 25, 35, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
   padding: 0.35rem;
   display: flex;
   flex-direction: column;
@@ -298,18 +296,18 @@
   padding: 0.5rem 0.75rem;
   font-size: 0.86rem;
   color: var(--text-primary);
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .dropdownOption:hover {
-  background: var(--bg-card-hover);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--accent-primary);
 }
 
 .dropdownOption.activeOption {
-  background: var(--accent-glow, rgba(226, 232, 240, 0.12));
+  background: rgba(255, 255, 255, 0.08);
   color: var(--accent-highlight);
   font-weight: 600;
 }
@@ -319,7 +317,7 @@
 }
 
 .createOption {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   margin-top: 0.2rem;
   padding-top: 0.6rem;
   color: var(--accent-primary);
@@ -336,7 +334,7 @@
 
 .confirmCatBtn {
   padding: 0.6rem 0.85rem;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   background: var(--accent-primary);
   color: #000;
   font-weight: 600;
@@ -347,7 +345,7 @@
 
 .cancelCatBtn {
   padding: 0.6rem 0.85rem;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-secondary);
   font-size: 0.84rem;
@@ -373,17 +371,17 @@
   justify-content: center;
   width: 42px;
   height: 42px;
-  border-radius: var(--radius-md);
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color-hover);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
 }
 
 .iconPickerToggleBtn {
   padding: 0.6rem 0.85rem;
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-secondary);
   font-size: 0.84rem;
   white-space: nowrap;
@@ -392,9 +390,8 @@
 }
 
 .iconPickerToggleBtn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
-  border-color: var(--border-color-hover);
 }
 
 .iconDropdownMenu {
@@ -403,10 +400,10 @@
   left: 0;
   right: 0;
   z-index: 150;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color-hover);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-xl);
+  background: rgba(22, 25, 35, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
@@ -422,9 +419,9 @@
 .iconSearchInput {
   width: 100%;
   padding: 0.4rem 0.65rem;
-  border-radius: var(--radius-sm);
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
   font-size: 0.82rem;
 }
@@ -445,7 +442,7 @@
   justify-content: center;
   gap: 0.2rem;
   padding: 0.4rem 0.2rem;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid transparent;
   color: var(--text-secondary);
@@ -455,14 +452,13 @@
 }
 
 .iconDropdownItem:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
-  border-color: var(--border-color-hover);
 }
 
 .iconDropdownItem.selectedIconItem {
-  background: var(--accent-glow, rgba(226, 232, 240, 0.15));
-  border-color: var(--accent-highlight);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
   color: var(--accent-highlight);
 }
 
@@ -484,7 +480,7 @@
 
 .cancelBtn {
   padding: 0.6rem 1.1rem;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   background: transparent;
   color: var(--text-secondary);
   font-size: 0.88rem;
@@ -498,7 +494,7 @@
 
 .saveBtn {
   padding: 0.6rem 1.25rem;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   background: var(--accent-primary);
   color: #000;
   font-weight: 600;
@@ -520,7 +516,7 @@
 
   .modalContainer {
     max-width: 100%;
-    border-radius: 24px 24px 0 0;
+    border-radius: 28px 28px 0 0;
     max-height: 88vh;
   }
 

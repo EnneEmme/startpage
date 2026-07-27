@@ -36,14 +36,6 @@ export const BASE_CHEATSHEET_SHORTCUTS: ShortcutGroup[] = [
       { keys: ['w', '<query>'], description: 'Search Wikipedia' },
       { keys: ['ddg', '<query>'], description: 'Search DuckDuckGo' }
     ]
-  },
-  {
-    category: 'Shortcuts & System',
-    items: [
-      { keys: ['?'], description: 'Toggle keyboard shortcuts cheatsheet' },
-      { keys: ['F1'], description: 'Open cheatsheet modal' },
-      { keys: ['Cmd', '/'], description: 'Toggle cheatsheet modal' }
-    ]
   }
 ];
 
