@@ -236,8 +236,7 @@
 .linkCardDragWrapper {
   width: 100%;
   border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease;
   cursor: grab;
   position: relative;
   user-select: none;
@@ -248,41 +247,11 @@
   cursor: grabbing;
 }
 
-/* Stable Insertion Line Indicator - ZERO Margin/Layout Shift (No Thrashing) */
-.linkCardDragWrapper.dragOverAbove {
-  background: var(--accent-glow, rgba(226, 232, 240, 0.1));
-  border-radius: var(--radius-md);
-}
-
-.linkCardDragWrapper.dragOverAbove::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent-primary, #e2e8f0);
-  border-radius: 2px;
-  box-shadow: 0 0 8px var(--accent-primary, #e2e8f0);
-  z-index: 10;
-}
-
+/* Ultra-Clean Minimalist Insertion Highlight - No intrusive top/bottom lines or borders */
+.linkCardDragWrapper.dragOverAbove,
 .linkCardDragWrapper.dragOverBelow {
-  background: var(--accent-glow, rgba(226, 232, 240, 0.1));
+  background: var(--bg-card-hover, rgba(26, 30, 42, 0.65));
   border-radius: var(--radius-md);
-}
-
-.linkCardDragWrapper.dragOverBelow::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent-primary, #e2e8f0);
-  border-radius: 2px;
-  box-shadow: 0 0 8px var(--accent-primary, #e2e8f0);
-  z-index: 10;
 }
 
 /* Fluid Drop Release Spring Keyframe Animation */
