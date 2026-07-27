@@ -33,12 +33,21 @@ export const SearchModal = ({
     if (isOpen) {
       setQuery(initialQuery);
       setSelectedIndex(0);
-      setTimeout(() => {
-        inputRef.current?.focus();
+
+      // Synchronous focus to trigger mobile OS virtual keyboard immediately on tap
+      if (inputRef.current) {
+        inputRef.current.focus();
         if (initialQuery) {
-          inputRef.current?.setSelectionRange(initialQuery.length, initialQuery.length);
+          inputRef.current.setSelectionRange(initialQuery.length, initialQuery.length);
         }
-      }, 50);
+      }
+
+      // Secondary requestAnimationFrame for smooth modal animation entry focus
+      requestAnimationFrame(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      });
     }
   }, [isOpen, initialQuery]);
 
@@ -119,6 +128,7 @@ export const SearchModal = ({
           <input
             ref={inputRef}
             type="text"
+            autoFocus={true}
             class={styles.searchInput}
             placeholder="Type link name, alias, or command (e.g. g meteo)..."
             value={query}
