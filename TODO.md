@@ -18,8 +18,9 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 9. **Custom JavaScript Script & Bookmarklet Link Support**.
 10. **Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching**.
 11. **Refined Drag & Drop Link Relocation & Context Menu Category Move**.
-12. **UI & UX Overhaul for Edit/Creation (`VisualEditModal`) and Settings (`SettingsModal`) Modals**.
+12. **Alias Badge Theme Accent Color Sync & Dynamic UI Refinement**.
 13. **Advanced Dynamic Link & Date Rule Visual Editor (Unimib Orari & Esami)**.
+14. **Grid Density Fix & Font Size Selector (Small, Medium, Large) in Settings**.
 
 ---
 
@@ -138,11 +139,9 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ---
 
-### 🔹 Task 12: UI & UX Overhaul for Edit/Creation and Settings Modals
-- [ ] **Tabbed Interface & Polished Aesthetics (`VisualEditModal.tsx` & `SettingsModal.tsx`)**:
-  - Organize fields into clean tabs (*Generale*, *Motore di Ricerca*, *Icona & Stile*).
-  - Modern glassmorphic dark design, clear field helper tooltips, focus rings, and live visual previews.
-  - Smooth entrance/exit animations and responsive mobile bottom-sheet adaptation.
+### 🔹 Task 12: Alias Badge Theme Accent Color Sync & Dynamic UI Refinement
+- [ ] **Theme Accent Color Sync for Alias Badges**:
+  - Update `.aliasBadge` styling in `ColumnGrid.module.css` so when aliases are toggled (`Alt` / `Shift+Space`), badge background/border/text dynamically uses the active Theme Accent Color (`var(--accent-highlight)`) instead of hardcoded emerald green.
 
 ---
 
@@ -150,6 +149,14 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 - [ ] **Dedicated Dynamic URL Rule Selector in `VisualEditModal.tsx`**:
   - Add an intuitive dropdown editor for configuring dynamic course/exam schedule rules (`unimib_orari`, `unimib_esami`) and date tokens (`{{DD-MM-YYYY}}`).
   - Ensure seamless pre-filling, validation bypass, and rule editing for custom dynamic links.
+
+---
+
+### 🔹 Task 14: Grid Density Fix & Font Size Selector in Settings Modal (`SettingsModal.tsx`)
+- [ ] **Grid Density Visibility**:
+  - Ensure column grid spacing & density options (Compact, Normal, Spaced) visibly adjust grid gap and link row height when selected in settings.
+- [ ] **Font Size Selector**:
+  - Add a Font Size setting selector in `SettingsModal.tsx` allowing users to choose text size (*Small*, *Medium*, *Large*).
 
 ---
 

@@ -64,5 +64,6 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [ ] **Task 10**: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching.
   - [ ] **Task 11**: Refined Drag & Drop Link Relocation & Context Menu Category Move.
   - [ ] **Task 5**: Ultra-Minimalist Search Overlay.
-  - [ ] **Task 12**: UI & UX Overhaul for Edit/Creation and Settings Modals.
+  - [ ] **Task 12**: Alias Badge Theme Accent Color Sync & Dynamic UI Refinement.
   - [ ] **Task 13**: Advanced Dynamic Link & Date Rule Visual Editor (Unimib Orari & Esami).
+  - [ ] **Task 14**: Grid Density Fix & Font Size Selector (Small, Medium, Large) in Settings.
