@@ -120,17 +120,18 @@
 
 .columnTitle {
   font-family: var(--font-heading);
-  font-size: 1.05rem;
+  font-size: var(--font-size-header, 1.05rem);
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.01em;
   user-select: none;
   -webkit-user-select: none;
+  transition: font-size 0.2s ease;
 }
 
 .inlineRenameInput {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: var(--font-size-header, 1rem);
   font-weight: 600;
   color: var(--accent-highlight);
   background: rgba(0, 0, 0, 0.4);
@@ -343,17 +344,18 @@
 }
 
 .linkTitle {
-  font-size: 0.88rem;
+  font-size: var(--font-size-link, 0.88rem);
   font-weight: 400;
   color: var(--text-primary);
   user-select: none;
   -webkit-user-select: none;
+  transition: font-size 0.2s ease;
 }
 
 /* Alias Badges - Dynamic Accent Color Sync */
 .aliasBadge {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--font-size-badge, 0.68rem);
   color: var(--accent-highlight);
   background: var(--accent-glow, rgba(226, 232, 240, 0.18));
   border: 1px solid var(--border-color-hover, rgba(226, 232, 240, 0.35));
@@ -363,7 +365,7 @@
   -webkit-user-select: none;
   display: none;
   opacity: 0;
-  transition: opacity 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: opacity 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, font-size 0.2s ease;
 }
 
 .aliasBadge.visibleAliasBadge {

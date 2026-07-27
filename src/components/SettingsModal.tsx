@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
-import { X, Check, Sliders, Palette, LayoutGrid, Search, Download } from 'lucide-preact';
+import { X, Check, Sliders, Palette, LayoutGrid, Type, Search, Download } from 'lucide-preact';
 import { themeEngine, ACCENT_COLORS, ThemeConfig } from '../engine/themeEngine';
 import styles from './SettingsModal.module.css';
 
@@ -29,6 +29,12 @@ export const SettingsModal = ({
 
   const handleSelectDensity = (density: 'compact' | 'normal' | 'spaced') => {
     themeEngine.setGridDensity(density);
+    setConfig(themeEngine.getConfig());
+    if (onConfigChanged) onConfigChanged();
+  };
+
+  const handleSelectFontSize = (size: 'small' | 'medium' | 'large') => {
+    themeEngine.setFontSize(size);
     setConfig(themeEngine.getConfig());
     if (onConfigChanged) onConfigChanged();
   };
@@ -105,6 +111,37 @@ export const SettingsModal = ({
                 onClick={() => handleSelectDensity('spaced')}
               >
                 Ampia
+              </button>
+            </div>
+          </div>
+
+          {/* Font Size Section */}
+          <div class={styles.sectionGroup}>
+            <label class={styles.sectionLabel}>
+              <Type size={15} class={styles.sectionIcon} />
+              Dimensione Testo
+            </label>
+            <div class={styles.segmentedControl}>
+              <button
+                type="button"
+                class={`${styles.segmentBtn} ${config.fontSize === 'small' ? styles.activeSegment : ''}`}
+                onClick={() => handleSelectFontSize('small')}
+              >
+                Piccolo (Small)
+              </button>
+              <button
+                type="button"
+                class={`${styles.segmentBtn} ${(config.fontSize === 'medium' || !config.fontSize) ? styles.activeSegment : ''}`}
+                onClick={() => handleSelectFontSize('medium')}
+              >
+                Medio (Medium)
+              </button>
+              <button
+                type="button"
+                class={`${styles.segmentBtn} ${config.fontSize === 'large' ? styles.activeSegment : ''}`}
+                onClick={() => handleSelectFontSize('large')}
+              >
+                Grande (Large)
               </button>
             </div>
           </div>

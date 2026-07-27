@@ -121,6 +121,14 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ---
 
+### 🔹 Task 14: Grid Density Fix & Font Size Selector in Settings Modal (`SettingsModal.tsx`)
+- [x] **Grid Density Visibility & New Scale**:
+  - Updated grid density scale: `normal` (185px) is now default, `spaced` (230px) is wide, and created a new ultra-compact `compact` (155px) density.
+- [x] **Font Size Selector**:
+  - Added a Font Size setting selector in `SettingsModal.tsx` allowing users to choose text size (*Small*, *Medium*, *Large* / *Piccolo*, *Medio*, *Grande*).
+
+---
+
 ### 🔹 Task 10: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching
 - [ ] **Improved Fuzzy Algorithm & Relevance Scoring**:
   - Fine-tune Fuse.js weights, distance metrics, and prefix matching for instant pinpoint search.
@@ -149,14 +157,6 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 - [ ] **Dedicated Dynamic URL Rule Selector in `VisualEditModal.tsx`**:
   - Add an intuitive dropdown editor for configuring dynamic course/exam schedule rules (`unimib_orari`, `unimib_esami`) and date tokens (`{{DD-MM-YYYY}}`).
   - Ensure seamless pre-filling, validation bypass, and rule editing for custom dynamic links.
-
----
-
-### 🔹 Task 14: Grid Density Fix & Font Size Selector in Settings Modal (`SettingsModal.tsx`)
-- [ ] **Grid Density Visibility**:
-  - Ensure column grid spacing & density options (Compact, Normal, Spaced) visibly adjust grid gap and link row height when selected in settings.
-- [ ] **Font Size Selector**:
-  - Add a Font Size setting selector in `SettingsModal.tsx` allowing users to choose text size (*Small*, *Medium*, *Large*).
 
 ---
 

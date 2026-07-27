@@ -6,6 +6,7 @@
 export interface ThemeConfig {
   accentColorId: string;
   gridDensity: 'compact' | 'normal' | 'spaced';
+  fontSize: 'small' | 'medium' | 'large';
   defaultSearchEngine: 'g' | 'ddg' | 'b' | 'yt' | 'gh';
 }
 
@@ -73,7 +74,8 @@ const STORAGE_KEY = 'startpage_theme_settings';
 
 const DEFAULT_THEME_CONFIG: ThemeConfig = {
   accentColorId: 'silver', // Default accent is silver/platinum gray
-  gridDensity: 'normal',   // Default density is balanced 185px (previously compact)
+  gridDensity: 'normal',   // Default density is balanced 185px
+  fontSize: 'medium',      // Default font size is medium
   defaultSearchEngine: 'g'
 };
 
@@ -99,6 +101,11 @@ export class ThemeEngine {
 
   public setGridDensity(density: 'compact' | 'normal' | 'spaced'): void {
     this.config.gridDensity = density;
+    this.saveAndApply();
+  }
+
+  public setFontSize(size: 'small' | 'medium' | 'large'): void {
+    this.config.fontSize = size;
     this.saveAndApply();
   }
 
@@ -141,6 +148,29 @@ export class ThemeEngine {
     root.style.setProperty('--grid-col-min-width', minColWidth);
     root.style.setProperty('--grid-gap', gridGap);
     root.style.setProperty('--link-row-padding', linkPadding);
+
+    // Apply Font Size scaling
+    let baseSize = '1rem';
+    let linkSize = '0.88rem';
+    let headerSize = '1.05rem';
+    let badgeSize = '0.68rem';
+
+    if (config.fontSize === 'small') {
+      baseSize = '0.92rem';
+      linkSize = '0.80rem';
+      headerSize = '0.95rem';
+      badgeSize = '0.62rem';
+    } else if (config.fontSize === 'large') {
+      baseSize = '1.1rem';
+      linkSize = '0.98rem';
+      headerSize = '1.18rem';
+      badgeSize = '0.76rem';
+    }
+
+    root.style.setProperty('--font-size-base', baseSize);
+    root.style.setProperty('--font-size-link', linkSize);
+    root.style.setProperty('--font-size-header', headerSize);
+    root.style.setProperty('--font-size-badge', badgeSize);
   }
 
   private saveAndApply(): void {
