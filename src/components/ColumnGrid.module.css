@@ -1,9 +1,9 @@
 .gridContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 210px), 1fr));
-  gap: 2.2rem 1.6rem;
+  grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 215px), 1fr));
+  gap: 2.4rem 1.75rem;
   width: 100%;
-  padding: 0.5rem 2.25rem 3.5rem;
+  padding: 0.5rem 2.85rem 3.5rem;
 }
 
 /* Mobile Screens (< 600px): 1-2 columns with side padding */
@@ -11,7 +11,7 @@
   .gridContainer {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1.5rem 1rem;
-    padding: 0.5rem 0.85rem 3.5rem;
+    padding: 0.5rem 1rem 3.5rem;
   }
 
   .linksList {
@@ -22,9 +22,9 @@
 /* Medium Screens / Tablets (600px - 1024px): 2-4 columns */
 @media (min-width: 600px) and (max-width: 1024px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 190px), 1fr));
-    gap: 1.75rem 1.25rem;
-    padding: 0.5rem 1.5rem 3.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 195px), 1fr));
+    gap: 1.85rem 1.35rem;
+    padding: 0.5rem 1.85rem 3.5rem;
   }
 
   .linksList {
@@ -35,25 +35,25 @@
 /* Laptop / Standard Desktop (1025px - 1599px): 4-5 columns */
 @media (min-width: 1025px) and (max-width: 1599px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 210px), 1fr));
-    gap: 2rem 1.5rem;
-    padding: 0.5rem 2.25rem 3.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 215px), 1fr));
+    gap: 2.2rem 1.6rem;
+    padding: 0.5rem 2.85rem 3.5rem;
   }
 }
 
 /* Large Monitors & Ultrawide (> 1600px): 5-8 columns */
 @media (min-width: 1600px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 220px), 1fr));
-    gap: 2.5rem 1.8rem;
-    padding: 0.5rem 3rem 4rem;
+    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 225px), 1fr));
+    gap: 2.6rem 2rem;
+    padding: 0.5rem 3.5rem 4rem;
   }
 }
 
 .columnCard {
   background: transparent;
   border: 1px dashed transparent;
-  padding: 0.4rem;
+  padding: 0.65rem 0.6rem;
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-lg);
@@ -96,8 +96,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.85rem;
-  padding-bottom: 0.4rem;
+  margin-bottom: 0.95rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
   cursor: grab;
@@ -127,7 +127,7 @@
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid var(--accent-highlight);
   border-radius: var(--radius-sm);
-  padding: 0.15rem 0.4rem;
+  padding: 0.2rem 0.45rem;
   outline: none;
   width: 100%;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
@@ -139,7 +139,7 @@
 .linksList {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.3rem;
   max-height: calc(100vh - 160px);
   overflow-y: auto;
   scrollbar-width: none; /* Hide scrollbar Firefox */
@@ -295,8 +295,8 @@
 .linkRow {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.38rem 0.5rem;
+  gap: 0.65rem;
+  padding: 0.48rem 0.65rem;
   border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text-primary);
