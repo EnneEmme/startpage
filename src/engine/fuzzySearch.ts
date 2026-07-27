@@ -72,17 +72,28 @@ export class FuzzySearchEngine {
       // Check user-created dynamic search engine links
       const matchedCustomLink = this.links.find(link => {
         const hasTemplate = Boolean(link.searchTemplate || link.searchPath);
-        const matchesAlias = link.aliases.some(a => a.toLowerCase() === prefix);
+        const matchesAlias = link.aliases && link.aliases.some(a => a.toLowerCase() === prefix);
         return hasTemplate && matchesAlias;
       });
 
       if (matchedCustomLink) {
-        const template = matchedCustomLink.searchTemplate || matchedCustomLink.searchPath || '';
-        let fullTemplate = template;
-        if (!template.startsWith('http')) {
-          fullTemplate = matchedCustomLink.url.replace(/\/$/, '') + (template.startsWith('/') ? template : '/' + template);
+        const pathOrUrl = (matchedCustomLink.searchTemplate || matchedCustomLink.searchPath || '').trim();
+        let fullTemplate = pathOrUrl;
+
+        // If user provided relative path/param (e.g. "/results?search_query={q}" or "?q={q}")
+        if (!pathOrUrl.startsWith('http://') && !pathOrUrl.startsWith('https://')) {
+          const baseUrl = matchedCustomLink.url.replace(/\/$/, '');
+          if (pathOrUrl.startsWith('?') || pathOrUrl.startsWith('&')) {
+            fullTemplate = baseUrl + pathOrUrl;
+          } else {
+            const cleanPath = pathOrUrl.startsWith('/') ? pathOrUrl : '/' + pathOrUrl;
+            fullTemplate = baseUrl + cleanPath;
+          }
         }
-        const targetTemplate = fullTemplate.includes('{q}') ? fullTemplate : fullTemplate.replace('{}', '{q}');
+
+        const targetTemplate = fullTemplate.includes('{q}')
+          ? fullTemplate
+          : fullTemplate.replace('{}', '{q}');
 
         return {
           isPrefixCommand: true,

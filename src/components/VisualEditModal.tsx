@@ -215,11 +215,11 @@ export const VisualEditModal = ({
 
           {/* URL */}
           <div class={styles.fieldGroup}>
-            <label class={styles.label}>URL</label>
+            <label class={styles.label}>URL (Base Domain / Site)</label>
             <input
               type="url"
               class={styles.input}
-              placeholder="https://example.com"
+              placeholder="e.g. https://www.youtube.com"
               value={url}
               onInput={e => setUrl((e.target as HTMLInputElement).value)}
               required
@@ -321,16 +321,16 @@ export const VisualEditModal = ({
 
             {isSearchEngineMode && (
               <div class={styles.searchTemplateSubGroup}>
-                <label class={styles.label}>Search Query URL Template (use {"{q}"} for query)</label>
+                <label class={styles.label}>Search Query Path / Parameters (after URL)</label>
                 <input
                   type="text"
                   class={styles.input}
-                  placeholder="e.g. https://youtube.com/results?search_query={q}"
+                  placeholder="e.g. /results?search_query={q}  or  /search?q={q}"
                   value={searchTemplate}
                   onInput={e => setSearchTemplate((e.target as HTMLInputElement).value)}
                 />
                 <span class={styles.helperText}>
-                  Type alias + query in search bar (e.g. <code>{aliases.split(',')[0] || 'yt'} lo-fi</code>) to search directly!
+                  Inserisci solo il percorso/parametro dopo il link (es. <code>/results?search_query={"{"}q{"}"}</code>) oppure l'URL completo.
                 </span>
               </div>
             )}
