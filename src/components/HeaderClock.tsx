@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { Search, HelpCircle, Edit3, Download } from 'lucide-preact';
+import { Search, CircleQuestionMark, PenLine, Download, Keyboard } from 'lucide-preact';
 import styles from './HeaderClock.module.css';
 
 interface HeaderClockProps {
@@ -7,16 +7,30 @@ interface HeaderClockProps {
   onOpenCheatsheet: () => void;
   onOpenVisualEdit: () => void;
   onOpenImportExport: () => void;
+  showShortcuts?: boolean;
+  onToggleShortcuts?: () => void;
 }
 
 export const HeaderClock = ({
   onOpenSearch,
   onOpenCheatsheet,
   onOpenVisualEdit,
-  onOpenImportExport
+  onOpenImportExport,
+  showShortcuts = false,
+  onToggleShortcuts
 }: HeaderClockProps) => {
   return (
     <div class={styles.topRightTools}>
+      {/* Toggle Aliases & Category Shortcut Numbers (Alt or click) */}
+      <button
+        class={`${styles.iconBtn} ${showShortcuts ? styles.activeIconBtn : ''}`}
+        onClick={onToggleShortcuts}
+        title="Toggle Aliases & Number Shortcuts (Press Alt or Shift+Space)"
+      >
+        <Keyboard size={17} />
+      </button>
+
+      {/* Fuzzy Search Button */}
       <button
         class={styles.iconBtn}
         onClick={onOpenSearch}
@@ -25,22 +39,25 @@ export const HeaderClock = ({
         <Search size={17} />
       </button>
 
+      {/* Shortcuts Cheatsheet Modal */}
       <button
         class={styles.iconBtn}
         onClick={onOpenCheatsheet}
         title="Shortcuts Cheatsheet (? or F1)"
       >
-        <HelpCircle size={17} />
+        <CircleQuestionMark size={17} />
       </button>
 
+      {/* Visual Edit Button */}
       <button
         class={styles.iconBtn}
         onClick={onOpenVisualEdit}
         title="Add or Edit Links"
       >
-        <Edit3 size={17} />
+        <PenLine size={17} />
       </button>
 
+      {/* Backup / Export Config Button */}
       <button
         class={styles.iconBtn}
         onClick={onOpenImportExport}

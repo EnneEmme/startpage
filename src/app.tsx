@@ -54,8 +54,17 @@ export const App = () => {
     if (catName) {
       setHighlightedCategory(catName);
       setTimeout(() => setHighlightedCategory(null), 1400);
+
+      const columnId = `column-${catName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+      const targetEl = document.getElementById(columnId);
+      if (targetEl) {
+        const yOffset = -80;
+        const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
     } else {
       setHighlightedCategory(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -81,8 +90,8 @@ export const App = () => {
         setSearchOpen(false);
         setCheatsheetOpen(prev => !prev);
       },
-      onToggleModifierView: (active: boolean) => {
-        setShowShortcuts(active);
+      onToggleShortcutsView: () => {
+        setShowShortcuts(prev => !prev);
       },
       onSelectCategoryIndex: (index: number) => {
         const currentCats = dataStore.getCategories();
@@ -116,6 +125,8 @@ export const App = () => {
           setVisualEditOpen(true);
         }}
         onOpenImportExport={() => setImportExportOpen(true)}
+        showShortcuts={showShortcuts}
+        onToggleShortcuts={() => setShowShortcuts(prev => !prev)}
       />
 
       <JumpBar
