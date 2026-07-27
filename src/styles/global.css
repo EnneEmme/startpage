@@ -66,13 +66,13 @@ textarea,
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* Tighter Layout Container - Reduced Top Padding */
+/* Tighter Layout Container with Harmonized Outer Side Padding */
 #app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.75rem 1.5rem 4.5rem;
+  padding: 0.75rem 1.75rem 4.5rem;
   width: 100%;
   max-width: 1840px;
   margin: 0 auto;
@@ -97,7 +97,7 @@ textarea,
 
 @media (max-width: 1023px) {
   #app {
-    padding: 0.5rem 0.85rem 5.5rem;
+    padding: 0.5rem 1rem 5.5rem;
   }
 
   .unifiedHeader {
