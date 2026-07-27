@@ -171,12 +171,12 @@ export const ColumnGrid = ({
       dragGhost.style.top = '-9999px';
       dragGhost.style.padding = '6px 14px';
       dragGhost.style.background = '#18181b';
-      dragGhost.style.border = '1px solid #10b981';
+      dragGhost.style.border = '1px solid var(--accent-primary, #e2e8f0)';
       dragGhost.style.borderRadius = '8px';
       dragGhost.style.color = '#f4f4f5';
       dragGhost.style.fontSize = '13px';
       dragGhost.style.fontWeight = '500';
-      dragGhost.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(16,185,129,0.3)';
+      dragGhost.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5), 0 0 15px var(--accent-glow, rgba(226,232,240,0.3))';
       dragGhost.innerText = `Moving ${link.title}`;
       document.body.appendChild(dragGhost);
       e.dataTransfer.setDragImage(dragGhost, 20, 20);

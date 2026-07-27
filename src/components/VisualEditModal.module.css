@@ -130,7 +130,7 @@
 
 .input:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 2px var(--accent-glow, rgba(226, 232, 240, 0.2));
 }
 
 /* Custom Category Select Dropdown */
@@ -211,7 +211,7 @@
 }
 
 .dropdownOption.activeOption {
-  background: rgba(16, 185, 129, 0.12);
+  background: var(--accent-glow, rgba(226, 232, 240, 0.12));
   color: var(--accent-highlight);
   font-weight: 600;
 }
@@ -363,7 +363,7 @@
 }
 
 .iconDropdownItem.selectedIconItem {
-  background: rgba(16, 185, 129, 0.15);
+  background: var(--accent-glow, rgba(226, 232, 240, 0.15));
   border-color: var(--accent-highlight);
   color: var(--accent-highlight);
 }

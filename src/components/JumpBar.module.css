@@ -56,7 +56,7 @@
 }
 
 .tabBtn.active {
-  background: rgba(16, 185, 129, 0.18);
+  background: var(--accent-glow, rgba(226, 232, 240, 0.18));
   color: var(--accent-highlight);
   font-weight: 600;
 }
@@ -74,7 +74,7 @@
   font-family: var(--font-mono);
   font-size: 0.65rem;
   font-weight: 700;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 8px var(--border-color-hover, rgba(226, 232, 240, 0.4));
   animation: badgePop 0.15s ease-out forwards;
 }
 

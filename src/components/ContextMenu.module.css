@@ -96,5 +96,5 @@
 .submenuItem.active {
   font-weight: 600;
   color: var(--accent-highlight);
-  background: rgba(16, 185, 129, 0.1);
+  background: var(--accent-glow, rgba(226, 232, 240, 0.12));
 }

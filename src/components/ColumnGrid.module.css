@@ -73,12 +73,12 @@
 }
 
 .columnCard.dragOver {
-  border-color: rgba(16, 185, 129, 0.4);
-  background: rgba(16, 185, 129, 0.04);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+  border-color: var(--border-color-hover, rgba(226, 232, 240, 0.4));
+  background: var(--accent-glow, rgba(226, 232, 240, 0.08));
+  box-shadow: 0 0 20px var(--accent-glow, rgba(226, 232, 240, 0.15));
 }
 
-/* Highlight Pulse Animation when jumping to section */
+/* Highlight Pulse Animation when jumping to section - Dynamic Theme Accent Color */
 @keyframes highlightPulseKeyframe {
   0% {
     background: rgba(255, 255, 255, 0.12);
@@ -86,8 +86,8 @@
     transform: scale(1.02);
   }
   50% {
-    background: rgba(16, 185, 129, 0.12);
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4), 0 0 25px rgba(16, 185, 129, 0.2);
+    background: var(--accent-glow, rgba(226, 232, 240, 0.18));
+    box-shadow: 0 0 0 2px var(--border-color-hover, rgba(226, 232, 240, 0.5)), 0 0 25px var(--accent-glow, rgba(226, 232, 240, 0.25));
     transform: scale(1.02);
   }
   100% {
@@ -140,7 +140,7 @@
   padding: 0.15rem 0.4rem;
   outline: none;
   width: 100%;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 10px var(--accent-glow, rgba(226, 232, 240, 0.25));
   user-select: text !important;
   -webkit-user-select: text !important;
 }
@@ -198,7 +198,7 @@
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--accent-highlight);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 15px var(--accent-glow, rgba(226, 232, 240, 0.2));
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -248,10 +248,10 @@
   cursor: grabbing;
 }
 
-/* Glowing Insertion Slot Lines with Smooth Item Gap Opening */
+/* Glowing Insertion Slot Lines with Dynamic Theme Accent Color */
 .linkCardDragWrapper.dragOverAbove {
   margin-top: 8px;
-  background: rgba(16, 185, 129, 0.08);
+  background: var(--accent-glow, rgba(226, 232, 240, 0.08));
 }
 
 .linkCardDragWrapper.dragOverAbove::before {
@@ -261,16 +261,16 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: #10b981;
+  background: var(--accent-primary, #e2e8f0);
   border-radius: 3px;
-  box-shadow: 0 0 10px #10b981, 0 0 4px #10b981;
+  box-shadow: 0 0 10px var(--accent-primary, #e2e8f0), 0 0 4px var(--accent-primary, #e2e8f0);
   z-index: 10;
   animation: pulseGlow 1s infinite alternate;
 }
 
 .linkCardDragWrapper.dragOverBelow {
   margin-bottom: 8px;
-  background: rgba(16, 185, 129, 0.08);
+  background: var(--accent-glow, rgba(226, 232, 240, 0.08));
 }
 
 .linkCardDragWrapper.dragOverBelow::after {
@@ -280,9 +280,9 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: #10b981;
+  background: var(--accent-primary, #e2e8f0);
   border-radius: 3px;
-  box-shadow: 0 0 10px #10b981, 0 0 4px #10b981;
+  box-shadow: 0 0 10px var(--accent-primary, #e2e8f0), 0 0 4px var(--accent-primary, #e2e8f0);
   z-index: 10;
   animation: pulseGlow 1s infinite alternate;
 }
@@ -290,11 +290,11 @@
 @keyframes pulseGlow {
   0% {
     opacity: 0.8;
-    box-shadow: 0 0 6px #10b981;
+    box-shadow: 0 0 6px var(--accent-primary, #e2e8f0);
   }
   100% {
     opacity: 1;
-    box-shadow: 0 0 14px #10b981, 0 0 6px #10b981;
+    box-shadow: 0 0 14px var(--accent-primary, #e2e8f0), 0 0 6px var(--accent-primary, #e2e8f0);
   }
 }
 

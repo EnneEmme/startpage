@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Deep OLED Obsidian Dark Premium Design System Tokens (No Blue)
+   Deep OLED Obsidian Dark Premium Design System Tokens (Dynamic Theme Engine)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
@@ -15,15 +15,15 @@
 
   /* Subtle Seamless Contrast Borders */
   --border-color: rgba(255, 255, 255, 0.04);
-  --border-color-hover: rgba(255, 255, 255, 0.12);
+  --border-color-hover: rgba(226, 232, 240, 0.4);
   --border-focus: rgba(255, 255, 255, 0.3);
 
-  /* Sleek Platinum / Warm Emerald Accents (No Blue) */
+  /* Sleek Platinum Accents (Overridden dynamically by ThemeEngine) */
   --accent-primary: #e2e8f0;
   --accent-primary-hover: #ffffff;
-  --accent-glow: rgba(255, 255, 255, 0.12);
+  --accent-glow: rgba(226, 232, 240, 0.18);
   --accent-gradient: linear-gradient(135deg, #334155, #1e293b);
-  --accent-highlight: #10b981; /* Muted Emerald */
+  --accent-highlight: #f8fafc;
   --accent-amber: #f59e0b;
 
   /* Typography Colors */
