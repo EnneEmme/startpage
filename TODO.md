@@ -44,15 +44,17 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ---
 
 ### 🔹 Task 3: Theme Customization & Settings Modal (`Impostazioni`)
-- [ ] **Settings Engine (`themeEngine.ts`)**:
+- [x] **Settings Engine (`themeEngine.ts`)**:
+  - Default theme: **Silver / Platinum Gray** (`#e2e8f0` / `#94a3b8`).
   - Manage CSS theme variables (`--accent-primary`, `--accent-highlight`, `--accent-glow`) dynamically.
   - Preset Theme Palettes:
-    - 🌿 **Emerald**: `#10b981` (Default Warm Obsidian)
-    - 💙 **Sapphire**: `#3b82f6` (Deep Electric Blue)
-    - 💜 **Violet**: `#8b5cf6` (Cyberpunk Purple)
-    - 🧡 **Amber**: `#f59e0b` (Warm Sunset Gold)
-    - 🤍 **Silver / Monochrome**: `#e2e8f0` (Minimal Platinum)
-- [ ] **Settings Modal Component (`SettingsModal.tsx`)**:
+    - 🤍 **Silver / Platinum Gray** (Default): `#e2e8f0`
+    - 🌿 **Emerald Green**: `#10b981`
+    - 💙 **Sapphire Blue**: `#3b82f6`
+    - 💜 **Cyberpunk Violet**: `#8b5cf6`
+    - 🧡 **Sunset Gold**: `#f59e0b`
+    - 🌹 **Rose Coral**: `#f43f5e`
+- [x] **Settings Modal Component (`SettingsModal.tsx`)**:
   - Triggered via gear icon `⚙️` in top-right floating toolbar.
   - Color palette picker, Grid density selector (Compact, Normal, Spaced), and Default Search Engine selector.
   - Persist choices to `localStorage` under `startpage_theme_settings`.

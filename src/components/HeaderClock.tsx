@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { Search, CircleQuestionMark, PenLine, Download, Keyboard } from 'lucide-preact';
+import { Search, CircleQuestionMark, PenLine, Download, Keyboard, Settings } from 'lucide-preact';
 import styles from './HeaderClock.module.css';
 
 interface HeaderClockProps {
@@ -7,6 +7,7 @@ interface HeaderClockProps {
   onOpenCheatsheet: () => void;
   onOpenVisualEdit: () => void;
   onOpenImportExport: () => void;
+  onOpenSettings: () => void;
   showShortcuts?: boolean;
   onToggleShortcuts?: () => void;
 }
@@ -16,6 +17,7 @@ export const HeaderClock = ({
   onOpenCheatsheet,
   onOpenVisualEdit,
   onOpenImportExport,
+  onOpenSettings,
   showShortcuts = false,
   onToggleShortcuts
 }: HeaderClockProps) => {
@@ -46,6 +48,15 @@ export const HeaderClock = ({
         title="Shortcuts Cheatsheet (? or F1)"
       >
         <CircleQuestionMark size={17} />
+      </button>
+
+      {/* Settings Modal Button */}
+      <button
+        class={styles.iconBtn}
+        onClick={onOpenSettings}
+        title="Settings & Themes"
+      >
+        <Settings size={17} />
       </button>
 
       {/* Visual Edit Button */}

@@ -2,6 +2,7 @@ import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { dataStore } from './engine/dataStore';
 import { keyboardManager } from './engine/keyboardManager';
+import { themeEngine } from './engine/themeEngine';
 import { HeaderClock } from './components/HeaderClock';
 import { JumpBar } from './components/JumpBar';
 import { ColumnGrid } from './components/ColumnGrid';
@@ -9,6 +10,7 @@ import { SearchModal } from './components/SearchModal';
 import { CheatsheetModal } from './components/CheatsheetModal';
 import { ImportExportModal } from './components/ImportExportModal';
 import { VisualEditModal } from './components/VisualEditModal';
+import { SettingsModal } from './components/SettingsModal';
 import { LinkItem, CategoryGroup } from './types/startpage';
 
 export const App = () => {
@@ -24,9 +26,10 @@ export const App = () => {
   const [cheatsheetOpen, setCheatsheetOpen] = useState<boolean>(false);
   const [importExportOpen, setImportExportOpen] = useState<boolean>(false);
   const [visualEditOpen, setVisualEditOpen] = useState<boolean>(false);
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [editTargetLink, setEditTargetLink] = useState<LinkItem | null>(null);
 
-  const isAnyModalOpen = searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen;
+  const isAnyModalOpen = searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen || settingsOpen;
 
   // Lock body scrolling and interaction when any modal is open
   useEffect(() => {
@@ -47,6 +50,7 @@ export const App = () => {
   const refreshData = () => {
     setLinks(dataStore.getLinks());
     setCategories(dataStore.getCategories());
+    themeEngine.applyTheme(themeEngine.getConfig());
   };
 
   const handleSelectCategory = (catName: string | null) => {
@@ -74,7 +78,7 @@ export const App = () => {
     // Attach global keyboard shortcuts handlers
     keyboardManager.setHandlers({
       onOpenSearch: (char?: string) => {
-        if (!cheatsheetOpen && !importExportOpen && !visualEditOpen) {
+        if (!cheatsheetOpen && !importExportOpen && !visualEditOpen && !settingsOpen) {
           setInitialSearchChar(char || '');
           setSearchOpen(true);
         }
@@ -84,6 +88,7 @@ export const App = () => {
         setCheatsheetOpen(false);
         setImportExportOpen(false);
         setVisualEditOpen(false);
+        setSettingsOpen(false);
         setEditTargetLink(null);
       },
       onOpenCheatsheet: () => {
@@ -103,7 +108,7 @@ export const App = () => {
 
     keyboardManager.attach();
     return () => keyboardManager.detach();
-  }, [cheatsheetOpen, importExportOpen, visualEditOpen]);
+  }, [cheatsheetOpen, importExportOpen, visualEditOpen, settingsOpen]);
 
   const handleEditLinkFromContext = (link: LinkItem) => {
     setEditTargetLink(link);
@@ -125,6 +130,7 @@ export const App = () => {
           setVisualEditOpen(true);
         }}
         onOpenImportExport={() => setImportExportOpen(true)}
+        onOpenSettings={() => setSettingsOpen(true)}
         showShortcuts={showShortcuts}
         onToggleShortcuts={() => setShowShortcuts(prev => !prev)}
       />
@@ -172,6 +178,12 @@ export const App = () => {
           setVisualEditOpen(false);
           setEditTargetLink(null);
         }}
+        onConfigChanged={refreshData}
+      />
+
+      <SettingsModal
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
         onConfigChanged={refreshData}
       />
     </div>
