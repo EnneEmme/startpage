@@ -19,6 +19,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 10. **Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching**.
 11. **Refined Drag & Drop Link Relocation & Context Menu Category Move**.
 12. **UI & UX Overhaul for Edit/Creation (`VisualEditModal`) and Settings (`SettingsModal`) Modals**.
+13. **Advanced Dynamic Link & Date Rule Visual Editor (Unimib Orari & Esami)**.
 
 ---
 
@@ -142,6 +143,13 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
   - Organize fields into clean tabs (*Generale*, *Motore di Ricerca*, *Icona & Stile*).
   - Modern glassmorphic dark design, clear field helper tooltips, focus rings, and live visual previews.
   - Smooth entrance/exit animations and responsive mobile bottom-sheet adaptation.
+
+---
+
+### 🔹 Task 13: Advanced Dynamic Link & Date Rule Visual Editor (Unimib Orari & Esami)
+- [ ] **Dedicated Dynamic URL Rule Selector in `VisualEditModal.tsx`**:
+  - Add an intuitive dropdown editor for configuring dynamic course/exam schedule rules (`unimib_orari`, `unimib_esami`) and date tokens (`{{DD-MM-YYYY}}`).
+  - Ensure seamless pre-filling, validation bypass, and rule editing for custom dynamic links.
 
 ---
 

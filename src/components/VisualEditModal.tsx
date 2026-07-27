@@ -26,9 +26,6 @@ interface VisualEditModalProps {
 
 const PRESET_ICONS = [
   // AI & Tech
-  { name: 'Calendar', spec: 'Calendar', icon: Calendar },
-  { name: 'FileText', spec: 'FileText', icon: FileText },
-  { name: 'BookOpen', spec: 'BookOpen', icon: BookOpen },
   { name: 'Terminal', spec: 'Terminal', icon: Terminal },
   { name: 'Code', spec: 'Code', icon: Code },
   { name: 'Sparkles', spec: 'Sparkles', icon: Sparkles },
@@ -81,6 +78,9 @@ const PRESET_ICONS = [
   { name: 'Moon', spec: 'Moon', icon: Moon },
 
   // Office & Education
+  { name: 'Calendar', spec: 'Calendar', icon: Calendar },
+  { name: 'FileText', spec: 'FileText', icon: FileText },
+  { name: 'BookOpen', spec: 'BookOpen', icon: BookOpen },
   { name: 'Folder', spec: 'Folder', icon: Folder },
   { name: 'Search', spec: 'Search', icon: Search },
   { name: 'Bookmark', spec: 'Bookmark', icon: Bookmark },
@@ -119,17 +119,14 @@ export const VisualEditModal = ({
   const targetLink = initialEditLink || initialLink;
   const isEditing = Boolean(targetLink);
 
-  // Compute resolved display URL for initial prefill if raw URL is blank
-  const resolvedInitialUrl = targetLink ? resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) : '';
+  // Prefill URL cleanly (resolved if dynamic)
+  const resolvedDisplayUrl = targetLink ? resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) : '';
 
   const [title, setTitle] = useState(targetLink?.title || '');
-  const [url, setUrl] = useState(targetLink?.url || resolvedInitialUrl || '');
+  const [url, setUrl] = useState(targetLink?.url || resolvedDisplayUrl || '');
   const [aliases, setAliases] = useState(targetLink?.aliases ? targetLink.aliases.join(', ') : '');
   const [icon, setIcon] = useState(targetLink?.icon || '');
   const [category, setCategory] = useState(targetLink?.category || 'General');
-
-  // Dynamic Rule State (unimib_orari, unimib_esami, none)
-  const [dynamicRule, setDynamicRule] = useState<string>(targetLink?.dynamicUrlRule || 'none');
 
   // Custom JS Script / Bookmarklet Mode State
   const initialIsScript = Boolean(targetLink?.isScript || (targetLink?.url && targetLink.url.toLowerCase().startsWith('javascript:')));
@@ -189,11 +186,10 @@ export const VisualEditModal = ({
       const code = scriptSnippet.trim();
       finalScriptContent = code;
       finalUrl = code.toLowerCase().startsWith('javascript:') ? code : `javascript:${encodeURI(code)}`;
-    } else if (dynamicRule === 'unimib_orari' || dynamicRule === 'unimib_esami') {
-      finalUrl = url.trim() || '';
     }
 
-    if (!finalUrl && !finalScriptContent && dynamicRule === 'none') return;
+    // Preserve dynamic rules if url was not manually altered
+    const finalDynamicRule = targetLink?.dynamicUrlRule;
 
     const updatedLink: LinkItem = {
       id: linkId,
@@ -204,7 +200,7 @@ export const VisualEditModal = ({
       icon: icon.trim() || (isScriptMode ? 'Terminal' : undefined),
       isScript: isScriptMode || undefined,
       scriptContent: finalScriptContent,
-      dynamicUrlRule: dynamicRule !== 'none' ? dynamicRule : undefined,
+      dynamicUrlRule: finalDynamicRule,
       searchTemplate: isSearchEngineMode && searchTemplate.trim() ? searchTemplate.trim() : undefined
     };
 
@@ -236,82 +232,43 @@ export const VisualEditModal = ({
             <input
               type="text"
               class={styles.input}
-              placeholder="e.g. GitHub, ChatGPT, Unimib Orari..."
+              placeholder="e.g. GitHub, ChatGPT, Mail..."
               value={title}
               onInput={e => setTitle((e.target as HTMLInputElement).value)}
               required
             />
           </div>
 
-          {/* Dynamic Link Rules Selector (Unimib Orari / Esami / Dates) */}
+          {/* Toggle Script / Bookmarklet Mode */}
           <div class={styles.fieldGroup}>
-            <label class={styles.label}>Dynamic URL Rule / Function</label>
-            <select
-              class={styles.input}
-              value={dynamicRule}
-              onChange={e => {
-                const selected = (e.target as HTMLSelectElement).value;
-                setDynamicRule(selected);
-                if (selected === 'unimib_orari' || selected === 'unimib_esami') {
-                  setIsScriptMode(false);
-                }
-              }}
-            >
-              <option value="none">Standard Web Link / Custom URL</option>
-              <option value="unimib_orari">📅 Unimib Course Timetable (Auto-Calculated Today's Schedule)</option>
-              <option value="unimib_esami">🎓 Unimib Exam Schedule (Auto-Calculated 60-Day Exams)</option>
-            </select>
-            {dynamicRule === 'unimib_orari' && (
-              <span class={styles.helperText}>
-                📅 Questo link calcola automaticamente la data odierna ed apre l'orario lezioni Unimib aggiornato!
-              </span>
-            )}
-            {dynamicRule === 'unimib_esami' && (
-              <span class={styles.helperText}>
-                🎓 Questo link calcola automaticamente le date esami Unimib per i prossimi 60 giorni!
-              </span>
-            )}
+            <label class={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={isScriptMode}
+                onChange={e => {
+                  const checked = (e.target as HTMLInputElement).checked;
+                  setIsScriptMode(checked);
+                  if (checked && !icon) {
+                    setIcon('Terminal');
+                  }
+                }}
+              />
+              <span>⚡ Enable Custom JavaScript / Bookmarklet Code Mode</span>
+            </label>
           </div>
-
-          {/* Toggle Script / Bookmarklet Mode (Only when dynamicRule is 'none') */}
-          {dynamicRule === 'none' && (
-            <div class={styles.fieldGroup}>
-              <label class={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={isScriptMode}
-                  onChange={e => {
-                    const checked = (e.target as HTMLInputElement).checked;
-                    setIsScriptMode(checked);
-                    if (checked && !icon) {
-                      setIcon('Terminal');
-                    }
-                  }}
-                />
-                <span>⚡ Enable Custom JavaScript / Bookmarklet Code Mode</span>
-              </label>
-            </div>
-          )}
 
           {/* URL or Script Input Field */}
           {!isScriptMode ? (
             <div class={styles.fieldGroup}>
-              <label class={styles.label}>
-                URL {dynamicRule !== 'none' ? '(Calculated Automatically / Optional Base URL)' : '(Base Domain / Site)'}
-              </label>
+              <label class={styles.label}>URL (Base Domain / Site)</label>
               <input
-                type={dynamicRule !== 'none' ? 'text' : 'url'}
+                type="text"
                 class={styles.input}
-                placeholder={dynamicRule !== 'none' ? 'Calculated automatically on launch...' : 'e.g. https://www.youtube.com'}
+                placeholder="e.g. https://www.youtube.com"
                 value={url}
                 onInput={e => setUrl((e.target as HTMLInputElement).value)}
-                required={!isScriptMode && dynamicRule === 'none'}
+                required={!isScriptMode}
               />
-              {dynamicRule === 'none' && (
-                <span class={styles.helperText}>
-                  Puoi usare token di data nell'URL come <code>{"{{"}DD-MM-YYYY{"}}"}</code> o <code>{"{{"}YYYY-MM-DD{"}}"}</code>.
-                </span>
-              )}
             </div>
           ) : (
             <div class={styles.fieldGroup}>
@@ -413,7 +370,7 @@ export const VisualEditModal = ({
           </div>
 
           {/* Advanced Search Engine Toggle & Field (Only for URLs) */}
-          {!isScriptMode && dynamicRule === 'none' && (
+          {!isScriptMode && (
             <div class={styles.fieldGroup}>
               <label class={styles.checkboxLabel}>
                 <input
