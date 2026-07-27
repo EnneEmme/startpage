@@ -12,6 +12,7 @@ import styles from './ColumnGrid.module.css';
 interface ColumnGridProps {
   categories: CategoryGroup[];
   highlightedCategory?: string | null;
+  showShortcuts?: boolean;
   onLinkClick?: (link: LinkItem) => void;
   onEditLink?: (link: LinkItem) => void;
   onConfigChanged?: () => void;
@@ -20,6 +21,7 @@ interface ColumnGridProps {
 export const ColumnGrid = ({
   categories,
   highlightedCategory,
+  showShortcuts = false,
   onLinkClick,
   onEditLink,
   onConfigChanged
@@ -370,7 +372,9 @@ export const ColumnGrid = ({
                       </div>
 
                       {mainAlias && (
-                        <span class={styles.aliasBadge}>{mainAlias}</span>
+                        <span class={`${styles.aliasBadge} ${showShortcuts ? styles.visibleAliasBadge : ''}`}>
+                          {mainAlias}
+                        </span>
                       )}
                     </a>
                   </div>

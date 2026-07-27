@@ -32,11 +32,11 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ---
 
 ### 🔹 Task 2: Hidden Aliases, Key-Hold Trigger & Category Number Shortcuts (`1`..`9`)
-- [ ] **Hide Aliases by Default**:
+- [x] **Hide Aliases by Default**:
   - Keep link row alias badges hidden during normal browsing.
-- [ ] **Modifier Key Listener (`Alt` / `Space`)**:
+- [x] **Modifier Key Listener (`Alt` / `Space`)**:
   - Update `keyboardManager.ts` to emit key-down/key-up events when holding `Alt` (or `Space`).
-- [ ] **Category Quick-Select Badges (`1`..`9`)**:
+- [x] **Category Quick-Select Badges (`1`..`9`)**:
   - When modifier key is held, render number badges (`1`, `2`, `3`...) inside category pills in `JumpBar.tsx`.
   - Pressing key `1`..`9` while holding the modifier key instantly scrolls and jumps to category 1..9.
   - Reveal alias badges on link rows while modifier key is held.
@@ -118,4 +118,4 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 2. **Production Build Compilation**:
    - Run `bun ./node_modules/vite/bin/vite.js build` to build singlefile bundle `dist/index.html`.
 3. **Deployment**:
-   - Commit feature code to `dev` branch and deploy release to `main` branch.
+   - Commit feature code to `dev` branch.

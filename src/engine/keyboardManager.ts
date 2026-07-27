@@ -1,7 +1,7 @@
 /**
  * Global Keyboard Manager & Shortcuts Engine
  * Handles keystroke listeners, input field filtering, shortcuts cheatsheet triggers,
- * search auto-activation on typing, and Ctrl+1..9 selection.
+ * search auto-activation on typing, modifier key view toggle (Alt/Space), and numerical category selection (1..9).
  */
 
 export interface KeyboardActionHandlers {
@@ -10,6 +10,8 @@ export interface KeyboardActionHandlers {
   onOpenCheatsheet?: () => void;
   onSelectQuickResult?: (index: number) => void;
   onNavigateSearch?: (direction: 'up' | 'down' | 'enter') => void;
+  onToggleModifierView?: (active: boolean) => void;
+  onSelectCategoryIndex?: (index: number) => void;
 }
 
 export class KeyboardManager {
@@ -17,12 +19,14 @@ export class KeyboardManager {
   private active: boolean = false;
   private searchActive: boolean = false;
   private modalActive: boolean = false;
+  private modifierActive: boolean = false;
 
   constructor(handlers?: KeyboardActionHandlers) {
     if (handlers) {
       this.handlers = handlers;
     }
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleKeyUp = this.handleKeyUp.bind(this);
   }
 
   public setHandlers(handlers: KeyboardActionHandlers): void {
@@ -53,8 +57,32 @@ export class KeyboardManager {
     // Escape always closes search & modals
     if (e.key === 'Escape') {
       e.preventDefault();
+      this.modifierActive = false;
+      this.handlers.onToggleModifierView?.(false);
       this.handlers.onCloseModals?.();
       return;
+    }
+
+    // Modifier View Toggle (Alt or Space outside input fields)
+    if (!isInput && (e.key === 'Alt' || e.key === ' ')) {
+      if (e.key === ' ') {
+        e.preventDefault(); // Prevent space page scrolling when using space modifier
+      }
+      if (!this.modifierActive) {
+        this.modifierActive = true;
+        this.handlers.onToggleModifierView?.(true);
+      }
+    }
+
+    // Category Quick-Select Badges (1..9) when Alt/Space modifier is active OR using Alt/Ctrl+1..9
+    if (e.key >= '1' && e.key <= '9') {
+      if (this.modifierActive || e.altKey || e.ctrlKey) {
+        e.preventDefault();
+        const index = parseInt(e.key, 10) - 1;
+        this.handlers.onSelectCategoryIndex?.(index);
+        this.handlers.onSelectQuickResult?.(index);
+        return;
+      }
     }
 
     // Interactive Cheatsheet trigger: '?' (Shift+/), F1, or Cmd+/ / Ctrl+/
@@ -65,14 +93,6 @@ export class KeyboardManager {
     ) {
       e.preventDefault();
       this.handlers.onOpenCheatsheet?.();
-      return;
-    }
-
-    // Ctrl+1 through Ctrl+9 or Alt+1 through Alt+9 quick selection
-    if ((e.ctrlKey || e.altKey) && e.key >= '1' && e.key <= '9') {
-      e.preventDefault();
-      const index = parseInt(e.key, 10) - 1;
-      this.handlers.onSelectQuickResult?.(index);
       return;
     }
 
@@ -101,10 +121,20 @@ export class KeyboardManager {
     }
   }
 
+  public handleKeyUp(e: KeyboardEvent): void {
+    if (e.key === 'Alt' || e.key === ' ') {
+      if (this.modifierActive) {
+        this.modifierActive = false;
+        this.handlers.onToggleModifierView?.(false);
+      }
+    }
+  }
+
   public attach(): void {
     if (this.active) return;
     if (typeof window !== 'undefined') {
       window.addEventListener('keydown', this.handleKeyDown);
+      window.addEventListener('keyup', this.handleKeyUp);
       this.active = true;
     }
   }
@@ -113,6 +143,7 @@ export class KeyboardManager {
     if (!this.active) return;
     if (typeof window !== 'undefined') {
       window.removeEventListener('keydown', this.handleKeyDown);
+      window.removeEventListener('keyup', this.handleKeyUp);
       this.active = false;
     }
   }

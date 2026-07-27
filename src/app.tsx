@@ -16,6 +16,7 @@ export const App = () => {
   const [categories, setCategories] = useState<CategoryGroup[]>([]);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string | null>(null);
   const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null);
+  const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
 
   // Modals state
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
@@ -48,6 +49,16 @@ export const App = () => {
     setCategories(dataStore.getCategories());
   };
 
+  const handleSelectCategory = (catName: string | null) => {
+    setActiveCategoryFilter(catName);
+    if (catName) {
+      setHighlightedCategory(catName);
+      setTimeout(() => setHighlightedCategory(null), 1400);
+    } else {
+      setHighlightedCategory(null);
+    }
+  };
+
   useEffect(() => {
     refreshData();
 
@@ -69,22 +80,21 @@ export const App = () => {
       onOpenCheatsheet: () => {
         setSearchOpen(false);
         setCheatsheetOpen(prev => !prev);
+      },
+      onToggleModifierView: (active: boolean) => {
+        setShowShortcuts(active);
+      },
+      onSelectCategoryIndex: (index: number) => {
+        const currentCats = dataStore.getCategories();
+        if (index >= 0 && index < currentCats.length) {
+          handleSelectCategory(currentCats[index].name);
+        }
       }
     });
 
     keyboardManager.attach();
     return () => keyboardManager.detach();
   }, [cheatsheetOpen, importExportOpen, visualEditOpen]);
-
-  const handleSelectCategory = (catName: string | null) => {
-    setActiveCategoryFilter(catName);
-    if (catName) {
-      setHighlightedCategory(catName);
-      setTimeout(() => setHighlightedCategory(null), 1400);
-    } else {
-      setHighlightedCategory(null);
-    }
-  };
 
   const handleEditLinkFromContext = (link: LinkItem) => {
     setEditTargetLink(link);
@@ -111,6 +121,7 @@ export const App = () => {
       <JumpBar
         categories={categoryNames}
         activeCategory={activeCategoryFilter}
+        showShortcuts={showShortcuts}
         onSelectCategory={handleSelectCategory}
       />
 
@@ -118,6 +129,7 @@ export const App = () => {
         <ColumnGrid
           categories={categories}
           highlightedCategory={highlightedCategory}
+          showShortcuts={showShortcuts}
           onEditLink={handleEditLinkFromContext}
           onConfigChanged={refreshData}
         />

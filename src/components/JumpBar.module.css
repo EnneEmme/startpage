@@ -28,6 +28,7 @@
 .tabBtn {
   display: flex;
   align-items: center;
+  gap: 0.4rem;
   padding: 0.4rem 0.9rem;
   border-radius: var(--radius-full);
   font-size: 0.84rem;
@@ -47,4 +48,32 @@
   background: rgba(16, 185, 129, 0.18);
   color: var(--accent-highlight);
   font-weight: 600;
+}
+
+.shortcutNumberBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--accent-highlight);
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  animation: badgePop 0.15s ease-out forwards;
+}
+
+@keyframes badgePop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

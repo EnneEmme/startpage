@@ -326,13 +326,35 @@
   -webkit-user-select: none;
 }
 
+/* Alias Badges - Hidden by Default, Revealed on Modifier Key Hold */
 .aliasBadge {
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--accent-highlight);
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   padding: 0.1rem 0.35rem;
   border-radius: var(--radius-sm);
   user-select: none;
   -webkit-user-select: none;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.aliasBadge.visibleAliasBadge {
+  display: inline-block;
+  opacity: 1;
+  animation: aliasPop 0.15s ease-out forwards;
+}
+
+@keyframes aliasPop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

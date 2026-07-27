@@ -4,12 +4,14 @@ import styles from './JumpBar.module.css';
 interface JumpBarProps {
   categories: string[];
   activeCategory: string | null;
+  showShortcuts?: boolean;
   onSelectCategory: (category: string | null) => void;
 }
 
 export const JumpBar = ({
   categories,
   activeCategory,
+  showShortcuts = false,
   onSelectCategory
 }: JumpBarProps) => {
   const handleTabClick = (categoryName: string | null) => {
@@ -40,13 +42,16 @@ export const JumpBar = ({
           All
         </button>
 
-        {categories.map(cat => (
+        {categories.map((cat, idx) => (
           <button
             key={cat}
             class={`${styles.tabBtn} ${activeCategory === cat ? styles.active : ''}`}
             onClick={() => handleTabClick(cat)}
           >
-            {cat}
+            {showShortcuts && idx < 9 && (
+              <span class={styles.shortcutNumberBadge}>{idx + 1}</span>
+            )}
+            <span>{cat}</span>
           </button>
         ))}
       </nav>
