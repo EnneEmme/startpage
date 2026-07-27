@@ -115,6 +115,12 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ---
 
+### 🔹 Task 12: Alias Badge Theme Accent Color Sync & Dynamic UI Refinement
+- [x] **Theme Accent Color Sync for Alias Badges**:
+  - Updated `.aliasBadge` styling in `ColumnGrid.module.css` so when aliases are toggled (`Alt` / `Shift+Space`), badge background/border/text dynamically inherits the active Theme Color (`var(--accent-highlight)`, `var(--accent-glow)`, `var(--border-color-hover)`) instead of hardcoded emerald green.
+
+---
+
 ### 🔹 Task 10: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching
 - [ ] **Improved Fuzzy Algorithm & Relevance Scoring**:
   - Fine-tune Fuse.js weights, distance metrics, and prefix matching for instant pinpoint search.
@@ -136,12 +142,6 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
   - Position floating dark search bar centered at top 15% of screen.
   - Enhanced glassmorphic backdrop blur (`backdrop-filter: blur(16px)`).
   - Minimalist matching list with clear command badges (`Tab to complete, Enter to open`).
-
----
-
-### 🔹 Task 12: Alias Badge Theme Accent Color Sync & Dynamic UI Refinement
-- [ ] **Theme Accent Color Sync for Alias Badges**:
-  - Update `.aliasBadge` styling in `ColumnGrid.module.css` so when aliases are toggled (`Alt` / `Shift+Space`), badge background/border/text dynamically uses the active Theme Accent Color (`var(--accent-highlight)`) instead of hardcoded emerald green.
 
 ---
 
