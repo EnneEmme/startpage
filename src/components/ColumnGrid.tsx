@@ -195,6 +195,7 @@ export const ColumnGrid = ({
     if (e.dataTransfer) {
       e.dataTransfer.dropEffect = 'move';
     }
+
     if (dragOverCategory !== categoryName) {
       setDragOverCategory(categoryName);
     }
@@ -211,18 +212,25 @@ export const ColumnGrid = ({
     }
 
     if (linkId) {
-      if (dragOverLinkId !== linkId) {
-        setDragOverLinkId(linkId);
-      }
       const targetElement = e.currentTarget as HTMLElement;
       const rect = targetElement.getBoundingClientRect();
       const relativeY = e.clientY - rect.top;
-      const isBottomHalf = relativeY > rect.height / 2;
-      setDropPosition(isBottomHalf ? 'below' : 'above');
+      const newPosition = relativeY > rect.height * 0.5 ? 'below' : 'above';
+
+      if (dragOverLinkId !== linkId || dropPosition !== newPosition) {
+        setDragOverLinkId(linkId);
+        setDropPosition(newPosition);
+      }
     }
   };
 
-  const handleDragLeave = () => {
+  const handleDragLeave = (e: DragEvent) => {
+    const currentTarget = e.currentTarget as HTMLElement;
+    const relatedTarget = e.relatedTarget as Node | null;
+    if (currentTarget && relatedTarget && currentTarget.contains(relatedTarget)) {
+      return; // Ignore dragLeave when moving over internal children
+    }
+
     setDragOverCategory(null);
     setDragOverLinkId(null);
   };
@@ -243,7 +251,7 @@ export const ColumnGrid = ({
 
       // Trigger smooth spring drop animation
       setJustDroppedLinkId(draggedLinkId);
-      setTimeout(() => setJustDroppedLinkId(null), 400);
+      setTimeout(() => setJustDroppedLinkId(null), 350);
 
       setDraggedLinkId(null);
       if (onConfigChanged) onConfigChanged();
@@ -352,6 +360,7 @@ export const ColumnGrid = ({
                     onDragStart={e => handleLinkDragStart(e, link)}
                     onDragOver={e => handleDragOver(e, cat.name, link.id)}
                     onDrop={e => handleDrop(e, cat.name, linkIdx)}
+                    onDragLeave={handleDragLeave}
                     onDragEnd={handleDragEnd}
                     title={isScript ? 'JS Bookmarklet (Click to execute snippet)' : 'Drag to reorder link'}
                   >

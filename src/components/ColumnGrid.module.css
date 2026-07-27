@@ -65,7 +65,7 @@
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-lg);
-  transition: all var(--transition-fast);
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   user-select: none;
   -webkit-user-select: none;
   position: relative;
@@ -236,88 +236,65 @@
 .linkCardDragWrapper {
   width: 100%;
   border-radius: var(--radius-md);
-  border: 1px dashed transparent;
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              margin 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.22s ease,
-              border-color 0.22s ease,
-              box-shadow 0.22s ease;
+  border: 1px solid transparent;
+  transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease;
   cursor: grab;
   position: relative;
   user-select: none;
   -webkit-user-select: none;
-  will-change: transform, margin, opacity;
 }
 
 .linkCardDragWrapper:active {
   cursor: grabbing;
 }
 
-/* Glowing Insertion Slot Lines with Dynamic Theme Accent Color & Smooth Gap Opening */
+/* Stable Insertion Line Indicator - ZERO Margin/Layout Shift (No Thrashing) */
 .linkCardDragWrapper.dragOverAbove {
-  margin-top: 14px;
-  background: var(--accent-glow, rgba(226, 232, 240, 0.08));
+  background: var(--accent-glow, rgba(226, 232, 240, 0.1));
   border-radius: var(--radius-md);
-  transform: translateY(2px);
 }
 
 .linkCardDragWrapper.dragOverAbove::before {
   content: '';
   position: absolute;
-  top: -7px;
+  top: -2px;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px;
   background: var(--accent-primary, #e2e8f0);
-  border-radius: 3px;
-  box-shadow: 0 0 12px var(--accent-primary, #e2e8f0), 0 0 6px var(--accent-primary, #e2e8f0);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--accent-primary, #e2e8f0);
   z-index: 10;
-  animation: pulseGlow 1s infinite alternate;
 }
 
 .linkCardDragWrapper.dragOverBelow {
-  margin-bottom: 14px;
-  background: var(--accent-glow, rgba(226, 232, 240, 0.08));
+  background: var(--accent-glow, rgba(226, 232, 240, 0.1));
   border-radius: var(--radius-md);
-  transform: translateY(-2px);
 }
 
 .linkCardDragWrapper.dragOverBelow::after {
   content: '';
   position: absolute;
-  bottom: -7px;
+  bottom: -2px;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px;
   background: var(--accent-primary, #e2e8f0);
-  border-radius: 3px;
-  box-shadow: 0 0 12px var(--accent-primary, #e2e8f0), 0 0 6px var(--accent-primary, #e2e8f0);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--accent-primary, #e2e8f0);
   z-index: 10;
-  animation: pulseGlow 1s infinite alternate;
-}
-
-@keyframes pulseGlow {
-  0% {
-    opacity: 0.8;
-    box-shadow: 0 0 6px var(--accent-primary, #e2e8f0);
-  }
-  100% {
-    opacity: 1;
-    box-shadow: 0 0 14px var(--accent-primary, #e2e8f0), 0 0 6px var(--accent-primary, #e2e8f0);
-  }
 }
 
 /* Fluid Drop Release Spring Keyframe Animation */
 @keyframes dropReleaseSpring {
   0% {
-    transform: scale(0.92);
-    opacity: 0.5;
+    transform: scale(0.96);
+    opacity: 0.7;
   }
   50% {
-    transform: scale(1.03);
+    transform: scale(1.02);
     opacity: 1;
-    box-shadow: 0 0 16px var(--accent-glow, rgba(226, 232, 240, 0.3));
+    box-shadow: 0 0 12px var(--accent-glow, rgba(226, 232, 240, 0.3));
   }
   100% {
     transform: scale(1);
@@ -327,12 +304,11 @@
 }
 
 .linkCardReleased {
-  animation: dropReleaseSpring 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: dropReleaseSpring 0.3s ease-out forwards;
 }
 
 .linkCardDragWrapper.linkBeingDragged {
-  opacity: 0.2;
-  transform: scale(0.95);
+  opacity: 0.25;
 }
 
 .linkRow {
