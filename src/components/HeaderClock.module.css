@@ -38,8 +38,8 @@
   border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
-/* Tablet & Smartphone Responsive (< 860px) */
-@media (max-width: 859px) {
+/* Hide top bubble and show bottom floating bar on any screen < 1024px */
+@media (max-width: 1023px) {
   .topRightTools {
     display: none !important;
   }

@@ -188,8 +188,8 @@
   cursor: pointer;
 }
 
-/* Hide or Lift Scroll Down Cue on Tablet & Mobile when Floating Bottom Nav is present */
-@media (max-width: 859px) {
+/* Hide Scroll Down Cue on Tablet & Mobile when Floating Bottom Nav is present (< 1024px) */
+@media (max-width: 1023px) {
   .pageScrollDownIndicator {
     display: none !important;
   }
