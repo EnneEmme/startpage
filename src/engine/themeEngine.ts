@@ -75,7 +75,7 @@ const STORAGE_KEY = 'startpage_theme_settings';
 const DEFAULT_THEME_CONFIG: ThemeConfig = {
   accentColorId: 'silver', // Default accent is silver/platinum gray
   gridDensity: 'normal',   // Default density is balanced 185px
-  fontSize: 'medium',      // Default font size is medium
+  fontSize: 'medium',      // Default font size is medium (0.96rem)
   defaultSearchEngine: 'g'
 };
 
@@ -149,22 +149,22 @@ export class ThemeEngine {
     root.style.setProperty('--grid-gap', gridGap);
     root.style.setProperty('--link-row-padding', linkPadding);
 
-    // Apply Font Size scaling
-    let baseSize = '1rem';
-    let linkSize = '0.88rem';
-    let headerSize = '1.05rem';
-    let badgeSize = '0.68rem';
+    // Apply 3-tier font size scale (Old Large becomes Normal Default; Old Normal becomes Small; New Large is bigger)
+    let baseSize = '1.05rem';
+    let linkSize = '0.96rem';      // DEFAULT ('medium') - Previous Large
+    let headerSize = '1.14rem';
+    let badgeSize = '0.74rem';
 
     if (config.fontSize === 'small') {
-      baseSize = '0.92rem';
-      linkSize = '0.80rem';
-      headerSize = '0.95rem';
-      badgeSize = '0.62rem';
+      baseSize = '0.95rem';        // PICCOLO ('small') - Previous Medium/Normal
+      linkSize = '0.85rem';
+      headerSize = '1.00rem';
+      badgeSize = '0.65rem';
     } else if (config.fontSize === 'large') {
-      baseSize = '1.1rem';
-      linkSize = '0.98rem';
-      headerSize = '1.18rem';
-      badgeSize = '0.76rem';
+      baseSize = '1.18rem';        // GRANDE ('large') - New Extra Large
+      linkSize = '1.10rem';
+      headerSize = '1.28rem';
+      badgeSize = '0.82rem';
     }
 
     root.style.setProperty('--font-size-base', baseSize);
