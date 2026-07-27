@@ -1,9 +1,9 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { ChevronDown } from 'lucide-preact';
+import { ChevronDown, Zap } from 'lucide-preact';
 import { CategoryGroup, LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
-import { rankStorage } from '../engine/rankStorage';
+import { executeLink, isBookmarkletOrScript } from '../engine/linkExecutor';
 import { dataStore } from '../engine/dataStore';
 import { LinkIcon } from './LinkIcon';
 import { ContextMenu } from './ContextMenu';
@@ -70,15 +70,11 @@ export const ColumnGrid = ({
       return;
     }
 
-    rankStorage.recordUsage(link.id);
+    e.preventDefault();
+    executeLink(link);
 
     if (onLinkClick) {
       onLinkClick(link);
-    }
-
-    const targetUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
-    if (targetUrl) {
-      window.location.href = targetUrl;
     }
   };
 
@@ -332,6 +328,7 @@ export const ColumnGrid = ({
               {cat.links.map((link, linkIdx) => {
                 const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
                 const mainAlias = link.aliases && link.aliases.length > 0 ? link.aliases[0] : null;
+                const isScript = isBookmarkletOrScript(link);
                 const isItemDragOver = dragOverLinkId === link.id;
                 const isBeingDragged = draggedLinkId === link.id;
 
@@ -349,7 +346,7 @@ export const ColumnGrid = ({
                     onDragOver={e => handleDragOver(e, cat.name, link.id)}
                     onDrop={e => handleDrop(e, cat.name, linkIdx)}
                     onDragEnd={handleDragEnd}
-                    title="Drag to reorder link"
+                    title={isScript ? 'JS Bookmarklet (Click to execute snippet)' : 'Drag to reorder link'}
                   >
                     <a
                       href={displayUrl || '#'}
@@ -361,14 +358,17 @@ export const ColumnGrid = ({
                       <div class={styles.iconContainer}>
                         <LinkIcon
                           url={displayUrl || 'https://example.com'}
-                          iconSpec={link.icon}
+                          iconSpec={link.icon || (isScript ? 'Terminal' : undefined)}
                           title={link.title}
                           size={18}
                         />
                       </div>
 
                       <div class={styles.linkInfo}>
-                        <span class={styles.linkTitle}>{link.title}</span>
+                        <span class={styles.linkTitle}>
+                          {link.title}
+                          {isScript && <Zap size={11} style={{ marginLeft: '4px', color: '#f59e0b', display: 'inline-block', verticalAlign: 'middle' }} title="JS Script Bookmarklet" />}
+                        </span>
                       </div>
 
                       {mainAlias && (

@@ -25,12 +25,12 @@ interface VisualEditModalProps {
 
 const PRESET_ICONS = [
   // AI & Tech
+  { name: 'Terminal', spec: 'Terminal', icon: Terminal },
+  { name: 'Code', spec: 'Code', icon: Code },
   { name: 'Sparkles', spec: 'Sparkles', icon: Sparkles },
   { name: 'Bot', spec: 'Bot', icon: Bot },
   { name: 'Cpu', spec: 'Cpu', icon: Cpu },
   { name: 'Zap', spec: 'Zap', icon: Zap },
-  { name: 'Terminal', spec: 'Terminal', icon: Terminal },
-  { name: 'Code', spec: 'Code', icon: Code },
   { name: 'Database', spec: 'Database', icon: Database },
   { name: 'Server', spec: 'Server', icon: Server },
   { name: 'HardDrive', spec: 'HardDrive', icon: HardDrive },
@@ -124,6 +124,13 @@ export const VisualEditModal = ({
   const [icon, setIcon] = useState(targetLink?.icon || '');
   const [category, setCategory] = useState(targetLink?.category || 'General');
 
+  // Custom JS Script / Bookmarklet Mode State
+  const initialIsScript = Boolean(targetLink?.isScript || (targetLink?.url && targetLink.url.toLowerCase().startsWith('javascript:')));
+  const [isScriptMode, setIsScriptMode] = useState<boolean>(initialIsScript);
+  const [scriptSnippet, setScriptSnippet] = useState<string>(
+    targetLink?.scriptContent || (targetLink?.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : '')
+  );
+
   // Custom Search Engine State
   const [isSearchEngineMode, setIsSearchEngineMode] = useState(Boolean(targetLink?.searchTemplate || targetLink?.searchPath));
   const [searchTemplate, setSearchTemplate] = useState(targetLink?.searchTemplate || targetLink?.searchPath || '');
@@ -158,7 +165,7 @@ export const VisualEditModal = ({
   const handleSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
 
-    if (!title.trim() || !url.trim()) return;
+    if (!title.trim()) return;
 
     const parsedAliases = aliases
       .split(',')
@@ -168,13 +175,27 @@ export const VisualEditModal = ({
     const linkId = targetLink?.id || `link_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const targetCat = isCreatingNewCategory && newCategoryName.trim() ? newCategoryName.trim() : category;
 
+    let finalUrl = url.trim();
+    let finalScriptContent: string | undefined = undefined;
+
+    if (isScriptMode) {
+      const code = scriptSnippet.trim();
+      finalScriptContent = code;
+      finalUrl = code.toLowerCase().startsWith('javascript:') ? code : `javascript:${encodeURI(code)}`;
+    }
+
+    if (!finalUrl && !finalScriptContent) return;
+
     const updatedLink: LinkItem = {
       id: linkId,
       title: title.trim(),
-      url: url.trim(),
+      url: finalUrl,
       aliases: parsedAliases,
       category: targetCat || 'General',
-      icon: icon.trim() || undefined,
+      icon: icon.trim() || (isScriptMode ? 'Terminal' : undefined),
+      isScript: isScriptMode || undefined,
+      scriptContent: finalScriptContent,
+      dynamicUrlRule: targetLink?.dynamicUrlRule, // Preserve dynamic rules (e.g. unimib_orari, unimib_esami)
       searchTemplate: isSearchEngineMode && searchTemplate.trim() ? searchTemplate.trim() : undefined
     };
 
@@ -206,25 +227,60 @@ export const VisualEditModal = ({
             <input
               type="text"
               class={styles.input}
-              placeholder="e.g. GitHub, ChatGPT, Mail..."
+              placeholder="e.g. GitHub, ChatGPT, My Bookmarklet..."
               value={title}
               onInput={e => setTitle((e.target as HTMLInputElement).value)}
               required
             />
           </div>
 
-          {/* URL */}
+          {/* Toggle Script / Bookmarklet Mode */}
           <div class={styles.fieldGroup}>
-            <label class={styles.label}>URL (Base Domain / Site)</label>
-            <input
-              type="url"
-              class={styles.input}
-              placeholder="e.g. https://www.youtube.com"
-              value={url}
-              onInput={e => setUrl((e.target as HTMLInputElement).value)}
-              required
-            />
+            <label class={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={isScriptMode}
+                onChange={e => {
+                  const checked = (e.target as HTMLInputElement).checked;
+                  setIsScriptMode(checked);
+                  if (checked && !icon) {
+                    setIcon('Terminal');
+                  }
+                }}
+              />
+              <span>⚡ Enable Custom JavaScript / Bookmarklet Code Mode</span>
+            </label>
           </div>
+
+          {/* URL or Script Input Field */}
+          {!isScriptMode ? (
+            <div class={styles.fieldGroup}>
+              <label class={styles.label}>URL (Base Domain / Site)</label>
+              <input
+                type="url"
+                class={styles.input}
+                placeholder="e.g. https://www.youtube.com"
+                value={url}
+                onInput={e => setUrl((e.target as HTMLInputElement).value)}
+                required={!isScriptMode}
+              />
+            </div>
+          ) : (
+            <div class={styles.fieldGroup}>
+              <label class={styles.label}>JavaScript Code / Bookmarklet Snippet</label>
+              <textarea
+                class={styles.input}
+                style={{ minHeight: '80px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
+                placeholder="e.g. alert('Hello World!') or javascript:(function(){ ... })();"
+                value={scriptSnippet}
+                onInput={e => setScriptSnippet((e.target as HTMLInputElement).value)}
+                required={isScriptMode}
+              />
+              <span class={styles.helperText}>
+                Puoi inserire sia codice JS diretto (es. <code>alert("Test")</code>) che bookmarklet (es. <code>javascript:void(0)</code>).
+              </span>
+            </div>
+          )}
 
           {/* Custom Category Picker */}
           <div class={styles.fieldGroup}>
@@ -308,33 +364,35 @@ export const VisualEditModal = ({
             />
           </div>
 
-          {/* Advanced Search Engine Toggle & Field */}
-          <div class={styles.fieldGroup}>
-            <label class={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={isSearchEngineMode}
-                onChange={e => setIsSearchEngineMode((e.target as HTMLInputElement).checked)}
-              />
-              <span>Enable Custom Search Engine / Command Prefix Mode</span>
-            </label>
-
-            {isSearchEngineMode && (
-              <div class={styles.searchTemplateSubGroup}>
-                <label class={styles.label}>Search Query Path / Parameters (after URL)</label>
+          {/* Advanced Search Engine Toggle & Field (Only for URLs) */}
+          {!isScriptMode && (
+            <div class={styles.fieldGroup}>
+              <label class={styles.checkboxLabel}>
                 <input
-                  type="text"
-                  class={styles.input}
-                  placeholder="e.g. /results?search_query={q}  or  /search?q={q}"
-                  value={searchTemplate}
-                  onInput={e => setSearchTemplate((e.target as HTMLInputElement).value)}
+                  type="checkbox"
+                  checked={isSearchEngineMode}
+                  onChange={e => setIsSearchEngineMode((e.target as HTMLInputElement).checked)}
                 />
-                <span class={styles.helperText}>
-                  Inserisci solo il percorso/parametro dopo il link (es. <code>/results?search_query={"{"}q{"}"}</code>) oppure l'URL completo.
-                </span>
-              </div>
-            )}
-          </div>
+                <span>Enable Custom Search Engine / Command Prefix Mode</span>
+              </label>
+
+              {isSearchEngineMode && (
+                <div class={styles.searchTemplateSubGroup}>
+                  <label class={styles.label}>Search Query Path / Parameters (after URL)</label>
+                  <input
+                    type="text"
+                    class={styles.input}
+                    placeholder="e.g. /results?search_query={q}  or  /search?q={q}"
+                    value={searchTemplate}
+                    onInput={e => setSearchTemplate((e.target as HTMLInputElement).value)}
+                  />
+                  <span class={styles.helperText}>
+                    Inserisci solo il percorso/parametro dopo il link (es. <code>/results?search_query={"{"}q{"}"}</code>) oppure l'URL completo.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Clean Non-Invasive Icon Dropdown Picker */}
           <div class={styles.fieldGroup}>
@@ -344,7 +402,7 @@ export const VisualEditModal = ({
                 <div class={styles.iconLiveBadge}>
                   <LinkIcon
                     url={url || 'https://example.com'}
-                    iconSpec={icon}
+                    iconSpec={icon || (isScriptMode ? 'Terminal' : undefined)}
                     title={title || 'Preview'}
                     size={20}
                   />

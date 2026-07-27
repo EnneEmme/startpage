@@ -52,7 +52,7 @@ describe('App End-to-End Integration Flow', () => {
 
     expect(container.textContent).toContain('Add New Link');
 
-    const titleInput = getByPlaceholderText('e.g. GitHub, ChatGPT, Mail...');
+    const titleInput = getByPlaceholderText(/e.g. GitHub/i);
     const urlInput = getByPlaceholderText('e.g. https://www.youtube.com');
 
     fireEvent.input(titleInput, { target: { value: 'My Test Link' } });

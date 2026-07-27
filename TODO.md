@@ -98,17 +98,18 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 - [x] **Balanced Lateral Side Padding**:
   - Apply clean horizontal outer padding (`padding: 0.5rem 0 3.5rem`) to ensure columns never touch screen edges and maintain a polished margin on all monitors.
 - [x] **Viewport Min-Height Lock**:
-  - Added `min-height: calc(100vh - 180px)` to `.columnCard`, forcing Row 1 columns to fill screen height so Row 2 never peeks out when unscrolled.
+  - Added `min-height: calc(100vh - 110px)` to `.columnCard`, forcing Row 1 columns to fill screen height so Row 2 never peeks out when unscrolled.
 
 ---
 
 ### 🔹 Task 9: Custom JavaScript Script & Bookmarklet Links Support
-- [ ] **Custom JS Script & Bookmarklet Execution**:
+- [x] **Custom JS Script & Bookmarklet Execution**:
   - Add native support for `javascript:` URLs and custom JS script snippets (e.g. `javascript:(function(){ alert('Hello World'); })();`).
-  - Support execution of custom script functions directly when clicking the link item.
-- [ ] **Script Editor in Visual Edit Modal (`VisualEditModal.tsx`)**:
-  - Add a dedicated "Custom Script / Bookmarklet Code" field in the link creation/editing modal with guide and syntax hints.
-  - Handle safe execution without breaking page navigation.
+  - Implemented central `linkExecutor.ts` to execute custom script functions directly when clicking link items or searching in `SearchModal`.
+  - Preserved 100% backward compatibility for dynamic URL rules (`unimib_orari`, `unimib_esami`, and date interpolations).
+- [x] **Script Editor in Visual Edit Modal (`VisualEditModal.tsx`)**:
+  - Added a dedicated "⚡ Enable Custom JavaScript / Bookmarklet Code Mode" toggle and code textarea field in `VisualEditModal.tsx`.
+  - Rendered `⚡` script badge indicator next to script links in column cards.
 
 ---
 
@@ -147,7 +148,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ## 🛠️ Execution & Testing Strategy
 
 1. **Automated Unit Testing**:
-   - Run `bun ./node_modules/vitest/vitest.mjs run` after each task to maintain 100% passing tests (54/54+).
+   - Run `bun ./node_modules/vitest/vitest.mjs run` after each task to maintain 100% passing tests (57/57+).
 2. **Production Build Compilation**:
    - Run `bun ./node_modules/vite/bin/vite.js build` to build singlefile bundle `dist/index.html`.
 3. **Deployment**:

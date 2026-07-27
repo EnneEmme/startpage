@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'preact/hooks';
 import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles } from 'lucide-preact';
 import { fuzzySearchEngine } from '../engine/fuzzySearch';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
-import { rankStorage } from '../engine/rankStorage';
+import { executeLink } from '../engine/linkExecutor';
 import { LinkItem, SearchResult } from '../types/startpage';
 import { LinkIcon } from './LinkIcon';
 import styles from './SearchModal.module.css';
@@ -59,12 +59,8 @@ export const SearchModal = ({
     : fuzzySearchEngine.search(query);
 
   const handleSelectLink = (link: LinkItem) => {
-    rankStorage.recordUsage(link.id);
-    const targetUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
     onClose();
-    if (targetUrl) {
-      window.location.href = targetUrl;
-    }
+    executeLink(link);
   };
 
   const handleExecuteCommandPrefix = () => {

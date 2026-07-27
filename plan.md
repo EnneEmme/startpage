@@ -44,12 +44,12 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] Build **Import / Export Config Modal** (backup/sync `links.json` & ranking history).
   - [x] Build **Visual Edit Mode** (Add/Edit link modal directly in UI saving to LocalStorage).
   - [x] Connect Preact UI to Data Engine APIs in `src/app.tsx`.
-  - [x] Write Vitest UI component tests (54/54 total tests passing).
+  - [x] Write Vitest UI component tests (57/57 total tests passing).
   - [x] Verify standalone single-file production build (`dist/index.html`).
 
 - [x] **Phase 5: Legacy Homepage Migration & Production Release (v1.0.0)**
   - [x] Import legacy links and dynamic functions into `dataStore.ts` and `dynamicEvaluator.ts`.
-  - [x] Run full automated test suite under Bun (`54/54 tests passed`).
+  - [x] Run full automated test suite under Bun (`57/57 tests passed`).
   - [x] Deploy production build bundle to `main` branch.
 
 - [ ] **Phase 6: Master TODO Roadmap Execution (Refer to `TODO.md`)**
@@ -60,7 +60,7 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] **Task 6**: Top Spacing Reduction & JumpBar Horizontal Mask.
   - [x] **Task 7**: Mobile Touch & Smartphone UX Refinements (Unified Non-Overlapping Header & Bottom Sheets).
   - [x] **Task 8**: Dynamic Responsive Column Grid Geometry, Extended Link Capacity (+1-2 links), & Balanced Side Padding.
-  - [ ] **Task 9**: Custom JavaScript Script & Bookmarklet Links Support.
+  - [x] **Task 9**: Custom JavaScript Script & Bookmarklet Links Support (with Unimib dynamic URL preservation).
   - [ ] **Task 10**: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching.
   - [ ] **Task 11**: Refined Drag & Drop Link Relocation & Context Menu Category Move.
   - [ ] **Task 5**: Ultra-Minimalist Search Overlay.
