@@ -237,52 +237,62 @@
   width: 100%;
   border-radius: var(--radius-md);
   border: 1px dashed transparent;
-  transition: transform 0.15s ease, margin 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              margin 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.22s ease,
+              border-color 0.22s ease,
+              box-shadow 0.22s ease;
   cursor: grab;
   position: relative;
   user-select: none;
   -webkit-user-select: none;
+  will-change: transform, margin, opacity;
 }
 
 .linkCardDragWrapper:active {
   cursor: grabbing;
 }
 
-/* Glowing Insertion Slot Lines with Dynamic Theme Accent Color */
+/* Glowing Insertion Slot Lines with Dynamic Theme Accent Color & Smooth Gap Opening */
 .linkCardDragWrapper.dragOverAbove {
-  margin-top: 8px;
+  margin-top: 14px;
   background: var(--accent-glow, rgba(226, 232, 240, 0.08));
+  border-radius: var(--radius-md);
+  transform: translateY(2px);
 }
 
 .linkCardDragWrapper.dragOverAbove::before {
   content: '';
   position: absolute;
-  top: -5px;
+  top: -7px;
   left: 0;
   right: 0;
   height: 3px;
   background: var(--accent-primary, #e2e8f0);
   border-radius: 3px;
-  box-shadow: 0 0 10px var(--accent-primary, #e2e8f0), 0 0 4px var(--accent-primary, #e2e8f0);
+  box-shadow: 0 0 12px var(--accent-primary, #e2e8f0), 0 0 6px var(--accent-primary, #e2e8f0);
   z-index: 10;
   animation: pulseGlow 1s infinite alternate;
 }
 
 .linkCardDragWrapper.dragOverBelow {
-  margin-bottom: 8px;
+  margin-bottom: 14px;
   background: var(--accent-glow, rgba(226, 232, 240, 0.08));
+  border-radius: var(--radius-md);
+  transform: translateY(-2px);
 }
 
 .linkCardDragWrapper.dragOverBelow::after {
   content: '';
   position: absolute;
-  bottom: -5px;
+  bottom: -7px;
   left: 0;
   right: 0;
   height: 3px;
   background: var(--accent-primary, #e2e8f0);
   border-radius: 3px;
-  box-shadow: 0 0 10px var(--accent-primary, #e2e8f0), 0 0 4px var(--accent-primary, #e2e8f0);
+  box-shadow: 0 0 12px var(--accent-primary, #e2e8f0), 0 0 6px var(--accent-primary, #e2e8f0);
   z-index: 10;
   animation: pulseGlow 1s infinite alternate;
 }
@@ -298,9 +308,31 @@
   }
 }
 
+/* Fluid Drop Release Spring Keyframe Animation */
+@keyframes dropReleaseSpring {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
+    box-shadow: 0 0 16px var(--accent-glow, rgba(226, 232, 240, 0.3));
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: none;
+  }
+}
+
+.linkCardReleased {
+  animation: dropReleaseSpring 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
 .linkCardDragWrapper.linkBeingDragged {
-  opacity: 0.25;
-  transform: scale(0.96);
+  opacity: 0.2;
+  transform: scale(0.95);
 }
 
 .linkRow {

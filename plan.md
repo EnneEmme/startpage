@@ -61,9 +61,10 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] **Task 7**: Mobile Touch & Smartphone UX Refinements (Unified Non-Overlapping Header & Bottom Sheets).
   - [x] **Task 8**: Dynamic Responsive Column Grid Geometry, Extended Link Capacity (+1-2 links), & Balanced Side Padding.
   - [x] **Task 9**: Custom JavaScript Script & Bookmarklet Links Support.
+  - [x] **Task 11**: Refined Drag & Drop Link Relocation & Context Menu Category Move.
   - [x] **Task 12**: Alias Badge Theme Accent Color Sync & Dynamic UI Refinement.
   - [x] **Task 14**: Grid Density Fix & Font Size Selector (Small, Medium, Large) in Settings.
   - [ ] **Task 10**: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching.
-  - [ ] **Task 11**: Refined Drag & Drop Link Relocation & Context Menu Category Move.
   - [ ] **Task 5**: Ultra-Minimalist Search Overlay.
   - [ ] **Task 13**: Advanced Dynamic Link & Date Rule Visual Editor (Unimib Orari & Esami).
+  - [ ] **Task 15**: In-Column Section Separators & Sub-Headers (Divider Lines / Titles).

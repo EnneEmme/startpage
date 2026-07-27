@@ -21,6 +21,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 12. **Alias Badge Theme Accent Color Sync & Dynamic UI Refinement**.
 13. **Advanced Dynamic Link & Date Rule Visual Editor (Unimib Orari & Esami)**.
 14. **Grid Density Fix & Font Size Selector (Small, Medium, Large) in Settings**.
+15. **In-Column Section Separators & Sub-Headers (Divider Lines / Titles)**.
 
 ---
 
@@ -115,6 +116,14 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ---
 
+### 🔹 Task 11: Refined Drag & Drop Link Relocation & Context Menu Category Move
+- [x] **Ultra-Smooth Drag & Drop Experience**:
+  - Created 1:1 replica clone drag ghost showing the entire exact link card (icon, title, alias badge, glass background, accent border, shadow).
+  - Smooth spring gap animations during dragging and fluid drop release spring animation (`dropReleaseSpring`).
+  - Added "Move to Category..." submenu option in right-click context menu (`ContextMenu.tsx`) for click-based relocation.
+
+---
+
 ### 🔹 Task 12: Alias Badge Theme Accent Color Sync & Dynamic UI Refinement
 - [x] **Theme Accent Color Sync for Alias Badges**:
   - Updated `.aliasBadge` styling in `ColumnGrid.module.css` so when aliases are toggled (`Alt` / `Shift+Space`), badge background/border/text dynamically inherits the active Theme Color (`var(--accent-highlight)`, `var(--accent-glow)`, `var(--border-color-hover)`) instead of hardcoded emerald green.
@@ -137,14 +146,6 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ---
 
-### 🔹 Task 11: Refined Drag & Drop Link Relocation & Context Menu Category Move
-- [ ] **High-UX Drag & Drop Experience**:
-  - Smooth spring gap animations when dragging links between columns.
-  - Auto-scroll container when holding drag items near top/bottom boundaries of tall columns.
-  - Add "Move to Category..." dropdown option in right-click context menu (`ContextMenu.tsx`) for click-based relocation without dragging.
-
----
-
 ### 🔹 Task 5: Ultra-Minimalist Search Overlay
 - [ ] **Streamlined Command Palette (`SearchModal.tsx`)**:
   - Position floating dark search bar centered at top 15% of screen.
@@ -157,6 +158,12 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 - [ ] **Dedicated Dynamic URL Rule Selector in `VisualEditModal.tsx`**:
   - Add an intuitive dropdown editor for configuring dynamic course/exam schedule rules (`unimib_orari`, `unimib_esami`) and date tokens (`{{DD-MM-YYYY}}`).
   - Ensure seamless pre-filling, validation bypass, and rule editing for custom dynamic links.
+
+---
+
+### 🔹 Task 15: In-Column Section Separators & Sub-Headers (Divider Lines / Titles)
+- [ ] **Visual Dividers & Sub-Section Headers**:
+  - Support creating visual divider lines, sub-titles, or combined section headers within tall columns to organize related links into sub-groups (details to be defined subsequently).
 
 ---
 

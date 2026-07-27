@@ -1,30 +1,28 @@
 import { h } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import { ChevronDown, Zap } from 'lucide-preact';
-import { CategoryGroup, LinkItem } from '../types/startpage';
+import { LinkItem, CategoryGroup } from '../types/startpage';
+import { dataStore } from '../engine/dataStore';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
 import { executeLink, isBookmarkletOrScript } from '../engine/linkExecutor';
-import { dataStore } from '../engine/dataStore';
 import { LinkIcon } from './LinkIcon';
 import { ContextMenu } from './ContextMenu';
 import styles from './ColumnGrid.module.css';
 
 interface ColumnGridProps {
   categories: CategoryGroup[];
+  showShortcuts: boolean;
   highlightedCategory?: string | null;
-  showShortcuts?: boolean;
-  onLinkClick?: (link: LinkItem) => void;
-  onEditLink?: (link: LinkItem) => void;
   onConfigChanged?: () => void;
+  onEditLink?: (link: LinkItem) => void;
 }
 
 export const ColumnGrid = ({
   categories,
+  showShortcuts,
   highlightedCategory,
-  showShortcuts = false,
-  onLinkClick,
-  onEditLink,
-  onConfigChanged
+  onConfigChanged,
+  onEditLink
 }: ColumnGridProps) => {
   const [contextMenuState, setContextMenuState] = useState<{
     x: number;
@@ -32,55 +30,92 @@ export const ColumnGrid = ({
     link: LinkItem;
   } | null>(null);
 
-  const [editingCategory, setEditingCategory] = useState<{ originalName: string; text: string } | null>(null);
-  const [scrollStates, setScrollStates] = useState<Record<string, { canScrollTop: boolean; canScrollBottom: boolean }>>({});
+  // Inline Category Header Rename State
+  const [editingCategoryName, setEditingCategoryName] = useState<string | null>(null);
+  const [renameInputValue, setRenameInputValue] = useState<string>('');
+
+  // Drag & Drop State
   const [draggedLinkId, setDraggedLinkId] = useState<string | null>(null);
   const [draggedCategoryName, setDraggedCategoryName] = useState<string | null>(null);
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
   const [dragOverLinkId, setDragOverLinkId] = useState<string | null>(null);
-  const [dropPosition, setDropPosition] = useState<'above' | 'below'>('above');
+  const [dropPosition, setDropPosition] = useState<'above' | 'below'>('below');
+  const [justDroppedLinkId, setJustDroppedLinkId] = useState<string | null>(null);
 
-  // Page-wide scroll indicator state
-  const [showPageDownCue, setShowPageDownCue] = useState(false);
+  // Reactive Gradient Fade Mask & Page Down Cue State
+  const [scrollStates, setScrollStates] = useState<Record<string, { canScrollUp: boolean; canScrollDown: boolean }>>({});
+  const [hasPageScrollDown, setHasPageScrollDown] = useState<boolean>(false);
+
+  // Check page scroll state for bottom chevron indicator
+  const checkPageScroll = () => {
+    const totalHeight = document.documentElement.scrollHeight;
+    const viewportHeight = window.innerHeight;
+    const currentScroll = window.scrollY || document.documentElement.scrollTop;
+
+    // Show indicator if content extends > 80px below fold and user hasn't scrolled near bottom
+    const isUnscrolledPage = currentScroll < 120;
+    const hasMorePageContent = totalHeight > viewportHeight + 80;
+
+    setHasPageScrollDown(isUnscrolledPage && hasMorePageContent);
+  };
 
   useEffect(() => {
-    const checkPageScrollability = () => {
-      const isScrolledNearTop = window.scrollY < 40;
-      const isPageScrollable = document.documentElement.scrollHeight > window.innerHeight + 100;
-      setShowPageDownCue(isScrolledNearTop && isPageScrollable);
-    };
-
-    checkPageScrollability();
-    window.addEventListener('scroll', checkPageScrollability);
-    window.addEventListener('resize', checkPageScrollability);
-
+    checkPageScroll();
+    window.addEventListener('scroll', checkPageScroll, { passive: true });
+    window.addEventListener('resize', checkPageScroll, { passive: true });
     return () => {
-      window.removeEventListener('scroll', checkPageScrollability);
-      window.removeEventListener('resize', checkPageScrollability);
+      window.removeEventListener('scroll', checkPageScroll);
+      window.removeEventListener('resize', checkPageScroll);
     };
   }, [categories]);
 
-  const handleScrollPageDown = () => {
-    window.scrollBy({ top: window.innerHeight * 0.7, behavior: 'smooth' });
+  // Isolate mousewheel scrolling to inner column list only
+  const handleWheel = (e: WheelEvent) => {
+    const container = e.currentTarget as HTMLDivElement;
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const delta = e.deltaY;
+
+    if (delta > 0 && scrollTop + clientHeight >= scrollHeight - 1) {
+      container.scrollTop = scrollHeight;
+      e.preventDefault();
+    } else if (delta < 0 && scrollTop <= 0) {
+      container.scrollTop = 0;
+      e.preventDefault();
+    }
   };
 
-  const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
-    if (draggedLinkId) {
-      e.preventDefault();
-      return;
-    }
+  const updateScrollMasksForColumn = (columnName: string, container: HTMLDivElement) => {
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const canScrollUp = scrollTop > 4;
+    const canScrollDown = scrollTop + clientHeight < scrollHeight - 4;
 
-    e.preventDefault();
-    executeLink(link);
+    setScrollStates(prev => {
+      const current = prev[columnName];
+      if (current?.canScrollUp === canScrollUp && current?.canScrollDown === canScrollDown) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [columnName]: { canScrollUp, canScrollDown }
+      };
+    });
+  };
 
-    if (onLinkClick) {
-      onLinkClick(link);
-    }
+  const handleScroll = (e: Event, columnName: string) => {
+    const container = e.currentTarget as HTMLDivElement;
+    updateScrollMasksForColumn(columnName, container);
+  };
+
+  // Scroll smooth to bottom of page when clicking floating chevron indicator
+  const scrollToNextPageRow = () => {
+    window.scrollTo({
+      top: window.innerHeight - 100,
+      behavior: 'smooth'
+    });
   };
 
   const handleContextMenu = (e: MouseEvent, link: LinkItem) => {
     e.preventDefault();
-    e.stopPropagation();
     setContextMenuState({
       x: e.clientX,
       y: e.clientY,
@@ -88,74 +123,34 @@ export const ColumnGrid = ({
     });
   };
 
-  const handleHeaderContextMenu = (e: MouseEvent, categoryName: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setEditingCategory({
-      originalName: categoryName,
-      text: categoryName
-    });
+  const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
+    // Intercept JS scripts & bookmarklets
+    const handled = executeLink(link);
+    if (handled) {
+      e.preventDefault();
+    }
   };
 
-  const handleFinishRenameCategory = () => {
-    if (editingCategory && editingCategory.text.trim()) {
-      dataStore.renameCategory(editingCategory.originalName, editingCategory.text.trim());
+  const handleHeaderDoubleClick = (e: MouseEvent, categoryName: string) => {
+    e.stopPropagation();
+    setEditingCategoryName(categoryName);
+    setRenameInputValue(categoryName);
+  };
+
+  const handleRenameSubmit = (oldName: string) => {
+    if (renameInputValue.trim() && renameInputValue.trim() !== oldName) {
+      dataStore.renameCategory(oldName, renameInputValue.trim());
       if (onConfigChanged) onConfigChanged();
     }
-    setEditingCategory(null);
+    setEditingCategoryName(null);
   };
 
-  const handleRenameKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleFinishRenameCategory();
-    } else if (e.key === 'Escape') {
-      setEditingCategory(null);
-    }
-  };
-
-  const handleRemoveLink = (linkId: string) => {
-    dataStore.removeLink(linkId);
-    if (onConfigChanged) {
-      onConfigChanged();
-    }
-  };
-
-  const handleScroll = (e: Event, categoryName: string) => {
-    const target = e.target as HTMLDivElement;
-    const canScrollTop = target.scrollTop > 5;
-    const canScrollBottom = target.scrollTop + target.clientHeight < target.scrollHeight - 8;
-
-    setScrollStates(prev => {
-      const current = prev[categoryName];
-      if (current?.canScrollTop === canScrollTop && current?.canScrollBottom === canScrollBottom) {
-        return prev;
-      }
-      return {
-        ...prev,
-        [categoryName]: { canScrollTop, canScrollBottom }
-      };
-    });
-  };
-
-  const handleWheel = (e: WheelEvent) => {
-    const target = e.currentTarget as HTMLDivElement;
-    const isAtTop = target.scrollTop <= 0 && e.deltaY < 0;
-    const isAtBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 1 && e.deltaY > 0;
-
-    if (isAtTop || isAtBottom) {
-      e.preventDefault();
-    }
-  };
-
-  /* --------------------------------------------------------------------------
-     Fluid & Premium UI/UX Drag & Drop Handlers
-     -------------------------------------------------------------------------- */
-  const handleColumnDragStart = (e: DragEvent, categoryName: string) => {
+  const handleCategoryDragStart = (e: DragEvent, categoryName: string) => {
+    e.stopPropagation();
     setDraggedCategoryName(categoryName);
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'COLUMN', name: categoryName }));
+      e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'CATEGORY', name: categoryName }));
     }
   };
 
@@ -166,22 +161,32 @@ export const ColumnGrid = ({
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'LINK', id: link.id }));
 
-      const dragGhost = document.createElement('div');
+      // Create a 1:1 replica clone of the full link card element for ultra-smooth drag preview
+      const targetEl = e.currentTarget as HTMLElement;
+      const dragGhost = targetEl.cloneNode(true) as HTMLElement;
+
       dragGhost.style.position = 'absolute';
       dragGhost.style.top = '-9999px';
-      dragGhost.style.padding = '6px 14px';
-      dragGhost.style.background = '#18181b';
+      dragGhost.style.left = '-9999px';
+      dragGhost.style.width = `${targetEl.offsetWidth}px`;
+      dragGhost.style.background = 'rgba(18, 20, 28, 0.95)';
+      dragGhost.style.backdropFilter = 'blur(16px)';
       dragGhost.style.border = '1px solid var(--accent-primary, #e2e8f0)';
-      dragGhost.style.borderRadius = '8px';
-      dragGhost.style.color = '#f4f4f5';
-      dragGhost.style.fontSize = '13px';
-      dragGhost.style.fontWeight = '500';
-      dragGhost.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5), 0 0 15px var(--accent-glow, rgba(226,232,240,0.3))';
-      dragGhost.innerText = `Moving ${link.title}`;
-      document.body.appendChild(dragGhost);
-      e.dataTransfer.setDragImage(dragGhost, 20, 20);
+      dragGhost.style.borderRadius = 'var(--radius-md)';
+      dragGhost.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.8), 0 0 20px var(--accent-glow, rgba(226, 232, 240, 0.3))';
+      dragGhost.style.pointerEvents = 'none';
+      dragGhost.style.transform = 'scale(1.02)';
+      dragGhost.style.opacity = '0.98';
+      dragGhost.style.zIndex = '9999';
 
-      setTimeout(() => document.body.removeChild(dragGhost), 0);
+      document.body.appendChild(dragGhost);
+      e.dataTransfer.setDragImage(dragGhost, targetEl.offsetWidth / 2, targetEl.offsetHeight / 2);
+
+      setTimeout(() => {
+        if (document.body.contains(dragGhost)) {
+          document.body.removeChild(dragGhost);
+        }
+      }, 0);
     }
   };
 
@@ -235,6 +240,11 @@ export const ColumnGrid = ({
       }
 
       dataStore.moveLink(draggedLinkId, targetCategoryName, finalIndex);
+
+      // Trigger smooth spring drop animation
+      setJustDroppedLinkId(draggedLinkId);
+      setTimeout(() => setJustDroppedLinkId(null), 400);
+
       setDraggedLinkId(null);
       if (onConfigChanged) onConfigChanged();
       return;
@@ -268,19 +278,14 @@ export const ColumnGrid = ({
         const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
         const isHighlighted = highlightedCategory === cat.name;
         const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
-        const isEditingThisHeader = editingCategory?.originalName === cat.name;
 
-        const state = scrollStates[cat.name] || {
-          canScrollTop: false,
-          canScrollBottom: cat.links.length > 15
-        };
-
+        const maskState = scrollStates[cat.name] || { canScrollUp: false, canScrollDown: false };
         let fadeClass = '';
-        if (state.canScrollTop && state.canScrollBottom) {
+        if (maskState.canScrollUp && maskState.canScrollDown) {
           fadeClass = styles.fadeBoth;
-        } else if (state.canScrollTop && !state.canScrollBottom) {
+        } else if (maskState.canScrollUp) {
           fadeClass = styles.fadeTop;
-        } else if (!state.canScrollTop && state.canScrollBottom) {
+        } else if (maskState.canScrollDown) {
           fadeClass = styles.fadeBottom;
         }
 
@@ -290,32 +295,33 @@ export const ColumnGrid = ({
             id={columnId}
             class={`${styles.columnCard} ${isHighlighted ? styles.highlightPulse : ''} ${isDragOver ? styles.dragOver : ''}`}
             onDragOver={e => handleDragOver(e, cat.name)}
-            onDragLeave={handleDragLeave}
             onDrop={e => handleDrop(e, cat.name)}
+            onDragLeave={handleDragLeave}
           >
-            {/* Draggable Column Header with Right-Click Inline Rename */}
+            {/* Column Header */}
             <div
               class={styles.columnHeader}
-              draggable={!isEditingThisHeader}
-              onDragStart={e => handleColumnDragStart(e, cat.name)}
+              draggable={editingCategoryName !== cat.name}
+              onDragStart={e => handleCategoryDragStart(e, cat.name)}
               onDragEnd={handleDragEnd}
-              onContextMenu={e => handleHeaderContextMenu(e, cat.name)}
-              title="Drag to reorder / Right-click to rename"
+              onDblClick={e => handleHeaderDoubleClick(e, cat.name)}
+              title="Double click to rename column header, drag to reorder"
             >
-              {isEditingThisHeader ? (
-                <input
-                  class={styles.inlineRenameInput}
-                  value={editingCategory.text}
-                  autoFocus
-                  onInput={e => {
-                    const val = (e.target as HTMLInputElement).value;
-                    setEditingCategory({ originalName: cat.name, text: val });
-                  }}
-                  onKeyDown={handleRenameKeyDown}
-                  onBlur={handleFinishRenameCategory}
-                />
+              {editingCategoryName !== cat.name ? (
+                <h3 class={styles.columnTitle}>{cat.name}</h3>
               ) : (
-                <h2 class={styles.columnTitle}>{cat.name}</h2>
+                <input
+                  type="text"
+                  class={styles.inlineRenameInput}
+                  value={renameInputValue}
+                  onInput={e => setRenameInputValue((e.target as HTMLInputElement).value)}
+                  onBlur={() => handleRenameSubmit(cat.name)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleRenameSubmit(cat.name);
+                    if (e.key === 'Escape') setEditingCategoryName(null);
+                  }}
+                  autoFocus
+                />
               )}
             </div>
 
@@ -331,6 +337,7 @@ export const ColumnGrid = ({
                 const isScript = isBookmarkletOrScript(link);
                 const isItemDragOver = dragOverLinkId === link.id;
                 const isBeingDragged = draggedLinkId === link.id;
+                const isJustDropped = justDroppedLinkId === link.id;
 
                 let dragOverClass = '';
                 if (isItemDragOver) {
@@ -340,7 +347,7 @@ export const ColumnGrid = ({
                 return (
                   <div
                     key={link.id}
-                    class={`${styles.linkCardDragWrapper} ${dragOverClass} ${isBeingDragged ? styles.linkBeingDragged : ''}`}
+                    class={`${styles.linkCardDragWrapper} ${dragOverClass} ${isBeingDragged ? styles.linkBeingDragged : ''} ${isJustDropped ? styles.linkCardReleased : ''}`}
                     draggable={true}
                     onDragStart={e => handleLinkDragStart(e, link)}
                     onDragOver={e => handleDragOver(e, cat.name, link.id)}
@@ -388,13 +395,14 @@ export const ColumnGrid = ({
       {/* Page-Wide Floating Minimalist Down Indicator Cue (Bottom Center) */}
       <button
         type="button"
-        class={`${styles.pageScrollDownIndicator} ${showPageDownCue ? styles.visiblePageIndicator : ''}`}
-        onClick={handleScrollPageDown}
-        title="Scroll down for more categories"
+        class={`${styles.pageScrollDownIndicator} ${hasPageScrollDown ? styles.visiblePageIndicator : ''}`}
+        onClick={scrollToNextPageRow}
+        title="Scroll down to view remaining columns"
       >
-        <ChevronDown size={16} />
+        <ChevronDown size={20} />
       </button>
 
+      {/* Context Menu */}
       {contextMenuState && (
         <ContextMenu
           x={contextMenuState.x}
@@ -404,7 +412,10 @@ export const ColumnGrid = ({
           onEdit={link => {
             if (onEditLink) onEditLink(link);
           }}
-          onRemove={handleRemoveLink}
+          onRemove={linkId => {
+            dataStore.removeLink(linkId);
+            if (onConfigChanged) onConfigChanged();
+          }}
           onConfigChanged={() => {
             if (onConfigChanged) onConfigChanged();
           }}
