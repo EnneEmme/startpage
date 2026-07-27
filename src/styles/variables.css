@@ -5,16 +5,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
 :root {
-  /* True Deep Obsidian Dark Palette */
-  --bg-primary: #08090c;
-  --bg-secondary: #0f1117;
-  --bg-card: rgba(18, 20, 28, 0.45);
-  --bg-card-hover: rgba(26, 30, 42, 0.65);
-  --bg-glass: rgba(15, 17, 24, 0.85);
-  --bg-modal-overlay: rgba(4, 5, 8, 0.82);
+  /* True Deep Neutral Obsidian Dark Palette */
+  --bg-primary: #08080a;
+  --bg-secondary: #101012;
+  --bg-card: rgba(20, 20, 23, 0.45);
+  --bg-card-hover: rgba(28, 28, 32, 0.65);
+  --bg-glass: rgba(16, 16, 18, 0.85);
+  --bg-navbar: rgba(20, 20, 23, 0.65);
+  --bg-modal-overlay: rgba(5, 5, 7, 0.85);
 
   /* Subtle Seamless Contrast Borders */
-  --border-color: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.06);
   --border-color-hover: rgba(226, 232, 240, 0.4);
   --border-focus: rgba(255, 255, 255, 0.3);
 

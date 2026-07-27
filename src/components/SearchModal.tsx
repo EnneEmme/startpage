@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
-import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles } from 'lucide-preact';
+import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles, X } from 'lucide-preact';
 import { fuzzySearchEngine } from '../engine/fuzzySearch';
 import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
 import { executeLink } from '../engine/linkExecutor';
@@ -77,6 +77,15 @@ export const SearchModal = ({
       return;
     }
 
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (!parsedPrefix.isPrefixCommand && searchResults.length > 0 && searchResults[selectedIndex]) {
+        const item = searchResults[selectedIndex].item;
+        setQuery(item.title);
+      }
+      return;
+    }
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       if (searchResults.length > 0) {
@@ -95,6 +104,36 @@ export const SearchModal = ({
 
     if (e.key === 'Enter') {
       e.preventDefault();
+
+      // Cmd+Enter or Ctrl+Enter: switch to site query mode for the selected link card
+      if ((e.metaKey || e.ctrlKey) && !parsedPrefix.isPrefixCommand && searchResults.length > 0 && searchResults[selectedIndex]) {
+        const item = searchResults[selectedIndex].item;
+        let prefixKey = item.aliases && item.aliases.length > 0 ? item.aliases[0] : '';
+        if (!prefixKey) {
+          const lowerUrl = (item.url || '').toLowerCase();
+          if (lowerUrl.includes('youtube.com')) prefixKey = 'yt';
+          else if (lowerUrl.includes('github.com')) prefixKey = 'gh';
+          else if (lowerUrl.includes('google.com')) prefixKey = 'g';
+          else if (lowerUrl.includes('wikipedia.org')) prefixKey = 'w';
+          else if (lowerUrl.includes('duckduckgo.com')) prefixKey = 'ddg';
+          else prefixKey = item.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+
+        const newQuery = `${prefixKey} `;
+        setQuery(newQuery);
+        setSelectedIndex(0);
+
+        if (inputRef.current) {
+          inputRef.current.focus();
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.setSelectionRange(newQuery.length, newQuery.length);
+            }
+          }, 10);
+        }
+        return;
+      }
+
       if (parsedPrefix.isPrefixCommand) {
         handleExecuteCommandPrefix();
       } else if (searchResults.length > 0 && searchResults[selectedIndex]) {
@@ -105,26 +144,22 @@ export const SearchModal = ({
         window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query.trim())}`;
       }
     }
-
-    // Numerical shortcut key bindings Ctrl+1..9 or Alt+1..9
-    if ((e.ctrlKey || e.altKey) && e.key >= '1' && e.key <= '9') {
-      e.preventDefault();
-      const idx = parseInt(e.key, 10) - 1;
-      if (searchResults[idx]) {
-        handleSelectLink(searchResults[idx].item);
-      }
-    }
   };
 
   return (
     <div class={styles.overlay} onClick={onClose}>
-      <div class={`${styles.modalContainer} fade-in`} onClick={e => e.stopPropagation()}>
+      <div class={`${styles.modalContainer} fade-in-scale`} onClick={e => e.stopPropagation()}>
         <div class={styles.inputWrapper}>
-          <Search size={22} class={styles.searchIcon} />
+          <Search size={20} class={styles.searchIcon} />
           <input
             ref={inputRef}
             type="text"
+            name="search-query"
             autoFocus={true}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
             class={styles.searchInput}
             placeholder="Type link name, alias, or command (e.g. g meteo)..."
             value={query}
@@ -134,6 +169,20 @@ export const SearchModal = ({
             }}
             onKeyDown={handleKeyDown}
           />
+          {query.length > 0 && (
+            <button
+              type="button"
+              class={styles.clearBtn}
+              onClick={() => {
+                setQuery('');
+                setSelectedIndex(0);
+                if (inputRef.current) inputRef.current.focus();
+              }}
+              title="Clear search"
+            >
+              <X size={16} />
+            </button>
+          )}
           {parsedPrefix.isPrefixCommand && (
             <span class={styles.commandBadge}>
               <Sparkles size={14} />
@@ -166,7 +215,6 @@ export const SearchModal = ({
               const item = res.item;
               const targetUrl = resolveDynamicUrl(item.url, item.dynamicUrlRule);
               const isSelected = index === selectedIndex;
-              const shortcutBadge = index < 9 ? `Ctrl+${index + 1}` : null;
 
               return (
                 <div
@@ -197,9 +245,6 @@ export const SearchModal = ({
                     <span class={styles.resultUrl}>{targetUrl || 'Dynamic Link'}</span>
                   </div>
 
-                  {shortcutBadge && (
-                    <span class={styles.shortcutBadge}>{shortcutBadge}</span>
-                  )}
                   {isSelected && <CornerDownLeft size={16} class={styles.enterHint} />}
                 </div>
               );
@@ -225,6 +270,26 @@ export const SearchModal = ({
             <ArrowRight size={16} />
           </div>
         )}
+
+        {/* Minimalist Footer Keyboard Hints */}
+        <div class={styles.footerHints}>
+          <span class={styles.hintItem}>
+            <kbd class={styles.hintKbd}>↑</kbd>
+            <kbd class={styles.hintKbd}>↓</kbd> navigate
+          </span>
+          <span class={styles.hintItem}>
+            <kbd class={styles.hintKbd}>Tab</kbd> complete
+          </span>
+          <span class={styles.hintItem}>
+            <kbd class={styles.hintKbd}>↵</kbd> open
+          </span>
+          <span class={styles.hintItem}>
+            <kbd class={styles.hintKbd}>⌘↵</kbd> search site
+          </span>
+          <span class={styles.hintItem}>
+            <kbd class={styles.hintKbd}>Esc</kbd> dismiss
+          </span>
+        </div>
       </div>
     </div>
   );

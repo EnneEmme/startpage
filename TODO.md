@@ -148,7 +148,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ---
 
 ### 🔹 Task 5: Ultra-Minimalist Search Overlay
-- [ ] **Streamlined Command Palette (`SearchModal.tsx`)**:
+- [x] **Streamlined Command Palette (`SearchModal.tsx`)**:
   - Position floating dark search bar centered at top 15% of screen.
   - Enhanced glassmorphic backdrop blur (`backdrop-filter: blur(16px)`).
   - Minimalist matching list with clear command badges (`Tab to complete, Enter to open`).
@@ -156,15 +156,27 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ---
 
 ### 🔹 Task 13: Advanced Dynamic Link & Date Rule Visual Editor (Unimib Orari & Esami)
-- [ ] **Dedicated Dynamic URL Rule Selector in `VisualEditModal.tsx`**:
-  - Add an intuitive dropdown editor for configuring dynamic course/exam schedule rules (`unimib_orari`, `unimib_esami`) and date tokens (`{{DD-MM-YYYY}}`).
-  - Ensure seamless pre-filling, validation bypass, and rule editing for custom dynamic links.
+- [x] **Dedicated Dynamic URL & JS Script Editor in `dataStore.ts`**:
+  - Embedded executable JS script functions (`updateOrari()` & `updateEsami()`) for dynamic date range calculations (`datefrom` = today, `dateto` = today + 60 days).
+  - Consolidated all AI/LLM tools under unified `AI & LLMs` category while keeping `ImGen` and `Media` as independent columns.
 
 ---
 
 ### 🔹 Task 15: In-Column Section Separators & Sub-Headers (Divider Lines / Titles)
 - [ ] **Visual Dividers & Sub-Section Headers**:
   - Support creating visual divider lines, sub-titles, or combined section headers within tall columns to organize related links into sub-groups (details to be defined subsequently).
+
+---
+
+### 🔹 Task 16: Column & Navbar Geometry, Spacing & Color Customization
+- [x] **Navbar & Floating Glass Island Dock Refinement**:
+  - Eliminated full-width edge-to-edge dark background banner and bottom border line from `.unifiedHeader`.
+  - Transformed header into a floating glass dock container where `JumpBar` (categories) and `HeaderClock` (tool icons) float as independent, matching glassmorphic capsules (`backdrop-filter: blur(20px)`, subtle inset glow, elevated drop shadow).
+  - Adjusted navbar height, category tab padding, gap between pills, horizontal alignment, and background/border translucency.
+- [x] **Column Card Dimensions & Spacing**:
+  - Adjust column card widths, grid gap, card inner padding, header typography, card background contrast, and hover borders.
+- [x] **Color Palette & Theme Balance**:
+  - Fine-tune color accents, border contrast, and active tab highlights for maximum visual harmony.
 
 ---
 

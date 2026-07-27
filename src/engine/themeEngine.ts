@@ -6,7 +6,8 @@
 export interface ThemeConfig {
   accentColorId: string;
   gridDensity: 'compact' | 'normal' | 'spaced';
-  fontSize: 'small' | 'medium' | 'large';
+  fontSize: 'small' | 'medium' | 'large' | 'xlarge';
+  aliasVisibility: 'smart' | 'always';
   defaultSearchEngine: 'g' | 'ddg' | 'b' | 'yt' | 'gh';
 }
 
@@ -75,7 +76,8 @@ const STORAGE_KEY = 'startpage_theme_settings';
 const DEFAULT_THEME_CONFIG: ThemeConfig = {
   accentColorId: 'silver', // Default accent is silver/platinum gray
   gridDensity: 'normal',   // Default density is balanced 185px
-  fontSize: 'medium',      // Default font size is medium (0.96rem)
+  fontSize: 'medium',      // Default font size is medium (1.02rem)
+  aliasVisibility: 'smart',// Default alias visibility is smart hidden (hold Alt)
   defaultSearchEngine: 'g'
 };
 
@@ -104,8 +106,13 @@ export class ThemeEngine {
     this.saveAndApply();
   }
 
-  public setFontSize(size: 'small' | 'medium' | 'large'): void {
+  public setFontSize(size: 'small' | 'medium' | 'large' | 'xlarge'): void {
     this.config.fontSize = size;
+    this.saveAndApply();
+  }
+
+  public setAliasVisibility(visibility: 'smart' | 'always'): void {
+    this.config.aliasVisibility = visibility;
     this.saveAndApply();
   }
 
@@ -130,18 +137,18 @@ export class ThemeEngine {
     root.style.setProperty('--accent-glow', accent.glow);
     root.style.setProperty('--border-color-hover', accent.borderHover);
 
-    // Apply 3-tier grid density scale
+    // Apply 3-tier grid density scale with optimized vertical row gaps
     let minColWidth = '185px';      // DEFAULT ('normal')
-    let gridGap = '5rem 1.25rem';
+    let gridGap = '2.5rem 1.25rem';
     let linkPadding = '0.34rem 0.45rem';
 
     if (config.gridDensity === 'compact') {
       minColWidth = '155px';       // ULTRA COMPACT
-      gridGap = '4.5rem 0.85rem';
+      gridGap = '1.75rem 0.85rem';
       linkPadding = '0.26rem 0.38rem';
     } else if (config.gridDensity === 'spaced') {
       minColWidth = '230px';       // WIDE / SPACED
-      gridGap = '6rem 1.8rem';
+      gridGap = '3.5rem 1.75rem';
       linkPadding = '0.45rem 0.6rem';
     }
 
@@ -149,28 +156,42 @@ export class ThemeEngine {
     root.style.setProperty('--grid-gap', gridGap);
     root.style.setProperty('--link-row-padding', linkPadding);
 
-    // Apply 3-tier font size scale (Old Large becomes Normal Default; Old Normal becomes Small; New Large is bigger)
-    let baseSize = '1.05rem';
-    let linkSize = '0.96rem';      // DEFAULT ('medium') - Previous Large
-    let headerSize = '1.14rem';
+    // Apply 4-tier font size scale (+10% upscale for crystal clear readability)
+    let baseSize = '1.10rem';
+    let linkSize = '1.02rem';      // DEFAULT ('medium')
+    let headerSize = '1.18rem';
     let badgeSize = '0.74rem';
 
     if (config.fontSize === 'small') {
-      baseSize = '0.95rem';        // PICCOLO ('small') - Previous Medium/Normal
-      linkSize = '0.85rem';
-      headerSize = '1.00rem';
-      badgeSize = '0.65rem';
+      baseSize = '0.98rem';
+      linkSize = '0.92rem';
+      headerSize = '1.05rem';
+      badgeSize = '0.66rem';
     } else if (config.fontSize === 'large') {
-      baseSize = '1.18rem';        // GRANDE ('large') - New Extra Large
-      linkSize = '1.10rem';
+      baseSize = '1.20rem';
+      linkSize = '1.12rem';
       headerSize = '1.28rem';
       badgeSize = '0.82rem';
+    } else if (config.fontSize === 'xlarge') {
+      baseSize = '1.30rem';
+      linkSize = '1.22rem';
+      headerSize = '1.38rem';
+      badgeSize = '0.90rem';
     }
 
     root.style.setProperty('--font-size-base', baseSize);
     root.style.setProperty('--font-size-link', linkSize);
     root.style.setProperty('--font-size-header', headerSize);
     root.style.setProperty('--font-size-badge', badgeSize);
+
+    // Apply dynamic alias visibility override
+    if (config.aliasVisibility === 'always') {
+      root.style.setProperty('--alias-badge-display-override', 'inline-block');
+      root.style.setProperty('--alias-badge-opacity-override', '1');
+    } else {
+      root.style.removeProperty('--alias-badge-display-override');
+      root.style.removeProperty('--alias-badge-opacity-override');
+    }
   }
 
   private saveAndApply(): void {

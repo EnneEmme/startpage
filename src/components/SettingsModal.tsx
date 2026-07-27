@@ -33,8 +33,14 @@ export const SettingsModal = ({
     if (onConfigChanged) onConfigChanged();
   };
 
-  const handleSelectFontSize = (size: 'small' | 'medium' | 'large') => {
+  const handleSelectFontSize = (size: 'small' | 'medium' | 'large' | 'xlarge') => {
     themeEngine.setFontSize(size);
+    setConfig(themeEngine.getConfig());
+    if (onConfigChanged) onConfigChanged();
+  };
+
+  const handleSelectAliasVisibility = (visibility: 'smart' | 'always') => {
+    themeEngine.setAliasVisibility(visibility);
     setConfig(themeEngine.getConfig());
     if (onConfigChanged) onConfigChanged();
   };
@@ -67,32 +73,6 @@ export const SettingsModal = ({
         </div>
 
         <div class={styles.modalContent}>
-          {/* Live Interactive Preview Card */}
-          <div class={styles.previewBox}>
-            <div class={styles.previewHeader}>
-              <Eye size={14} class={styles.previewIcon} />
-              <span>Anteprima in Tempo Reale</span>
-              <span class={styles.previewTag} style={{ color: currentAccent.primary }}>
-                {currentAccent.name}
-              </span>
-            </div>
-
-            <div class={styles.previewCardBody}>
-              <div class={styles.previewColumnCard}>
-                <div class={styles.previewColumnHeader}>Produttività</div>
-                <div class={styles.previewLinkRow}>
-                  <div class={styles.previewIconBox} style={{ color: currentAccent.primary }}>
-                    <Sparkles size={14} />
-                  </div>
-                  <span class={styles.previewLinkTitle}>Esempio Link Card</span>
-                  <span class={styles.previewBadge} style={{ background: currentAccent.glow, color: currentAccent.highlight, borderColor: currentAccent.borderHover }}>
-                    ALT
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Accent Color Theme Section */}
           <div class={styles.sectionGroup}>
             <div class={styles.sectionHeaderRow}>
@@ -192,6 +172,43 @@ export const SettingsModal = ({
                 onClick={() => handleSelectFontSize('large')}
               >
                 Grande
+              </button>
+              <button
+                type="button"
+                class={`${styles.segmentBtn} ${config.fontSize === 'xlarge' ? styles.activeSegment : ''}`}
+                onClick={() => handleSelectFontSize('xlarge')}
+              >
+                XL
+              </button>
+            </div>
+          </div>
+
+          {/* Alias Badge Visibility Section */}
+          <div class={styles.sectionGroup}>
+            <div class={styles.sectionHeaderRow}>
+              <label class={styles.sectionLabel}>
+                <Eye size={15} class={styles.sectionIcon} />
+                Visibilità Badge Scorciatoie (Alias)
+              </label>
+              <span class={styles.sectionSubtext}>
+                Scegli se mostrare i badge alias solo alla pressione del tasto Alt o mantenerli sempre visibili
+              </span>
+            </div>
+
+            <div class={styles.segmentedControl}>
+              <button
+                type="button"
+                class={`${styles.segmentBtn} ${(config.aliasVisibility === 'smart' || !config.aliasVisibility) ? styles.activeSegment : ''}`}
+                onClick={() => handleSelectAliasVisibility('smart')}
+              >
+                👁️ Smart (Hold Alt)
+              </button>
+              <button
+                type="button"
+                class={`${styles.segmentBtn} ${config.aliasVisibility === 'always' ? styles.activeSegment : ''}`}
+                onClick={() => handleSelectAliasVisibility('always')}
+              >
+                📌 Sempre Visibili
               </button>
             </div>
           </div>

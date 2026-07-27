@@ -79,6 +79,7 @@ startpage/
     ├── cheatsheetData.test.ts
     ├── uiComponents.test.tsx
     ├── contextMenu.test.tsx
+    ├── searchModal.test.tsx
     ├── dragDrop.test.ts
     ├── reorderModal.test.tsx
     └── integrationFlow.test.tsx

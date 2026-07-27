@@ -10,6 +10,7 @@ export interface KeyboardActionHandlers {
   onCloseModals?: () => void;
   onOpenCheatsheet?: () => void;
   onOpenVisualEdit?: () => void;
+  onOpenSettings?: () => void;
   onSelectQuickResult?: (index: number) => void;
   onNavigateSearch?: (direction: 'up' | 'down' | 'enter') => void;
   onToggleShortcutsView?: () => void;
@@ -68,6 +69,13 @@ export class KeyboardManager {
       return;
     }
 
+    // Shortcut to open Settings Modal: ',' (comma) key outside inputs
+    if (!isInput && e.key === ',') {
+      e.preventDefault();
+      this.handlers.onOpenSettings?.();
+      return;
+    }
+
     // Shortcut to Create New Link: Shift+N or 'n' key outside inputs
     if (!isInput && ((e.shiftKey && (e.key === 'N' || e.key === 'n')) || e.key === 'n')) {
       e.preventDefault();
@@ -115,7 +123,7 @@ export class KeyboardManager {
     if (e.ctrlKey || e.altKey || e.metaKey) return;
 
     // Single printable character (length == 1) auto-opens search
-    if (e.key.length === 1 && e.key !== ' ' && e.key.toLowerCase() !== 'n') {
+    if (e.key.length === 1 && e.key !== ' ' && e.key.toLowerCase() !== 'n' && e.key !== ',') {
       this.handlers.onOpenSearch?.(e.key);
     }
   }

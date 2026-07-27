@@ -106,6 +106,16 @@ const PRESET_ICONS = [
   { name: 'Minimize2', spec: 'Minimize2', category: 'Tools', icon: Minimize2 }
 ];
 
+import * as Icons from 'lucide-preact';
+
+const ALL_LUCIDE_ICONS: { name: string; spec: string; icon: any }[] = Object.keys(Icons)
+  .filter(key => /^[A-Z]/.test(key) && key !== 'createLucideIcon')
+  .map(key => ({
+    name: key,
+    spec: key,
+    icon: (Icons as Record<string, any>)[key]
+  }));
+
 export const VisualEditModal = ({
   isOpen = true,
   initialEditLink,
@@ -129,7 +139,7 @@ export const VisualEditModal = ({
   const [category, setCategory] = useState(targetLink?.category || 'General');
 
   // Link Mode Tab State: 'web' | 'script' | 'search'
-  const initialMode = targetLink?.isScript || (targetLink?.url && targetLink.url.toLowerCase().startsWith('javascript:'))
+  const initialMode = targetLink?.isScript || targetLink?.scriptContent || (targetLink?.url && targetLink.url.toLowerCase().startsWith('javascript:'))
     ? 'script'
     : (targetLink?.searchTemplate || targetLink?.searchPath ? 'search' : 'web');
 
@@ -157,7 +167,11 @@ export const VisualEditModal = ({
       setIcon(targetLink.icon || '');
       setCategory(targetLink.category || 'General');
 
-      const isScript = Boolean(targetLink.isScript || (targetLink.url && targetLink.url.toLowerCase().startsWith('javascript:')));
+      const isScript = Boolean(
+        targetLink.isScript ||
+        targetLink.scriptContent ||
+        (targetLink.url && targetLink.url.toLowerCase().startsWith('javascript:'))
+      );
       const isSearch = Boolean(targetLink.searchTemplate || targetLink.searchPath);
 
       setActiveTab(isScript ? 'script' : (isSearch ? 'search' : 'web'));
@@ -238,11 +252,10 @@ export const VisualEditModal = ({
     onClose();
   };
 
-  const filteredIcons = PRESET_ICONS.filter(i =>
-    i.name.toLowerCase().includes(iconSearchQuery.toLowerCase()) ||
-    i.spec.toLowerCase().includes(iconSearchQuery.toLowerCase()) ||
-    i.category.toLowerCase().includes(iconSearchQuery.toLowerCase())
-  );
+  const iconQueryTrimmed = iconSearchQuery.trim().toLowerCase();
+  const filteredIcons = iconQueryTrimmed
+    ? ALL_LUCIDE_ICONS.filter(i => i.name.toLowerCase().includes(iconQueryTrimmed)).slice(0, 120)
+    : [];
 
   const firstAlias = aliases.split(',')[0]?.trim();
 
@@ -361,14 +374,18 @@ export const VisualEditModal = ({
               <label class={styles.label}>Codice JavaScript / Bookmarklet</label>
               <textarea
                 class={styles.input}
-                style={{ minHeight: '85px', fontFamily: 'var(--font-mono)', fontSize: '0.84rem' }}
-                placeholder="es. alert('Hello World') oppure javascript:(function(){...})();"
+                style={{ minHeight: '105px', fontFamily: 'var(--font-mono)', fontSize: '0.84rem' }}
+                placeholder="es. (function() { const targetUrl = 'https://...'; window.location.href = targetUrl; })();"
                 value={scriptSnippet}
                 onInput={e => setScriptSnippet((e.target as HTMLInputElement).value)}
                 required
               />
               <span class={styles.helperText}>
-                Puoi inserire sia codice JS diretto (es. <code>alert("Test")</code>) che bookmarklet (es. <code>javascript:void(0)</code>).
+                💡 <strong>Come reindirizzare all'URL finale:</strong> Inserisci nel tuo codice JavaScript l'istruzione:
+                <br />
+                <code>window.location.href = "https://tuo-url-calcolato.com";</code> (oppure <code>window.open("...", "_blank")</code>).
+                <br />
+                Puoi inserire sia codice JS diretto che bookmarklet (es. <code>javascript:(function(){"{"}/* codice */{"}"})();</code>).
               </span>
             </div>
           )}
@@ -501,7 +518,7 @@ export const VisualEditModal = ({
                 <input
                   type="text"
                   class={styles.input}
-                  placeholder="Nome Lucide oppure URL Immagine..."
+                  placeholder="Lucide, URL Immagine o Codice SVG <svg>..."
                   value={icon}
                   onInput={e => setIcon((e.target as HTMLInputElement).value)}
                 />
@@ -510,7 +527,7 @@ export const VisualEditModal = ({
                   class={styles.iconPickerToggleBtn}
                   onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}
                 >
-                  Scegli ({PRESET_ICONS.length}) ▼
+                  Scegli (1400+ Lucide) ▼
                 </button>
               </div>
 
@@ -520,33 +537,45 @@ export const VisualEditModal = ({
                     <input
                       type="text"
                       class={styles.iconSearchInput}
-                      placeholder="Cerca oltre 75+ icone (Dev, Social, Media)..."
+                      placeholder="Cerca tra oltre 1400+ icone Lucide (es. Coffee, Github, Shield)..."
                       value={iconSearchQuery}
                       onInput={e => setIconSearchQuery((e.target as HTMLInputElement).value)}
                       autoFocus
                     />
                   </div>
                   <div class={styles.iconDropdownGrid}>
-                    {filteredIcons.map(item => {
-                      const IconComp = item.icon;
-                      const isSelected = icon === item.spec;
+                    {iconQueryTrimmed ? (
+                      filteredIcons.length > 0 ? (
+                        filteredIcons.map(item => {
+                          const IconComp = item.icon;
+                          const isSelected = icon === item.spec;
 
-                      return (
-                        <button
-                          key={item.spec}
-                          type="button"
-                          class={`${styles.iconDropdownItem} ${isSelected ? styles.selectedIconItem : ''}`}
-                          onClick={() => {
-                            setIcon(item.spec);
-                            setIsIconDropdownOpen(false);
-                          }}
-                          title={item.name}
-                        >
-                          <IconComp size={15} />
-                          <span class={styles.iconItemName}>{item.name}</span>
-                        </button>
-                      );
-                    })}
+                          return (
+                            <button
+                              key={item.spec}
+                              type="button"
+                              class={`${styles.iconDropdownItem} ${isSelected ? styles.selectedIconItem : ''}`}
+                              onClick={() => {
+                                setIcon(item.spec);
+                                setIsIconDropdownOpen(false);
+                              }}
+                              title={item.name}
+                            >
+                              {IconComp && <IconComp size={15} />}
+                              <span class={styles.iconItemName}>{item.name}</span>
+                            </button>
+                          );
+                        })
+                      ) : (
+                        <div style={{ gridColumn: '1 / -1', padding: '1.25rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                          Nessuna icona Lucide trovata per "{iconSearchQuery}". Puoi anche inserire un URL immagine diretto.
+                        </div>
+                      )
+                    ) : (
+                      <div style={{ gridColumn: '1 / -1', padding: '1.25rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.6' }}>
+                        🔍 Digita nel campo in alto per cercare tra oltre <strong>1400+ icone Lucide</strong> (es. <em>coffee, github, mail, shield, code, music</em>)...
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

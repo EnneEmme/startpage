@@ -78,21 +78,20 @@ textarea,
   margin: 0 auto;
 }
 
-/* Unified Non-Overlapping Sticky Header */
+/* Floating Non-Overlapping Glass Dock Sticky Header */
 .unifiedHeader {
   position: sticky;
   top: 0;
   z-index: 900;
   width: 100%;
-  padding: 0.4rem 0;
-  margin-bottom: 1rem;
-  background: rgba(8, 9, 12, 0.88);
-  backdrop-filter: var(--glass-backdrop);
+  padding: 0.5rem 0 0.25rem 0;
+  margin-bottom: 0.5rem;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  pointer-events: none;
 }
 
 @media (max-width: 1023px) {
@@ -102,7 +101,7 @@ textarea,
 
   .unifiedHeader {
     justify-content: center;
-    padding: 0.35rem 0;
+    padding: 0.35rem 0 0.15rem 0;
   }
 }
 

@@ -204,7 +204,7 @@ export const ColumnGrid = ({
       dragGhost.style.top = '-9999px';
       dragGhost.style.left = '-9999px';
       dragGhost.style.width = `${targetEl.offsetWidth}px`;
-      dragGhost.style.background = 'rgba(18, 20, 28, 0.95)';
+      dragGhost.style.background = 'rgba(20, 20, 23, 0.95)';
       dragGhost.style.backdropFilter = 'blur(16px)';
       dragGhost.style.border = 'none';
       dragGhost.style.borderRadius = 'var(--radius-md)';
@@ -409,7 +409,7 @@ export const ColumnGrid = ({
                       <div class={styles.iconContainer}>
                         <LinkIcon
                           url={displayUrl || 'https://example.com'}
-                          iconSpec={link.icon || (isScript ? 'Terminal' : undefined)}
+                          iconSpec={link.icon}
                           title={link.title}
                           size={18}
                         />

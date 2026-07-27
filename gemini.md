@@ -7,7 +7,7 @@ This document specifies the operational rules, coding standards, git workflow, a
 ## 1. Core Architecture & Tooling Principles
 
 1. **STRICT Bun Tooling Mandate (ABSOLUTE MANDATE)**:
-   - MUST use `bun` exclusively for package installation (`bun install`), script execution, building (`bun ./node_modules/vite/bin/vite.js build`), and testing (`bun ./node_modules/vitest/vitest.mjs run`).
+   - MUST use `bun` exclusively for package installation (`bun install`), script execution, building (`bun run build` or `bun vite build`), and testing (`bun test` or `bun vitest run`).
    - **NEVER use `npm`, `npx`, `yarn`, or `pnpm` under any circumstances**.
    - All shell executions MUST use `bun` or direct node module scripts via `bun`.
 
@@ -84,7 +84,7 @@ This document specifies the operational rules, coding standards, git workflow, a
 
 - **Zero-Regression Policy**: Every new feature or refactor MUST be accompanied by unit or integration tests in Vitest.
 - Before considering any task complete:
-  1. Run `bun ./node_modules/vitest/vitest.mjs run` to ensure all tests pass.
+  1. Run `bun test` (or `bun vitest run`) to ensure all tests pass.
   2. Test edge cases (missing icons, invalid URLs, empty search queries, local storage corruption, dynamic date boundaries).
 
 ---

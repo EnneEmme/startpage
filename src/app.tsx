@@ -100,6 +100,10 @@ export const App = () => {
         setEditTargetLink(null);
         setVisualEditOpen(true);
       },
+      onOpenSettings: () => {
+        setSearchOpen(false);
+        setSettingsOpen(prev => !prev);
+      },
       onToggleShortcutsView: () => {
         setShowShortcuts(prev => !prev);
       },
