@@ -1,6 +1,6 @@
 .topRightTools {
   position: fixed;
-  top: 0.85rem;
+  top: 0.75rem;
   right: 1.25rem;
   z-index: 950;
   display: flex;

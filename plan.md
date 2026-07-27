@@ -58,7 +58,7 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] **Task 3**: Settings Modal (`Impostazioni`) with Theme Color customization (Silver Platinum default).
   - [x] **Task 4**: Custom Search Engine Creator with Cheatsheet Auto-Registration.
   - [ ] **Task 5**: Ultra-Minimalist Search Overlay.
-  - [ ] **Task 6**: Top Spacing Reduction & JumpBar Horizontal Mask.
+  - [x] **Task 6**: Top Spacing Reduction & JumpBar Horizontal Mask.
   - [ ] **Task 7**: Mobile Touch & Smartphone UX Refinements.
   - [ ] **Task 8**: Dynamic Responsive Column Grid Geometry & Side Padding.
   - [ ] **Task 9**: Custom JavaScript Script & Bookmarklet Links Support.

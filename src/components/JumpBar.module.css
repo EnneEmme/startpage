@@ -3,8 +3,8 @@
   top: 0;
   z-index: 900;
   width: 100%;
-  padding: 0.6rem 0;
-  margin-bottom: 2rem;
+  padding: 0.4rem 0;
+  margin-bottom: 1rem;
   background: rgba(8, 9, 12, 0.88);
   backdrop-filter: var(--glass-backdrop);
   display: flex;
@@ -17,12 +17,35 @@
   align-items: center;
   gap: 0.3rem;
   overflow-x: auto;
-  padding: 0.3rem 0.5rem;
+  padding: 0.3rem 0.6rem;
   background: rgba(18, 20, 28, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
   max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  transition: mask-image 0.2s ease, -webkit-mask-image 0.2s ease;
+}
+
+.jumpBar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Dynamic Horizontal Gradient Fade Masks */
+.jumpBar.fadeRight {
+  mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+}
+
+.jumpBar.fadeLeft {
+  mask-image: linear-gradient(to left, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, #000 88%, transparent 100%);
+}
+
+.jumpBar.fadeBoth {
+  mask-image: linear-gradient(to right, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
 }
 
 .tabBtn {

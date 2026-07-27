@@ -83,10 +83,10 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ---
 
 ### 🔹 Task 6: Top Spacing Optimization & Sticky JumpBar Horizontal Mask
-- [ ] **Tighter Header Padding**:
+- [x] **Tighter Header Padding**:
   - Reduce `#app` top padding to `0.75rem` to eliminate wasted white/dark space.
-- [ ] **JumpBar Horizontal Fade Mask**:
-  - Apply `-webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)` on `.jumpBar` when category tabs overflow horizontally.
+- [x] **JumpBar Horizontal Fade Mask**:
+  - Apply dynamic left & right horizontal gradient masks (`fadeRight`, `fadeLeft`, `fadeBoth`) on `.jumpBar` when category tabs overflow horizontally.
 
 ---
 

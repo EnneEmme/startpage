@@ -1,4 +1,5 @@
 import { h } from 'preact';
+import { useState, useRef, useEffect } from 'preact/hooks';
 import styles from './JumpBar.module.css';
 
 interface JumpBarProps {
@@ -14,6 +15,27 @@ export const JumpBar = ({
   showShortcuts = false,
   onSelectCategory
 }: JumpBarProps) => {
+  const jumpBarRef = useRef<HTMLDivElement>(null);
+  const [scrollState, setScrollState] = useState({ canScrollLeft: false, canScrollRight: false });
+
+  const checkScrollState = () => {
+    if (!jumpBarRef.current) return;
+    const el = jumpBarRef.current;
+    const canScrollLeft = el.scrollLeft > 5;
+    const canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 8;
+    setScrollState({ canScrollLeft, canScrollRight });
+  };
+
+  useEffect(() => {
+    checkScrollState();
+    window.addEventListener('resize', checkScrollState);
+    return () => window.removeEventListener('resize', checkScrollState);
+  }, [categories]);
+
+  const handleScroll = () => {
+    checkScrollState();
+  };
+
   const handleTabClick = (categoryName: string | null) => {
     onSelectCategory(categoryName);
 
@@ -32,9 +54,23 @@ export const JumpBar = ({
     }
   };
 
+  let fadeClass = '';
+  if (scrollState.canScrollLeft && scrollState.canScrollRight) {
+    fadeClass = styles.fadeBoth;
+  } else if (scrollState.canScrollLeft && !scrollState.canScrollRight) {
+    fadeClass = styles.fadeLeft;
+  } else if (!scrollState.canScrollLeft && scrollState.canScrollRight) {
+    fadeClass = styles.fadeRight;
+  }
+
   return (
     <div class={styles.stickyHeaderWrapper}>
-      <nav class={styles.jumpBar} aria-label="Category Navigation">
+      <nav
+        ref={jumpBarRef}
+        class={`${styles.jumpBar} ${fadeClass}`}
+        onScroll={handleScroll}
+        aria-label="Category Navigation"
+      >
         <button
           class={`${styles.tabBtn} ${activeCategory === null ? styles.active : ''}`}
           onClick={() => handleTabClick(null)}
