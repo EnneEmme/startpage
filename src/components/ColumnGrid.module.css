@@ -14,8 +14,12 @@
     padding: 0.5rem 0 3.5rem;
   }
 
+  .columnCard {
+    min-height: calc(100vh - 200px) !important;
+  }
+
   .linksList {
-    max-height: calc(100vh - 240px) !important;
+    max-height: calc(100vh - 260px) !important;
   }
 }
 
@@ -25,6 +29,10 @@
     grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 190px), 1fr));
     gap: 3rem 1.25rem;
     padding: 0.5rem 0 3.5rem;
+  }
+
+  .columnCard {
+    min-height: calc(100vh - 190px) !important;
   }
 
   .linksList {
@@ -61,6 +69,7 @@
   user-select: none;
   -webkit-user-select: none;
   position: relative;
+  min-height: calc(100vh - 180px); /* Guarantees Row 1 spans screen height so Row 2 is 100% off-screen */
 }
 
 .columnCard.dragOver {
@@ -135,12 +144,12 @@
   -webkit-user-select: text !important;
 }
 
-/* Precise Viewport-Height Links List - Pushes subsequent grid rows completely below the fold */
+/* Precise Viewport-Height Links List */
 .linksList {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  max-height: calc(100vh - 260px);
+  max-height: calc(100vh - 250px);
   padding-bottom: 0.75rem;
   overflow-y: auto;
   scrollbar-width: none; /* Hide scrollbar Firefox */

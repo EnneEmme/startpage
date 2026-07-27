@@ -26,7 +26,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ### 🔹 Task 1: Viewport-Height Columns & Minimalist Down Indicator (`↓`)
 - [x] **Dynamic Viewport Height**:
-  - Calculate column card height dynamically using `max-height: calc(100vh - 160px)` on desktop.
+  - Calculate column card height dynamically using `max-height: calc(100vh - 220px)` on desktop.
   - Ensures columns span exactly the available screen height so lower rows don't awkwardly peek out underneath.
 - [x] **Minimalist Page-Wide Down Cue (`↓`)**:
   - Add a sleek, floating bottom chevron indicator `↓` fixed at bottom center of the page when un-scrolled content exists below.
@@ -74,14 +74,6 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ---
 
-### 🔹 Task 5: Ultra-Minimalist Search Overlay
-- [ ] **Streamlined Command Palette (`SearchModal.tsx`)**:
-  - Position floating dark search bar centered at top 15% of screen.
-  - Enhanced glassmorphic backdrop blur (`backdrop-filter: blur(16px)`).
-  - Minimalist matching list with clear command badges (`Tab to complete, Enter to open`).
-
----
-
 ### 🔹 Task 6: Top Spacing Optimization & Sticky JumpBar Horizontal Mask
 - [x] **Tighter Header Padding**:
   - Reduce `#app` top padding to `0.75rem` to eliminate wasted white/dark space.
@@ -104,9 +96,9 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 - [x] **Dynamic Window-Based Column Columns**:
   - Configure `grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 210px), 1fr))` in `ColumnGrid.module.css` so the number of columns per row adapts fluidly and dynamically to window resizing.
 - [x] **Balanced Lateral Side Padding**:
-  - Apply clean horizontal outer padding (`padding: 0.5rem 2.25rem 3.5rem`) to ensure columns never touch screen edges and maintain a polished margin on all monitors.
-- [x] **Extended Vertical Link Height**:
-  - Increased `.linksList` max-height to `calc(100vh - 160px)`, displaying 1-2 additional link items per column to fill reclaimed vertical space.
+  - Apply clean horizontal outer padding (`padding: 0.5rem 0 3.5rem`) to ensure columns never touch screen edges and maintain a polished margin on all monitors.
+- [x] **Viewport Min-Height Lock**:
+  - Added `min-height: calc(100vh - 180px)` to `.columnCard`, forcing Row 1 columns to fill screen height so Row 2 never peeks out when unscrolled.
 
 ---
 
@@ -133,6 +125,14 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
   - Smooth spring gap animations when dragging links between columns.
   - Auto-scroll container when holding drag items near top/bottom boundaries of tall columns.
   - Add "Move to Category..." dropdown option in right-click context menu (`ContextMenu.tsx`) for click-based relocation without dragging.
+
+---
+
+### 🔹 Task 5: Ultra-Minimalist Search Overlay
+- [ ] **Streamlined Command Palette (`SearchModal.tsx`)**:
+  - Position floating dark search bar centered at top 15% of screen.
+  - Enhanced glassmorphic backdrop blur (`backdrop-filter: blur(16px)`).
+  - Minimalist matching list with clear command badges (`Tab to complete, Enter to open`).
 
 ---
 

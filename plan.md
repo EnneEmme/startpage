@@ -57,11 +57,11 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] **Task 2**: Hidden Aliases by default, Key-Hold Trigger (`Alt`/`Space`), and Category Number Shortcuts (`1`..`9`).
   - [x] **Task 3**: Settings Modal (`Impostazioni`) with Theme Color customization (Silver Platinum default).
   - [x] **Task 4**: Custom Search Engine Creator with Cheatsheet Auto-Registration.
-  - [ ] **Task 5**: Ultra-Minimalist Search Overlay.
   - [x] **Task 6**: Top Spacing Reduction & JumpBar Horizontal Mask.
   - [x] **Task 7**: Mobile Touch & Smartphone UX Refinements (Unified Non-Overlapping Header & Bottom Sheets).
   - [x] **Task 8**: Dynamic Responsive Column Grid Geometry, Extended Link Capacity (+1-2 links), & Balanced Side Padding.
   - [ ] **Task 9**: Custom JavaScript Script & Bookmarklet Links Support.
   - [ ] **Task 10**: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching.
   - [ ] **Task 11**: Refined Drag & Drop Link Relocation & Context Menu Category Move.
+  - [ ] **Task 5**: Ultra-Minimalist Search Overlay.
   - [ ] **Task 12**: UI & UX Overhaul for Edit/Creation and Settings Modals.
