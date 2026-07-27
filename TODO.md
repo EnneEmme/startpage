@@ -17,6 +17,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 8. **Dynamic Responsive Column Grid Geometry** with **Side Padding**.
 9. **Custom JavaScript Script & Bookmarklet Link Support**.
 10. **Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching**.
+11. **Refined Drag & Drop Link Relocation & Context Menu Category Move**.
 
 ---
 
@@ -119,6 +120,14 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
   - Fine-tune Fuse.js weights, distance metrics, and prefix matching for instant pinpoint search.
   - Exact alias matches gain absolute priority score (top of list).
   - Add support for partial word searches, typo tolerance, and sub-string category matching.
+
+---
+
+### 🔹 Task 11: Refined Drag & Drop Link Relocation & Context Menu Category Move
+- [ ] **High-UX Drag & Drop Experience**:
+  - Smooth spring gap animations when dragging links between columns.
+  - Auto-scroll container when holding drag items near top/bottom boundaries of tall columns.
+  - Add "Move to Category..." dropdown option in right-click context menu (`ContextMenu.tsx`) for click-based relocation without dragging.
 
 ---
 

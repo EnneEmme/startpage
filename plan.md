@@ -63,3 +63,4 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [ ] **Task 8**: Dynamic Responsive Column Grid Geometry & Side Padding.
   - [ ] **Task 9**: Custom JavaScript Script & Bookmarklet Links Support.
   - [ ] **Task 10**: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching.
+  - [ ] **Task 11**: Refined Drag & Drop Link Relocation & Context Menu Category Move.
