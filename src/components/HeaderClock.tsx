@@ -27,9 +27,9 @@ export const HeaderClock = ({
       <button
         class={`${styles.iconBtn} ${showShortcuts ? styles.activeIconBtn : ''}`}
         onClick={onToggleShortcuts}
-        title="Toggle Aliases & Number Shortcuts (Press Alt or Shift+Space)"
+        title="Toggle Aliases & Number Shortcuts (Alt / Shift+Space)"
       >
-        <Keyboard size={17} />
+        <Keyboard size={16} />
       </button>
 
       {/* Fuzzy Search Button */}
@@ -38,7 +38,7 @@ export const HeaderClock = ({
         onClick={onOpenSearch}
         title="Fuzzy Search (Press any key)"
       >
-        <Search size={17} />
+        <Search size={16} />
       </button>
 
       {/* Shortcuts Cheatsheet Modal */}
@@ -47,7 +47,7 @@ export const HeaderClock = ({
         onClick={onOpenCheatsheet}
         title="Shortcuts Cheatsheet (? or F1)"
       >
-        <CircleQuestionMark size={17} />
+        <CircleQuestionMark size={16} />
       </button>
 
       {/* Settings Modal Button */}
@@ -56,7 +56,7 @@ export const HeaderClock = ({
         onClick={onOpenSettings}
         title="Settings & Themes"
       >
-        <Settings size={17} />
+        <Settings size={16} />
       </button>
 
       {/* Visual Edit Button */}
@@ -65,7 +65,7 @@ export const HeaderClock = ({
         onClick={onOpenVisualEdit}
         title="Add or Edit Links"
       >
-        <PenLine size={17} />
+        <PenLine size={16} />
       </button>
 
       {/* Backup / Export Config Button */}
@@ -74,7 +74,7 @@ export const HeaderClock = ({
         onClick={onOpenImportExport}
         title="Backup & Sync Config"
       >
-        <Download size={17} />
+        <Download size={16} />
       </button>
     </div>
   );

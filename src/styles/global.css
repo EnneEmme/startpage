@@ -78,6 +78,35 @@ textarea,
   margin: 0 auto;
 }
 
+/* Unified Non-Overlapping Sticky Header */
+.unifiedHeader {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  width: 100%;
+  padding: 0.4rem 0;
+  margin-bottom: 1rem;
+  background: rgba(8, 9, 12, 0.88);
+  backdrop-filter: var(--glass-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 600px) {
+  #app {
+    padding: 0.5rem 0.85rem 2.5rem;
+  }
+
+  .unifiedHeader {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.35rem 0;
+  }
+}
+
 /* Button & Input Resets */
 button {
   font-family: inherit;
@@ -108,4 +137,13 @@ input, textarea {
 
 .fade-in {
   animation: fadeIn var(--transition-normal) forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }

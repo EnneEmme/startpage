@@ -70,6 +70,7 @@
   flex-direction: column;
   gap: 1.5rem;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .sectionGroup {
@@ -99,8 +100,8 @@
 }
 
 .colorChipBtn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
@@ -134,11 +135,12 @@
   border-radius: var(--radius-md);
   padding: 0.25rem;
   gap: 0.25rem;
+  flex-wrap: wrap;
 }
 
 .segmentBtn {
   flex: 1;
-  padding: 0.5rem 0.4rem;
+  padding: 0.6rem 0.4rem;
   border-radius: var(--radius-sm);
   font-size: 0.8rem;
   font-weight: 500;
@@ -147,6 +149,7 @@
   transition: all var(--transition-fast);
   background: transparent;
   border: none;
+  min-height: 42px;
 }
 
 .segmentBtn:hover {
@@ -168,16 +171,32 @@
 }
 
 .saveBtn {
-  padding: 0.55rem 1.4rem;
+  padding: 0.6rem 1.4rem;
   border-radius: var(--radius-md);
   background: var(--accent-highlight);
   color: #000;
   font-weight: 600;
   font-size: 0.88rem;
   transition: all var(--transition-fast);
+  min-height: 42px;
 }
 
 .saveBtn:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+/* Mobile Smartphone Bottom Sheet Mode (< 600px) */
+@media (max-width: 600px) {
+  .overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modalContainer {
+    max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    max-height: 85vh;
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }

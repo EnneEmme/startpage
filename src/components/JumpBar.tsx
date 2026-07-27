@@ -48,7 +48,7 @@ export const JumpBar = ({
     const targetEl = document.getElementById(columnId);
 
     if (targetEl) {
-      const yOffset = -75;
+      const yOffset = -85;
       const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -64,33 +64,31 @@ export const JumpBar = ({
   }
 
   return (
-    <div class={styles.stickyHeaderWrapper}>
-      <nav
-        ref={jumpBarRef}
-        class={`${styles.jumpBar} ${fadeClass}`}
-        onScroll={handleScroll}
-        aria-label="Category Navigation"
+    <nav
+      ref={jumpBarRef}
+      class={`${styles.jumpBar} ${fadeClass}`}
+      onScroll={handleScroll}
+      aria-label="Category Navigation"
+    >
+      <button
+        class={`${styles.tabBtn} ${activeCategory === null ? styles.active : ''}`}
+        onClick={() => handleTabClick(null)}
       >
-        <button
-          class={`${styles.tabBtn} ${activeCategory === null ? styles.active : ''}`}
-          onClick={() => handleTabClick(null)}
-        >
-          All
-        </button>
+        All
+      </button>
 
-        {categories.map((cat, idx) => (
-          <button
-            key={cat}
-            class={`${styles.tabBtn} ${activeCategory === cat ? styles.active : ''}`}
-            onClick={() => handleTabClick(cat)}
-          >
-            {showShortcuts && idx < 9 && (
-              <span class={styles.shortcutNumberBadge}>{idx + 1}</span>
-            )}
-            <span>{cat}</span>
-          </button>
-        ))}
-      </nav>
-    </div>
+      {categories.map((cat, idx) => (
+        <button
+          key={cat}
+          class={`${styles.tabBtn} ${activeCategory === cat ? styles.active : ''}`}
+          onClick={() => handleTabClick(cat)}
+        >
+          {showShortcuts && idx < 9 && (
+            <span class={styles.shortcutNumberBadge}>{idx + 1}</span>
+          )}
+          <span>{cat}</span>
+        </button>
+      ))}
+    </nav>
   );
 };

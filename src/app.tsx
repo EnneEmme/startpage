@@ -62,7 +62,7 @@ export const App = () => {
       const columnId = `column-${catName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
       const targetEl = document.getElementById(columnId);
       if (targetEl) {
-        const yOffset = -80;
+        const yOffset = -85;
         const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
         window.scrollTo({ top: y, behavior: 'smooth' });
       }
@@ -119,28 +119,31 @@ export const App = () => {
 
   return (
     <div id="app">
-      <HeaderClock
-        onOpenSearch={() => {
-          setInitialSearchChar('');
-          setSearchOpen(true);
-        }}
-        onOpenCheatsheet={() => setCheatsheetOpen(true)}
-        onOpenVisualEdit={() => {
-          setEditTargetLink(null);
-          setVisualEditOpen(true);
-        }}
-        onOpenImportExport={() => setImportExportOpen(true)}
-        onOpenSettings={() => setSettingsOpen(true)}
-        showShortcuts={showShortcuts}
-        onToggleShortcuts={() => setShowShortcuts(prev => !prev)}
-      />
+      {/* Unified Non-Overlapping Header */}
+      <header class="unifiedHeader">
+        <JumpBar
+          categories={categoryNames}
+          activeCategory={activeCategoryFilter}
+          showShortcuts={showShortcuts}
+          onSelectCategory={handleSelectCategory}
+        />
 
-      <JumpBar
-        categories={categoryNames}
-        activeCategory={activeCategoryFilter}
-        showShortcuts={showShortcuts}
-        onSelectCategory={handleSelectCategory}
-      />
+        <HeaderClock
+          onOpenSearch={() => {
+            setInitialSearchChar('');
+            setSearchOpen(true);
+          }}
+          onOpenCheatsheet={() => setCheatsheetOpen(true)}
+          onOpenVisualEdit={() => {
+            setEditTargetLink(null);
+            setVisualEditOpen(true);
+          }}
+          onOpenImportExport={() => setImportExportOpen(true)}
+          onOpenSettings={() => setSettingsOpen(true)}
+          showShortcuts={showShortcuts}
+          onToggleShortcuts={() => setShowShortcuts(prev => !prev)}
+        />
+      </header>
 
       <main style={{ width: '100%', pointerEvents: isAnyModalOpen ? 'none' : 'auto' }}>
         <ColumnGrid

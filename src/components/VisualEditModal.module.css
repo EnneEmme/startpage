@@ -60,6 +60,7 @@
   flex-direction: column;
   gap: 1.1rem;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .fieldGroup {
@@ -88,8 +89,8 @@
 
 .checkboxLabel input[type="checkbox"] {
   accent-color: var(--accent-highlight);
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .searchTemplateSubGroup {
@@ -124,6 +125,7 @@
   color: var(--text-primary);
   font-size: 0.9rem;
   transition: all var(--transition-fast);
+  min-height: 42px;
 }
 
 .input:focus {
@@ -150,6 +152,7 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all var(--transition-fast);
+  min-height: 42px;
 }
 
 .customSelectTrigger:hover {
@@ -241,6 +244,7 @@
   font-weight: 600;
   font-size: 0.84rem;
   white-space: nowrap;
+  min-height: 42px;
 }
 
 .cancelCatBtn {
@@ -250,6 +254,7 @@
   color: var(--text-secondary);
   font-size: 0.84rem;
   white-space: nowrap;
+  min-height: 42px;
 }
 
 /* Non-Invasive Icon Dropdown Picker */
@@ -268,8 +273,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius-md);
   background: var(--bg-primary);
   border: 1px solid var(--border-color-hover);
@@ -285,6 +290,7 @@
   font-size: 0.84rem;
   white-space: nowrap;
   transition: all var(--transition-fast);
+  min-height: 42px;
 }
 
 .iconPickerToggleBtn:hover {
@@ -347,6 +353,7 @@
   color: var(--text-secondary);
   transition: all var(--transition-fast);
   cursor: pointer;
+  min-height: 44px;
 }
 
 .iconDropdownItem:hover {
@@ -378,12 +385,13 @@
 }
 
 .cancelBtn {
-  padding: 0.55rem 1.1rem;
+  padding: 0.6rem 1.1rem;
   border-radius: var(--radius-md);
   background: transparent;
   color: var(--text-secondary);
   font-size: 0.88rem;
   transition: all var(--transition-fast);
+  min-height: 42px;
 }
 
 .cancelBtn:hover {
@@ -391,16 +399,32 @@
 }
 
 .saveBtn {
-  padding: 0.55rem 1.25rem;
+  padding: 0.6rem 1.25rem;
   border-radius: var(--radius-md);
   background: var(--accent-primary);
   color: #000;
   font-weight: 600;
   font-size: 0.88rem;
   transition: all var(--transition-fast);
+  min-height: 42px;
 }
 
 .saveBtn:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+/* Mobile Smartphone Bottom Sheet Mode (< 600px) */
+@media (max-width: 600px) {
+  .overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modalContainer {
+    max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    max-height: 85vh;
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }

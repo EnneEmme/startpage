@@ -90,11 +90,13 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ---
 
-### 🔹 Task 7: Smartphone Mobile UX Refinements
-- [ ] **Mobile Touch Optimization**:
-  - Enable bottom-sheet modal layouts on mobile screens (`< 600px`).
-  - Ensure all touch targets meet 44px minimum height.
-  - Enable smooth touch scroll momentum (`-webkit-overflow-scrolling: touch`).
+### 🔹 Task 7: Smartphone Mobile UX Refinements & Unified Non-Overlapping Header
+- [x] **Unified Sticky Navigation Header**:
+  - Integrated `JumpBar` category tabs and toolbar tools into a single, non-overlapping flex header container at the exact same vertical level.
+  - Eliminates toolbar collision/overlapping on smaller screen sizes.
+- [x] **Mobile Touch & Bottom Sheets**:
+  - Convert all modals into mobile bottom sheets on screens `< 600px`.
+  - Ensure all touch targets meet min 42px-44px for effortless mobile thumb tapping.
 
 ---
 
