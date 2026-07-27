@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import {
   X, Check, Plus, Tag, Mail, Globe, Search, MessageSquare, Sparkles, Bot, Cpu, Send,
   Tv, Music, Film, Code, Terminal, Calendar, FileText, Share2, Video, Image, BookOpen,
@@ -148,6 +148,33 @@ export const VisualEditModal = ({
   const [isIconDropdownOpen, setIsIconDropdownOpen] = useState(false);
   const [iconSearchQuery, setIconSearchQuery] = useState('');
 
+  // Re-populate modal state whenever targetLink prop changes
+  useEffect(() => {
+    if (targetLink) {
+      setTitle(targetLink.title || '');
+      setUrl(targetLink.url || resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) || '');
+      setAliases(targetLink.aliases ? targetLink.aliases.join(', ') : '');
+      setIcon(targetLink.icon || '');
+      setCategory(targetLink.category || 'General');
+
+      const isScript = Boolean(targetLink.isScript || (targetLink.url && targetLink.url.toLowerCase().startsWith('javascript:')));
+      const isSearch = Boolean(targetLink.searchTemplate || targetLink.searchPath);
+
+      setActiveTab(isScript ? 'script' : (isSearch ? 'search' : 'web'));
+      setScriptSnippet(targetLink.scriptContent || (targetLink.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : ''));
+      setSearchTemplate(targetLink.searchTemplate || targetLink.searchPath || '');
+    } else {
+      setTitle('');
+      setUrl('');
+      setAliases('');
+      setIcon('');
+      setCategory('General');
+      setActiveTab('web');
+      setScriptSnippet('');
+      setSearchTemplate('');
+    }
+  }, [targetLink]);
+
   const categories = dataStore.getCategories().map(c => c.name);
 
   const handleSelectCategory = (catName: string) => {
@@ -198,7 +225,7 @@ export const VisualEditModal = ({
       url: finalUrl,
       aliases: parsedAliases,
       category: targetCat || 'General',
-      icon: icon.trim() || (isScriptMode ? 'Terminal' : undefined),
+      icon: icon.trim() || undefined,
       isScript: isScriptMode || undefined,
       scriptContent: finalScriptContent,
       dynamicUrlRule: finalDynamicRule,
@@ -250,7 +277,7 @@ export const VisualEditModal = ({
               <div class={styles.previewIconContainer}>
                 <LinkIcon
                   url={url || 'https://example.com'}
-                  iconSpec={icon || (activeTab === 'script' ? 'Terminal' : undefined)}
+                  iconSpec={icon || undefined}
                   title={title || 'Anteprima Link'}
                   size={18}
                 />
@@ -285,10 +312,7 @@ export const VisualEditModal = ({
             <button
               type="button"
               class={`${styles.tabSegment} ${activeTab === 'script' ? styles.activeTabSegment : ''}`}
-              onClick={() => {
-                setActiveTab('script');
-                if (!icon) setIcon('Terminal');
-              }}
+              onClick={() => setActiveTab('script')}
             >
               <Zap size={14} />
               <span>Script JS / Bookmarklet</span>
@@ -469,7 +493,7 @@ export const VisualEditModal = ({
                 <div class={styles.iconLiveBadge}>
                   <LinkIcon
                     url={url || 'https://example.com'}
-                    iconSpec={icon || (activeTab === 'script' ? 'Terminal' : undefined)}
+                    iconSpec={icon || undefined}
                     title={title || 'Preview'}
                     size={20}
                   />

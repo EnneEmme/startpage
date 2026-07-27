@@ -177,21 +177,21 @@ export const SettingsModal = ({
                 class={`${styles.segmentBtn} ${config.fontSize === 'small' ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectFontSize('small')}
               >
-                Piccolo (0.85rem)
+                Piccolo
               </button>
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${(config.fontSize === 'medium' || !config.fontSize) ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectFontSize('medium')}
               >
-                Medio (0.96rem)
+                Medio
               </button>
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${config.fontSize === 'large' ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectFontSize('large')}
               >
-                Grande (1.10rem)
+                Grande
               </button>
             </div>
           </div>
