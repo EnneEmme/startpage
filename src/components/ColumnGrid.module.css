@@ -188,6 +188,13 @@
   cursor: pointer;
 }
 
+/* Hide or Lift Scroll Down Cue on Tablet & Mobile when Floating Bottom Nav is present */
+@media (max-width: 859px) {
+  .pageScrollDownIndicator {
+    display: none !important;
+  }
+}
+
 .pageScrollDownIndicator:hover {
   background: rgba(26, 30, 42, 0.95);
   border-color: var(--accent-highlight);
