@@ -64,3 +64,4 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [ ] **Task 9**: Custom JavaScript Script & Bookmarklet Links Support.
   - [ ] **Task 10**: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching.
   - [ ] **Task 11**: Refined Drag & Drop Link Relocation & Context Menu Category Move.
+  - [ ] **Task 12**: UI & UX Overhaul for Edit/Creation and Settings Modals.

@@ -18,6 +18,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 9. **Custom JavaScript Script & Bookmarklet Link Support**.
 10. **Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching**.
 11. **Refined Drag & Drop Link Relocation & Context Menu Category Move**.
+12. **UI & UX Overhaul for Edit/Creation (`VisualEditModal`) and Settings (`SettingsModal`) Modals**.
 
 ---
 
@@ -66,7 +67,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ### 🔹 Task 4: Advanced Search Engine Link Creator & Cheatsheet Integration
 - [x] **Advanced Tab in `VisualEditModal.tsx`**:
   - Add "Advanced Search Engine / Custom Query" toggle.
-  - Fields: `Search Query Template` (e.g. `https://youtube.com/results?search_query={q}` or `https://duckduckgo.com/?q={q}`) and `Trigger Aliases` (e.g. `yt`, `ddg`, `g`).
+  - Fields: `Search Query Template` (e.g. `/results?search_query={q}` or `?q={q}`) and `Trigger Aliases` (e.g. `yt`, `ddg`, `g`).
 - [x] **Engine Auto-Registration**:
   - Update `fuzzySearch.ts` command palette engine to recognize custom search engine query templates automatically.
   - Update `CheatsheetModal.tsx` so user-created search commands automatically appear in the Keyboard Shortcuts Cheatsheet (`?`).
@@ -128,6 +129,14 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
   - Smooth spring gap animations when dragging links between columns.
   - Auto-scroll container when holding drag items near top/bottom boundaries of tall columns.
   - Add "Move to Category..." dropdown option in right-click context menu (`ContextMenu.tsx`) for click-based relocation without dragging.
+
+---
+
+### 🔹 Task 12: UI & UX Overhaul for Edit/Creation and Settings Modals
+- [ ] **Tabbed Interface & Polished Aesthetics (`VisualEditModal.tsx` & `SettingsModal.tsx`)**:
+  - Organize fields into clean tabs (*Generale*, *Motore di Ricerca*, *Icona & Stile*).
+  - Modern glassmorphic dark design, clear field helper tooltips, focus rings, and live visual previews.
+  - Smooth entrance/exit animations and responsive mobile bottom-sheet adaptation.
 
 ---
 
