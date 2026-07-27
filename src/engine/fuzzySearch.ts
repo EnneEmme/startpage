@@ -1,6 +1,7 @@
 /**
  * Fuzzy Search & Command Palette Engine
- * Combines Fuse.js fuzzy matching, usage rank weighting, and search engine command prefixes (g, yt, gh, w, ddg, custom).
+ * Combines Fuse.js fuzzy matching, exact alias scoring boost, category substring matching,
+ * usage rank weighting, and search engine command prefixes (g, yt, gh, w, ddg, custom).
  */
 
 import Fuse from 'fuse.js';
@@ -31,14 +32,16 @@ export class FuzzySearchEngine {
     this.links = links;
     this.fuse = new Fuse(links, {
       keys: [
-        { name: 'aliases', weight: 0.4 },
+        { name: 'aliases', weight: 0.45 },
         { name: 'title', weight: 0.35 },
-        { name: 'category', weight: 0.15 },
-        { name: 'url', weight: 0.1 }
+        { name: 'category', weight: 0.12 },
+        { name: 'url', weight: 0.08 }
       ],
-      threshold: 0.4,
+      threshold: 0.35, // Balanced typo tolerance without noise
+      distance: 100,
       includeScore: true,
-      ignoreLocation: true
+      ignoreLocation: true,
+      minMatchCharLength: 1
     });
   }
 
@@ -110,34 +113,94 @@ export class FuzzySearchEngine {
 
   public search(query: string): SearchResult[] {
     const trimmed = query.trim();
-    if (!trimmed || !this.fuse) {
+    if (!trimmed) {
       return [];
     }
 
-    const fuseResults = this.fuse.search(trimmed);
+    const lowerQuery = trimmed.toLowerCase();
 
-    const scoredResults: SearchResult[] = fuseResults.map(res => {
-      const item = res.item;
-      const fuseScore = res.score ?? 1; // 0 is perfect match, 1 is worst
+    // Map to collect and deduplicate search items
+    const resultMap = new Map<string, SearchResult>();
+
+    // 1. Check Fuse.js fuzzy search results
+    if (this.fuse) {
+      const fuseResults = this.fuse.search(trimmed);
+      for (const res of fuseResults) {
+        const item = res.item;
+        const fuseScore = res.score ?? 1;
+        const rankBonus = rankStorage.getRankBonus(item.id);
+        const matchedAlias = item.aliases.find(a => a.toLowerCase().includes(lowerQuery));
+
+        resultMap.set(item.id, {
+          item,
+          score: fuseScore,
+          rankBonus,
+          finalScore: fuseScore - rankBonus * 0.15,
+          matchedAlias
+        });
+      }
+    }
+
+    // 2. Multi-Criteria Direct Boost Checks across ALL links
+    for (const item of this.links) {
+      const lowerTitle = item.title.toLowerCase();
+      const lowerCategory = item.category ? item.category.toLowerCase() : '';
+      const matchedExactAlias = item.aliases.find(a => a.toLowerCase() === lowerQuery);
+      const matchedSubAlias = item.aliases.find(a => a.toLowerCase().includes(lowerQuery));
       const rankBonus = rankStorage.getRankBonus(item.id);
 
-      // Final score formula: lower is better for sorting
-      // fuseScore ranges 0..0.4, subtract rankBonus scaled down
-      const finalScore = Math.max(0, fuseScore - rankBonus * 0.15);
+      let isMatch = false;
+      let priorityScore = 1.0; // Default lower priority
 
-      // Check if alias matched
-      const matchedAlias = item.aliases.find(a => a.toLowerCase().includes(trimmed.toLowerCase()));
+      // Criteria A: Exact Alias Match -> Absolute #1 Top Priority
+      if (matchedExactAlias) {
+        isMatch = true;
+        priorityScore = -100.0;
+      }
+      // Criteria B: Exact Title Match -> Priority #2
+      else if (lowerTitle === lowerQuery) {
+        isMatch = true;
+        priorityScore = -50.0;
+      }
+      // Criteria C: Title Starts With Query -> Priority #3
+      else if (lowerTitle.startsWith(lowerQuery)) {
+        isMatch = true;
+        priorityScore = -10.0;
+      }
+      // Criteria D: Alias Starts With Query -> Priority #4
+      else if (matchedSubAlias && matchedSubAlias.toLowerCase().startsWith(lowerQuery)) {
+        isMatch = true;
+        priorityScore = -5.0;
+      }
+      // Criteria E: Category Match (Exact or Substring)
+      else if (lowerCategory && lowerCategory.includes(lowerQuery)) {
+        isMatch = true;
+        priorityScore = 0.05;
+      }
+      // Criteria F: Substring Title Match
+      else if (lowerTitle.includes(lowerQuery)) {
+        isMatch = true;
+        priorityScore = 0.1;
+      }
 
-      return {
-        item,
-        score: fuseScore,
-        rankBonus,
-        finalScore,
-        matchedAlias
-      };
-    });
+      if (isMatch) {
+        const existing = resultMap.get(item.id);
+        const currentFuseScore = existing ? existing.score : 0.2;
+        const computedScore = priorityScore + currentFuseScore - rankBonus * 0.15;
 
-    // Sort by finalScore ascending (best match first)
+        resultMap.set(item.id, {
+          item,
+          score: currentFuseScore,
+          rankBonus,
+          finalScore: Math.min(existing ? existing.finalScore : computedScore, computedScore),
+          matchedAlias: matchedExactAlias || matchedSubAlias || existing?.matchedAlias
+        });
+      }
+    }
+
+    const scoredResults = Array.from(resultMap.values());
+
+    // Sort by finalScore ascending (lowest score = highest match priority)
     scoredResults.sort((a, b) => a.finalScore - b.finalScore);
 
     return scoredResults;

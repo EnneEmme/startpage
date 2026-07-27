@@ -116,6 +116,15 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 
 ---
 
+### 🔹 Task 10: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching
+- [x] **Improved Fuzzy Algorithm & Relevance Scoring**:
+  - Fine-tuned Fuse.js weights, distance metrics, and prefix matching for instant pinpoint search.
+  - Exact alias matches gain absolute priority score (top of list #1).
+  - Exact title matches gain secondary priority score (#2).
+  - Added support for category substring matching (e.g. `social`, `school`, `ai`), partial word searches, and typo tolerance.
+
+---
+
 ### 🔹 Task 11: Refined Drag & Drop Link Relocation & Context Menu Category Move
 - [x] **Ultra-Smooth Drag & Drop Experience**:
   - Created 1:1 replica clone drag ghost showing the entire exact link card (icon, title, alias badge, glass background, accent border, shadow).
@@ -135,14 +144,6 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
   - Updated grid density scale: `normal` (185px) is now default, `spaced` (230px) is wide, and created a new ultra-compact `compact` (155px) density.
 - [x] **Font Size Selector**:
   - Added a Font Size setting selector in `SettingsModal.tsx` allowing users to choose text size (*Small*, *Medium*, *Large* / *Piccolo*, *Medio*, *Grande*).
-
----
-
-### 🔹 Task 10: Enhanced Fuzzy Search Engine & Smart Multi-Criteria Matching
-- [ ] **Improved Fuzzy Algorithm & Relevance Scoring**:
-  - Fine-tune Fuse.js weights, distance metrics, and prefix matching for instant pinpoint search.
-  - Exact alias matches gain absolute priority score (top of list).
-  - Add support for partial word searches, typo tolerance, and sub-string category matching.
 
 ---
 
@@ -170,7 +171,7 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ## 🛠️ Execution & Testing Strategy
 
 1. **Automated Unit Testing**:
-   - Run `bun ./node_modules/vitest/vitest.mjs run` after each task to maintain 100% passing tests (57/57+).
+   - Run `bun ./node_modules/vitest/vitest.mjs run` after each task to maintain 100% passing tests (59/59+).
 2. **Production Build Compilation**:
    - Run `bun ./node_modules/vite/bin/vite.js build` to build singlefile bundle `dist/index.html`.
 3. **Deployment**:
