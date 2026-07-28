@@ -15,7 +15,7 @@ export const PreviewPanel = ({ title, url, icon, firstAlias, activeTab }: Previe
   <div class={styles.previewBox}>
     <div class={styles.previewHeader}>
       <Eye size={14} class={styles.previewIcon} />
-      <span>Anteprima Card Link</span>
+      <span>Link Card Preview</span>
     </div>
 
     <div class={styles.previewCardRow}>
@@ -23,14 +23,14 @@ export const PreviewPanel = ({ title, url, icon, firstAlias, activeTab }: Previe
         <LinkIcon
           url={url || 'https://example.com'}
           iconSpec={icon || undefined}
-          title={title || 'Anteprima Link'}
+          title={title || 'Link Preview'}
           size={18}
         />
       </div>
 
       <div class={styles.previewInfo}>
         <span class={styles.previewTitle}>
-          {title || 'Titolo del Link'}
+          {title || 'Link Title'}
           {activeTab === 'script' && <Zap size={11} style={{ marginLeft: '4px', color: '#f59e0b', display: 'inline-block' }} />}
         </span>
       </div>

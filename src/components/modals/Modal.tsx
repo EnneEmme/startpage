@@ -67,7 +67,7 @@ export const Modal = ({
                 {subtitle && <span class={styles.modalSubtitle}>{subtitle}</span>}
               </div>
             </div>
-            <button class={styles.closeBtn} onClick={onClose} type="button" title="Chiudi (Esc)" aria-label="Close">
+            <button class={styles.closeBtn} onClick={onClose} type="button" title="Close (Esc)" aria-label="Close">
               <X size={18} />
             </button>
           </div>

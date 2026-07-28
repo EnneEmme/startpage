@@ -15,18 +15,18 @@ describe('Modal hooks guards (isOpen toggle)', () => {
   it('SettingsModal survives close → open cycles without hook corruption', () => {
     const onClose = vi.fn();
     const { rerender, container } = render(<SettingsModal isOpen={true} onClose={onClose} />);
-    expect(screen.getByText('Impostazioni & Personalizzazione')).toBeTruthy();
+    expect(screen.getByText('Settings & Personalization')).toBeTruthy();
 
     rerender(<SettingsModal isOpen={false} onClose={onClose} />);
     expect(container.innerHTML).toBe('');
 
     rerender(<SettingsModal isOpen={true} onClose={onClose} />);
-    expect(screen.getByText('Impostazioni & Personalizzazione')).toBeTruthy();
-    expect(screen.getByText(/Densità Griglia/)).toBeTruthy();
+    expect(screen.getByText('Settings & Personalization')).toBeTruthy();
+    expect(screen.getByText(/Column Grid Density/)).toBeTruthy();
 
     rerender(<SettingsModal isOpen={false} onClose={onClose} />);
     rerender(<SettingsModal isOpen={true} onClose={onClose} />);
-    expect(screen.getByText('Impostazioni & Personalizzazione')).toBeTruthy();
+    expect(screen.getByText('Settings & Personalization')).toBeTruthy();
   });
 
   it('CheatsheetModal survives close → open cycles without hook corruption', () => {
@@ -38,7 +38,7 @@ describe('Modal hooks guards (isOpen toggle)', () => {
     expect(container.innerHTML).toBe('');
 
     rerender(<CheatsheetModal isOpen={true} onClose={onClose} />);
-    expect(screen.getByPlaceholderText(/Filtra scorciatoie/)).toBeTruthy();
+    expect(screen.getByPlaceholderText(/Filter shortcuts/)).toBeTruthy();
   });
 
   it('VisualEditModal survives close → open cycles and resets add-link form', () => {
@@ -51,6 +51,6 @@ describe('Modal hooks guards (isOpen toggle)', () => {
 
     rerender(<VisualEditModal isOpen={true} onClose={onClose} />);
     expect(screen.getByText('Add New Link')).toBeTruthy();
-    expect(screen.getByText('URL Sito Web')).toBeTruthy();
+    expect(screen.getByText('Website URL')).toBeTruthy();
   });
 });

@@ -61,7 +61,7 @@
 - [ ] 🟠 **Mobile: nessun percorso per edit/remove/reorder/rename** — D&D HTML5 non funziona su touch (ColumnGrid.tsx:192-316), context menu solo right-click, rename solo dblclick, ReorderModal esiste ma **mai renderizzato**. Su mobile si può solo aggiungere.
   **Fix:** bottom-sheet azioni su long-press (`@media (hover:none)`), montare ReorderModal, edit via tap.
 
-- [ ] 🟠 **`navigator.clipboard` non protetto** — `ImportExportModal.tsx:31-35`: su `file://` o http LAN (scenario tipico single-file) è `undefined` → TypeError al click "Copy". `confirm()` nativi (ImportExportModal.tsx:64, ContextMenu.tsx:53) bloccanti e non temabili.
+- [x] 🟠 **`navigator.clipboard` non protetto** — `ImportExportModal.tsx:31-35`: su `file://` o http LAN (scenario tipico single-file) è `undefined` → TypeError al click "Copy". `confirm()` nativi (ImportExportModal.tsx:64, ContextMenu.tsx:53) bloccanti e non temabili.
   **Fix:** feature-detect + fallback `execCommand`; dialog custom di conferma.
 
 - [x] 🟠 **ContextMenu: posizionamento e chiusura** — `ContextMenu.tsx:80-81`: clamp magic 190/220, submenu apre sempre a destra (fuori schermo al bordo), non si chiude su scroll/resize/right-click altrove, il click di chiusura attiva anche l'elemento sottostante; `onClose()` fuori dall'if del confirm (riga 53-56: chiude anche se annulli).
@@ -73,7 +73,7 @@
 - [x] 🟠 **`handleWheel` custom dannoso in ColumnGrid** — `ColumnGrid.tsx:108-120`: scroll-trap a fine colonna (la pagina non scrolla più), jank su trackpad; `overscroll-behavior: contain` (CSS:158) già sufficiente.
   **Fix:** rimuovere l'handler JS.
 
-- [ ] 🟠 **Nessun feedback sulle azioni (no toast/undo)** — Remove link istantaneo e irreversibile; rename/move/import/reset senza conferma visiva.
+- [x] 🟠 **Nessun feedback sulle azioni (no toast/undo)** — Remove link istantaneo e irreversibile; rename/move/import/reset senza conferma visiva.
   **Fix:** snackbar/toast con Undo dopo le mutazioni.
 
 - [x] 🟠 **Backup/restore asimmetrico** — `dataStore.exportJson` (349-354) non include i rank, ma `ImportExportModal.handleResetDefaults` (63-70) li cancella.
@@ -150,7 +150,7 @@
 - [ ] 🟡 **Context menu inaccessibile da tastiera** — no `role="menu"/"menuitem"`, no roving tabindex, no tasto Menu/Shift+F10, focus non entra nel menu.
   **Fix:** pattern ARIA menu completo.
 
-- [ ] 🟡 **`lang="en"` (index.html:2) con UI in gran parte italiana** — screen reader legge IT con fonetica EN; copy misto IT/EN ovunque (Settings IT, Search EN, Modal close "Close"/"Chiudi (Esc)").
+- [x] 🟡 **`lang="en"` (index.html:2) con UI in gran parte italiana** — screen reader legge IT con fonetica EN; copy misto IT/EN ovunque (Settings IT, Search EN, Modal close "Close"/"Chiudi (Esc)").
   **Fix:** scegliere una lingua o dizionario stringhe centralizzato; `lang` coerente.
 
 - [ ] 🟡 **Reduced motion solo CSS** — scroll JS `behavior:'smooth'` (app.tsx:48,52, JumpBar, ColumnGrid:147) ignora `prefers-reduced-motion`.
@@ -310,7 +310,7 @@
 
 - [ ] ⚪ **Inline styles sparsi** — app.tsx:120, ScriptEditor:14, FormFields:169-176, ghost drag (giustificato), ambra ×2. Spostare in CSS/token.
 
-- [ ] ⚪ **i18n misto IT/EN** — centralizzare stringhe se si vuole coerenza.
+- [x] ⚪ **i18n misto IT/EN** — centralizzare stringhe se si vuole coerenza.
 
 - [ ] ⚪ **Scrollbar solo `-webkit`** — global.css:51-67: Firefox mostra scrollbar nativa chiara; manca `scrollbar-color`.
 

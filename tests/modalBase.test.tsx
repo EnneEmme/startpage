@@ -32,7 +32,7 @@ test('calls onClose when close button is clicked', () => {
     </Modal>
   );
 
-  const closeButton = screen.getByTitle('Chiudi (Esc)');
+  const closeButton = screen.getByTitle('Close (Esc)');
   fireEvent.click(closeButton);
 
   expect(handleClose).toHaveBeenCalledTimes(1);

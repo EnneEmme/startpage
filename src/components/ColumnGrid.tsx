@@ -5,6 +5,7 @@ import { LinkItem, CategoryGroup } from '../types/startpage';
 import {  dataStore  } from '../engine';
 import {  resolveDynamicUrl  } from '../engine';
 import {  executeLink, isBookmarkletOrScript, categoryColumnId  } from '../engine';
+import { showToast } from '../stores/toastStore';
 import { LinkIcon } from './LinkIcon';
 import { ContextMenu } from './ContextMenu';
 import styles from './ColumnGrid.module.css';
@@ -441,8 +442,26 @@ export const ColumnGrid = ({
             if (onEditLink) onEditLink(link);
           }}
           onRemove={linkId => {
+            // Capture the item + its in-category position so removal can be undone
+            const allLinks = dataStore.getLinks();
+            const removedLink = allLinks.find(l => l.id === linkId);
+            const categoryIndex = removedLink
+              ? allLinks.filter(l => l.category === removedLink.category).findIndex(l => l.id === linkId)
+              : -1;
+
             dataStore.removeLink(linkId);
             if (onConfigChanged) onConfigChanged();
+
+            if (removedLink) {
+              showToast(`"${removedLink.title}" removed`, {
+                actionLabel: 'Undo',
+                onAction: () => {
+                  dataStore.addLink(removedLink);
+                  dataStore.moveLink(removedLink.id, removedLink.category, categoryIndex);
+                  if (onConfigChanged) onConfigChanged();
+                }
+              });
+            }
           }}
           onConfigChanged={() => {
             if (onConfigChanged) onConfigChanged();

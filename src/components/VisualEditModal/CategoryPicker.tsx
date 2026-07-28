@@ -22,7 +22,7 @@ export const CategoryPicker = ({
 }: CategoryPickerProps) => {
   return (
     <div class={styles.fieldGroup}>
-      <label class={styles.label}>Colonna / Categoria</label>
+      <label class={styles.label}>Column / Category</label>
       <div class={styles.customSelectWrapper}>
         {!isCreatingNewCategory ? (
           <div
@@ -40,7 +40,7 @@ export const CategoryPicker = ({
             <input
               type="text"
               class={styles.input}
-              placeholder="Nome nuova categoria..."
+              placeholder="New category name..."
               value={newCategoryName}
               onInput={e => onSetNewCategoryName((e.target as HTMLInputElement).value)}
               autoFocus
@@ -50,14 +50,14 @@ export const CategoryPicker = ({
               class={styles.confirmCatBtn}
               onClick={onCreateNewCategory}
             >
-              Aggiungi
+              Add
             </button>
             <button
               type="button"
               class={styles.cancelCatBtn}
               onClick={() => onSetIsCreatingNewCategory(false)}
             >
-              Annulla
+              Cancel
             </button>
           </div>
         )}
@@ -82,7 +82,7 @@ export const CategoryPicker = ({
               }}
             >
               <Plus size={14} />
-              <span>Crea Nuova Categoria...</span>
+              <span>Create New Category...</span>
             </div>
           </div>
         )}

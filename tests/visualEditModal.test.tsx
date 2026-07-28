@@ -15,23 +15,23 @@ describe('VisualEditModal Modular Architecture', () => {
     render(<VisualEditModal isOpen={true} onClose={onClose} />);
     
     // Default is Web
-    expect(screen.getByText('URL Sito Web')).toBeTruthy();
+    expect(screen.getByText('Website URL')).toBeTruthy();
 
     // Switch to Script
     const scriptBtn = screen.getByText('Script JS / Bookmarklet');
     fireEvent.click(scriptBtn);
-    expect(screen.getByText('Codice JavaScript / Bookmarklet')).toBeTruthy();
+    expect(screen.getByText('JavaScript Code / Bookmarklet')).toBeTruthy();
 
     // Switch to Search
-    const searchBtn = screen.getByText('Motore di Ricerca');
+    const searchBtn = screen.getByText('Search Engine');
     fireEvent.click(searchBtn);
-    expect(screen.getByText('URL Base del Sito')).toBeTruthy();
-    expect(screen.getByText('Parametro di Ricerca (Search Query Template)')).toBeTruthy();
+    expect(screen.getByText('Site Base URL')).toBeTruthy();
+    expect(screen.getByText('Search Parameter (Query Template)')).toBeTruthy();
   });
 
   it('can interact with the preview panel', () => {
     const onClose = vi.fn();
     render(<VisualEditModal isOpen={true} onClose={onClose} />);
-    expect(screen.getByText('Anteprima Card Link')).toBeTruthy();
+    expect(screen.getByText('Link Card Preview')).toBeTruthy();
   });
 });

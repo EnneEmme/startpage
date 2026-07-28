@@ -39,7 +39,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
       isOpen={isOpen}
       onClose={onClose}
       title="Keyboard Shortcuts Cheatsheet"
-      subtitle="Guida completa alle scorciatoie da tastiera e comandi rapidi"
+      subtitle="Complete guide to keyboard shortcuts and quick commands"
       icon={<Keyboard size={18} class={styles.keyboardIcon} />}
       footer={
         <span class={styles.footerHint}>
@@ -53,7 +53,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
         <input
           type="text"
           class={styles.searchInput}
-          placeholder="Filtra scorciatoie (es. Alt, numeri, cerca, elimina)..."
+          placeholder="Filter shortcuts (e.g. Alt, numbers, search, delete)..."
           value={searchQuery}
           onInput={e => setSearchQuery((e.target as HTMLInputElement).value)}
           autoFocus
@@ -97,7 +97,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
           ) : (
             <div class={styles.noResultsState}>
               <Command size={32} class={styles.noResultsIcon} />
-              <p>Nessuna scorciatoia trovata per "{searchQuery}"</p>
+              <p>No shortcuts found for "{searchQuery}"</p>
             </div>
           )}
         </div>

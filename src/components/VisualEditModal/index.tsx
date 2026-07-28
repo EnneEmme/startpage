@@ -165,7 +165,7 @@ export const VisualEditModal = ({
       isOpen={isOpen}
       onClose={onClose}
       title={isEditing ? 'Edit Link' : 'Add New Link'}
-      subtitle="Configura collegamenti, script JS e motori di ricerca"
+      subtitle="Configure links, JS scripts and search engines"
       icon={isEditing ? <Sliders size={18} /> : <Plus size={18} />}
       contentClassName={styles.formContent}
       hideHeader={false}
@@ -187,7 +187,7 @@ export const VisualEditModal = ({
               onClick={() => setActiveTab('web')}
             >
               <Globe size={14} />
-              <span>Sito Web Standard</span>
+              <span>Standard Website</span>
             </button>
             <button
               type="button"
@@ -203,7 +203,7 @@ export const VisualEditModal = ({
               onClick={() => setActiveTab('search')}
             >
               <Search size={14} />
-              <span>Motore di Ricerca</span>
+              <span>Search Engine</span>
             </button>
           </div>
 

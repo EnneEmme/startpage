@@ -1,8 +1,9 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { X, Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
-import {  dataStore  } from '../engine';
-import {  rankStorage  } from '../engine';
+import {  dataStore, rankStorage, copyTextToClipboard  } from '../engine';
+import { confirmDialog } from '../stores/confirmStore';
+import { showToast } from '../stores/toastStore';
 import { Modal } from './modals/Modal';
 import styles from './ImportExportModal.module.css';
 
@@ -27,11 +28,15 @@ export const ImportExportModal = ({
     setStatusMsg({ text: 'Configuration exported successfully!', type: 'success' });
   };
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     const jsonStr = jsonText || dataStore.exportJson();
-    navigator.clipboard.writeText(jsonStr);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const ok = await copyTextToClipboard(jsonStr);
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } else {
+      setStatusMsg({ text: 'Clipboard unavailable here: use Download File instead.', type: 'error' });
+    }
   };
 
   const handleDownloadFile = () => {
@@ -61,24 +66,38 @@ export const ImportExportModal = ({
   };
 
   const handleResetDefaults = () => {
-    if (confirm('Are you sure you want to reset all links to default configuration?')) {
+    void confirmDialog({
+      title: 'Reset to defaults',
+      message: 'Reset all links to the default configuration? You can undo right after.',
+      confirmLabel: 'Reset',
+      danger: true
+    }).then(ok => {
+      if (!ok) return;
+      const snapshot = dataStore.exportJson();
       dataStore.resetToDefault();
       rankStorage.clear();
       onConfigChanged();
       setStatusMsg({ text: 'Reset to default configuration complete.', type: 'success' });
-    }
+      showToast('Configuration reset to defaults', {
+        actionLabel: 'Undo',
+        onAction: () => {
+          dataStore.importJson(snapshot);
+          onConfigChanged();
+        }
+      });
+    });
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Gestione Dati: Backup & Ripristino"
-      subtitle="Esporta i tuoi link per sicurezza o importa un backup precedente"
+      title="Data Management: Backup & Restore"
+      subtitle="Export your links for safekeeping or import a previous backup"
       icon={<Database size={18} class={styles.headerIcon} />}
       footer={
         <button type="button" class={styles.closeActionBtn} onClick={onClose}>
-          Chiudi
+          Close
         </button>
       }
     >
@@ -86,7 +105,7 @@ export const ImportExportModal = ({
         <div class={styles.sectionBlock}>
           <div class={styles.sectionHeader}>
             <Download size={16} class={styles.sectionIcon} />
-            <h3>Esporta Backup (JSON)</h3>
+            <h3>Export Backup (JSON)</h3>
           </div>
           <div class={styles.actionBar}>
             <button class={styles.actionBtn} onClick={handleExport}>

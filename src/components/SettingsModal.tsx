@@ -59,12 +59,12 @@ export const SettingsModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Impostazioni & Personalizzazione"
-      subtitle="Tema visivo, griglia, caratteri e preferenze"
+      title="Settings & Personalization"
+      subtitle="Visual theme, grid, fonts and preferences"
       icon={<Sliders size={18} class={styles.headerIcon} />}
       footer={
         <button type="button" class={styles.saveBtn} onClick={onClose}>
-          Salva e Chiudi
+          Save & Close
         </button>
       }
     >
@@ -73,9 +73,9 @@ export const SettingsModal = ({
             <div class={styles.sectionHeaderRow}>
               <label class={styles.sectionLabel}>
                 <Palette size={15} class={styles.sectionIcon} />
-                Colore d'Accento Primario
+                Primary Accent Color
               </label>
-              <span class={styles.sectionSubtext}>Applica la palette a pulsanti, selezioni ed evidenziatori</span>
+              <span class={styles.sectionSubtext}>Applies the palette to buttons, selections and highlight effects</span>
             </div>
 
             <div class={styles.colorPaletteGrid}>
@@ -102,12 +102,12 @@ export const SettingsModal = ({
             <div class={styles.sectionHeaderRow}>
               <label class={styles.sectionLabel}>
                 <LayoutGrid size={15} class={styles.sectionIcon} />
-                Densità Griglia Colonne
+                Column Grid Density
               </label>
               <span class={styles.sectionSubtext}>
-                {config.gridDensity === 'compact' && '⚡ Ultra Compatta (155px min - fino a 7-9 colonne per riga)'}
-                {config.gridDensity === 'normal' && '✨ Normale Predefinita (185px min - fino a 5-6 colonne per riga)'}
-                {config.gridDensity === 'spaced' && '🖥️ Ampia Spaziata (230px min - vista larga per monitor grandi)'}
+                {config.gridDensity === 'compact' && '⚡ Ultra Compact (155px min - up to 7-9 columns per row)'}
+                {config.gridDensity === 'normal' && '✨ Default Normal (185px min - up to 5-6 columns per row)'}
+                {config.gridDensity === 'spaced' && '🖥️ Wide Spaced (230px min - wide view for large monitors)'}
               </span>
             </div>
 
@@ -117,21 +117,21 @@ export const SettingsModal = ({
                 class={`${styles.segmentBtn} ${config.gridDensity === 'compact' ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectDensity('compact')}
               >
-                Compatta
+                Compact
               </button>
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${config.gridDensity === 'normal' ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectDensity('normal')}
               >
-                Normale (Default)
+                Normal (Default)
               </button>
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${config.gridDensity === 'spaced' ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectDensity('spaced')}
               >
-                Ampia
+                Spaced
               </button>
             </div>
           </div>
@@ -141,9 +141,9 @@ export const SettingsModal = ({
             <div class={styles.sectionHeaderRow}>
               <label class={styles.sectionLabel}>
                 <Type size={15} class={styles.sectionIcon} />
-                Dimensione Testo
+                Font Size
               </label>
-              <span class={styles.sectionSubtext}>Regola la scala tipografica dell'intera interfaccia</span>
+              <span class={styles.sectionSubtext}>Adjusts the typographic scale of the whole interface</span>
             </div>
 
             <div class={styles.segmentedControl}>
@@ -152,21 +152,21 @@ export const SettingsModal = ({
                 class={`${styles.segmentBtn} ${config.fontSize === 'small' ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectFontSize('small')}
               >
-                Piccolo
+                Small
               </button>
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${(config.fontSize === 'medium' || !config.fontSize) ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectFontSize('medium')}
               >
-                Medio
+                Medium
               </button>
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${config.fontSize === 'large' ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectFontSize('large')}
               >
-                Grande
+                Large
               </button>
               <button
                 type="button"
@@ -183,10 +183,10 @@ export const SettingsModal = ({
             <div class={styles.sectionHeaderRow}>
               <label class={styles.sectionLabel}>
                 <Eye size={15} class={styles.sectionIcon} />
-                Visibilità Badge Scorciatoie (Alias)
+                Shortcut Badge Visibility (Aliases)
               </label>
               <span class={styles.sectionSubtext}>
-                Scegli se mostrare i badge alias solo alla pressione del tasto Alt o mantenerli sempre visibili
+                Choose whether to show alias badges only while holding Alt or keep them always visible
               </span>
             </div>
 
@@ -203,7 +203,7 @@ export const SettingsModal = ({
                 class={`${styles.segmentBtn} ${config.aliasVisibility === 'always' ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectAliasVisibility('always')}
               >
-                📌 Sempre Visibili
+                📌 Always Visible
               </button>
             </div>
           </div>
@@ -213,9 +213,9 @@ export const SettingsModal = ({
             <div class={styles.sectionHeaderRow}>
               <label class={styles.sectionLabel}>
                 <Search size={15} class={styles.sectionIcon} />
-                Motore di Ricerca Predefinito
+                Default Search Engine
               </label>
-              <span class={styles.sectionSubtext}>Utilizzato per ricerche web generali da barra centrale</span>
+              <span class={styles.sectionSubtext}>Used for general web searches from the search bar</span>
             </div>
 
             <div class={styles.segmentedControl}>
@@ -262,9 +262,9 @@ export const SettingsModal = ({
             <div class={styles.sectionHeaderRow}>
               <label class={styles.sectionLabel}>
                 <Download size={15} class={styles.sectionIcon} />
-                Backup & Sincronizzazione Dati
+                Backup & Data Sync
               </label>
-              <span class={styles.sectionSubtext}>Esporta o importa link e preferenze in formato JSON</span>
+              <span class={styles.sectionSubtext}>Export or import links and preferences in JSON format</span>
             </div>
 
             <div class={styles.backupBtnRow}>
@@ -277,7 +277,7 @@ export const SettingsModal = ({
                 }}
               >
                 <Download size={15} />
-                <span>Esporta / Importa Backup JSON</span>
+                <span>Export / Import JSON Backup</span>
               </button>
             </div>
           </div>

@@ -9,7 +9,9 @@ import {
   ImportExportModal, 
   VisualEditModal, 
   SettingsModal, 
-  MobileBottomNav 
+  MobileBottomNav,
+  Toast,
+  ConfirmDialog
 } from './components';
 import { LinkItem } from './types/startpage';
 import { dataStore, scrollToCategory, scrollToTop } from './engine';
@@ -175,6 +177,10 @@ export const App = () => {
         onConfigChanged={refreshData}
         onOpenImportExport={() => setImportExportOpen(true)}
       />
+
+      {/* Global feedback overlays */}
+      <Toast />
+      <ConfirmDialog />
     </>
   );
 };

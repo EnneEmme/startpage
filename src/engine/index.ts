@@ -1,5 +1,6 @@
 export * from './categoryScroll';
 export * from './cheatsheetData';
+export * from './clipboard';
 export * from './dataStore';
 export * from './dynamicEvaluator';
 export * from './fuzzySearch';

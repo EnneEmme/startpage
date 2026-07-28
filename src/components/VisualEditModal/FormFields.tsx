@@ -34,7 +34,7 @@ export const FormFields = ({
     <>
       {/* Title Input */}
       <div class={styles.fieldGroup}>
-        <label class={styles.label}>Titolo del Link</label>
+        <label class={styles.label}>Link Title</label>
         <input
           type="text"
           class={styles.input}
@@ -48,7 +48,7 @@ export const FormFields = ({
       {/* Dynamic Field Based on Selected Mode */}
       {activeTab === 'web' && (
         <div class={styles.fieldGroup}>
-          <label class={styles.label}>URL Sito Web</label>
+          <label class={styles.label}>Website URL</label>
           <input
             type="text"
             class={styles.input}
@@ -63,7 +63,7 @@ export const FormFields = ({
       {activeTab === 'search' && (
         <>
           <div class={styles.fieldGroup}>
-            <label class={styles.label}>URL Base del Sito</label>
+            <label class={styles.label}>Site Base URL</label>
             <input
               type="text"
               class={styles.input}
@@ -75,17 +75,17 @@ export const FormFields = ({
           </div>
 
           <div class={styles.fieldGroup}>
-            <label class={styles.label}>Parametro di Ricerca (Search Query Template)</label>
+            <label class={styles.label}>Search Parameter (Query Template)</label>
             <input
               type="text"
               class={styles.input}
-              placeholder="es. /results?search_query={q}  oppure  /search?q={q}"
+              placeholder="e.g. /results?search_query={q}  or  /search?q={q}"
               value={searchTemplate}
               onInput={e => setSearchTemplate((e.target as HTMLInputElement).value)}
               required
             />
             <span class={styles.helperText}>
-              Inserisci il percorso con il segnaposto <code>{"{"}q{"}"}</code> (es. <code>/results?search_query={"{"}q{"}"}</code>).
+              Enter the path with the <code>{"{"}q{"}"}</code> (e.g. <code>/results?search_query={"{"}q{"}"}</code>).
             </span>
           </div>
         </>
@@ -93,11 +93,11 @@ export const FormFields = ({
 
       {/* Aliases */}
       <div class={styles.fieldGroup}>
-        <label class={styles.label}>Scorciatoie / Alias da Tastiera (separati da virgola)</label>
+        <label class={styles.label}>Keyboard Shortcuts / Aliases (comma separated)</label>
         <input
           type="text"
           class={styles.input}
-          placeholder="es. g, gh, github, yt"
+          placeholder="e.g. g, gh, github, yt"
           value={aliases}
           onInput={e => setAliases((e.target as HTMLInputElement).value)}
         />
@@ -105,7 +105,7 @@ export const FormFields = ({
 
       {/* Icon Picker Dropdown */}
       <div class={styles.fieldGroup}>
-        <label class={styles.label}>Icona Personalizzata</label>
+        <label class={styles.label}>Custom Icon</label>
         <div class={styles.iconDropdownWrapper}>
           <div class={styles.iconInputTriggerRow}>
             <div class={styles.iconLiveBadge}>
@@ -119,7 +119,7 @@ export const FormFields = ({
             <input
               type="text"
               class={styles.input}
-              placeholder="Lucide, URL Immagine o Codice SVG <svg>..."
+              placeholder="Lucide, Image URL or SVG Code <svg>..."
               value={icon}
               onInput={e => setIcon((e.target as HTMLInputElement).value)}
             />
@@ -128,7 +128,7 @@ export const FormFields = ({
               class={styles.iconPickerToggleBtn}
               onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}
             >
-              Scegli ({ICON_LIST.length} Lucide) ▼
+              Pick ({ICON_LIST.length} Lucide) ▼
             </button>
           </div>
 
@@ -138,7 +138,7 @@ export const FormFields = ({
                 <input
                   type="text"
                   class={styles.iconSearchInput}
-                  placeholder={`Cerca tra ${ICON_LIST.length} icone Lucide (es. Coffee, Rocket, Shield)...`}
+                  placeholder={`Search ${ICON_LIST.length} Lucide icons (e.g. Coffee, Rocket, Shield)...`}
                   value={iconSearchQuery}
                   onInput={e => setIconSearchQuery((e.target as HTMLInputElement).value)}
                   autoFocus
@@ -169,12 +169,12 @@ export const FormFields = ({
                     })
                   ) : (
                     <div style={{ gridColumn: '1 / -1', padding: '1.25rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
-                      Nessuna icona Lucide trovata per "{iconSearchQuery}". Puoi anche inserire un URL immagine diretto.
+                      No Lucide icon found for "{iconSearchQuery}". You can also paste a direct image URL.
                     </div>
                   )
                 ) : (
                   <div style={{ gridColumn: '1 / -1', padding: '1.25rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.6' }}>
-                    🔍 Digita nel campo in alto per cercare tra <strong>{ICON_LIST.length} icone Lucide</strong> (es. <em>coffee, rocket, mail, shield, code, music</em>). Le icone dei siti vengono risolte automaticamente via favicon.
+                    🔍 Type in the field above to search <strong>{ICON_LIST.length} icone Lucide</strong> (e.g. <em>coffee, rocket, mail, shield, code, music</em>). Site icons are resolved automatically via favicon.
                   </div>
                 )}
               </div>

@@ -1,0 +1,49 @@
+.message {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.cancelBtn,
+.confirmBtn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.cancelBtn {
+  color: var(--text-muted);
+}
+
+.cancelBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.confirmBtn {
+  background: var(--accent-primary);
+  color: #0b0d12;
+}
+
+.confirmBtn:hover {
+  filter: brightness(1.1);
+}
+
+.confirmBtn.dangerBtn {
+  background: #f87171;
+  color: #14060a;
+}
+
+.confirmBtn.dangerBtn:hover {
+  background: #ef4444;
+}

@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Edit3, Trash2, ArrowUp, ArrowDown, Folder } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
 import {  dataStore  } from '../engine';
+import { confirmDialog } from '../stores/confirmStore';
 import styles from './ContextMenu.module.css';
 
 /** Gap (px) kept between menu and viewport edges when clamping */
@@ -72,11 +73,18 @@ export const ContextMenu = ({
 
   const handleRemoveClick = (e: MouseEvent) => {
     e.stopPropagation();
-    // Cancelling the confirm keeps the menu open (previous behavior always closed)
-    if (confirm(`Are you sure you want to remove this link?`)) {
-      onRemove(link.id);
-      onClose();
-    }
+    // Cancelling keeps the menu open; removal offers toast-based Undo upstream
+    void confirmDialog({
+      title: 'Remove link',
+      message: `Remove "${link.title}"?`,
+      confirmLabel: 'Remove',
+      danger: true
+    }).then(ok => {
+      if (ok) {
+        onRemove(link.id);
+        onClose();
+      }
+    });
   };
 
   const handleMoveLinkDirection = (e: MouseEvent, direction: 'up' | 'down') => {
