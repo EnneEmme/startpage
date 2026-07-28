@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { h } from 'preact';
 import { render, fireEvent } from '@testing-library/preact';
 import { App } from '../src/app';
 import { dataStore } from '../src/engine/dataStore';
@@ -22,7 +21,7 @@ describe('App End-to-End Integration Flow', () => {
 
   it('filters columns when clicking category tab in JumpBar', () => {
     const { container, getAllByText } = render(<App />);
-    const socialTab = getAllByText('Social')[0];
+    const socialTab = getAllByText('Social')[0]!;
     fireEvent.click(socialTab);
 
     expect(container.textContent).toContain('Mail');
@@ -30,7 +29,7 @@ describe('App End-to-End Integration Flow', () => {
 
   it('opens search overlay when clicking search button in header', () => {
     const { getAllByTitle, getByPlaceholderText } = render(<App />);
-    const searchBtn = getAllByTitle('Fuzzy Search (Press any key)')[0];
+    const searchBtn = getAllByTitle('Fuzzy Search (Press any key)')[0]!;
     fireEvent.click(searchBtn);
 
     const input = getByPlaceholderText('Type link name, alias, or command (e.g. g meteo)...');
@@ -39,7 +38,7 @@ describe('App End-to-End Integration Flow', () => {
 
   it('opens keyboard cheatsheet modal when clicking help button', () => {
     const { baseElement, getAllByTitle } = render(<App />);
-    const helpBtn = getAllByTitle('Shortcuts Cheatsheet (? or F1)')[0];
+    const helpBtn = getAllByTitle('Shortcuts Cheatsheet (? or F1)')[0]!;
     fireEvent.click(helpBtn);
 
     // Modals portal to document.body (baseElement)
@@ -48,7 +47,7 @@ describe('App End-to-End Integration Flow', () => {
 
   it('opens visual edit modal and adds a new link successfully', () => {
     const { baseElement, getAllByTitle, getByPlaceholderText, getByText } = render(<App />);
-    const editBtn = getAllByTitle('Add or Edit Links (Shift+N)')[0];
+    const editBtn = getAllByTitle('Add or Edit Links (Shift+N)')[0]!;
     fireEvent.click(editBtn);
 
     expect(baseElement.textContent).toContain('Add New Link');

@@ -42,7 +42,7 @@ describe('RankStorage Engine & Edge Cases', () => {
   it('exports and imports rank data correctly', () => {
     rankStorage.recordUsage('youtube');
     const exported = rankStorage.getRankData();
-    expect(exported['youtube'].clicks).toBe(1);
+    expect(exported['youtube']!.clicks).toBe(1);
 
     const newStorage = new RankStorage();
     newStorage.importRankData(exported);

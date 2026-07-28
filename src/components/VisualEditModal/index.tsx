@@ -1,7 +1,7 @@
-import { h, Fragment } from 'preact';
+import type { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { X, Plus, Sliders, Globe, Zap, Search } from 'lucide-preact';
-import { LinkItem } from '../../types/startpage';
+import { Plus, Sliders, Globe, Zap, Search } from 'lucide-preact';
+import type { LinkItem } from '../../types/startpage';
 import { resolveDynamicUrl } from '../../engine';
 import { appActions, categoriesSignal } from '../../stores';
 import styles from '../VisualEditModal.module.css';
@@ -155,7 +155,7 @@ export const VisualEditModal = ({
   };
 
   const filteredIcons = searchLucideIcons(iconSearchQuery, 120);
-  const firstAlias = aliases.split(',')[0]?.trim();
+  const firstAlias = aliases.split(',')[0]?.trim() ?? '';
 
   return (
     <Modal

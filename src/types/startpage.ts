@@ -8,13 +8,13 @@ export interface LinkItem {
   url: string;
   aliases: string[];
   category: string;
-  icon?: string;
-  color?: string;
-  searchPath?: string; // Search pattern e.g. '/results?search_query={}'
-  searchTemplate?: string; // Custom search query template e.g. 'https://youtube.com/results?search_query={q}'
-  dynamicUrlRule?: 'unimib_orari' | 'unimib_esami' | string;
-  isScript?: boolean; // True if this link is a custom JS script / bookmarklet
-  scriptContent?: string; // JavaScript code snippet
+  icon?: string | undefined;
+  color?: string | undefined;
+  searchPath?: string | undefined; // Search pattern e.g. '/results?search_query={}'
+  searchTemplate?: string | undefined; // Custom search query template e.g. 'https://youtube.com/results?search_query={q}'
+  dynamicUrlRule?: 'unimib_orari' | 'unimib_esami' | (string & {}) | undefined;
+  isScript?: boolean | undefined; // True if this link is a custom JS script / bookmarklet
+  scriptContent?: string | undefined; // JavaScript code snippet
 }
 
 export interface CategoryGroup {

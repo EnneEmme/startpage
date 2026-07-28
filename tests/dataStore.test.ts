@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { DataStore, DEFAULT_CONFIG, sanitizeLinkItem } from '../src/engine/dataStore';
 import { rankStorage } from '../src/engine/rankStorage';
-import { LinkItem } from '../src/types/startpage';
+import type { LinkItem } from '../src/types/startpage';
 
 describe('DataStore Engine & Edge Cases', () => {
   let dataStore: DataStore;
@@ -73,8 +73,8 @@ describe('DataStore Engine & Edge Cases', () => {
 
     const reloadedStore = new DataStore();
     const reloadedIds = reloadedStore.getLinks().map(l => l.id);
-    expect(reloadedIds[reloadedIds.length - 1]).toBe('mail');
-    expect(DEFAULT_CONFIG.commands[0].id).toBe('mail'); // sanity: it used to be first
+    expect(reloadedIds[reloadedIds.length - 1]!).toBe('mail');
+    expect(DEFAULT_CONFIG.commands[0]!.id).toBe('mail'); // sanity: it used to be first
     expect(reloadedIds[0]).not.toBe('mail');
   });
 
@@ -104,26 +104,26 @@ describe('DataStore Engine & Edge Cases', () => {
     localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: legacy }));
 
     const migrated = new DataStore();
-    expect(migrated.getLinks()[0].category).toBe('AI & LLMs');
+    expect(migrated.getLinks()[0]!.category).toBe('AI & LLMs');
     expect(localStorage.getItem('startpage_migrations')).toContain('v2_legacy_normalization');
 
     // Second load: user data untouched even if it looks legacy-shaped again
     const links = migrated.getLinks().map(l => ({ ...l, category: 'LLMs 2' }));
     localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: links }));
     const secondLoad = new DataStore();
-    expect(secondLoad.getLinks()[0].category).toBe('LLMs 2');
+    expect(secondLoad.getLinks()[0]!.category).toBe('LLMs 2');
   });
 
   it('edits a link in place preserving its position in the category column', () => {
     const social = dataStore.getCategories().find(c => c.name === 'Social')!;
-    const firstId = social.links[0].id;
-    const edited = { ...social.links[0], title: 'Renamed First' };
+    const firstId = social.links[0]!.id;
+    const edited = { ...social.links[0]!, title: 'Renamed First' };
 
     dataStore.updateLink(edited);
 
     const after = dataStore.getCategories().find(c => c.name === 'Social')!;
-    expect(after.links[0].id).toBe(firstId);
-    expect(after.links[0].title).toBe('Renamed First');
+    expect(after.links[0]!.id).toBe(firstId);
+    expect(after.links[0]!.title).toBe('Renamed First');
   });
 
   it('sanitizeLinkItem drops unrecoverable entries and fills defaults', () => {
@@ -150,8 +150,8 @@ describe('DataStore Engine & Edge Cases', () => {
     const store = new DataStore();
     const links = store.getLinks();
     expect(links.map(l => l.id)).toEqual(['ok', 'ok2']);
-    expect(links[0].aliases).toEqual([]);
-    expect(links[1].aliases).toEqual(['a', 'b']);
+    expect(links[0]!.aliases).toEqual([]);
+    expect(links[1]!.aliases).toEqual(['a', 'b']);
   });
 
   it('export includes rank data and import restores it', () => {
@@ -168,7 +168,7 @@ describe('DataStore Engine & Edge Cases', () => {
 
     const success = dataStore.importJson(exported);
     expect(success).toBe(true);
-    expect(rankStorage.getRankData()['mail'].clicks).toBe(2);
+    expect(rankStorage.getRankData()['mail']!.clicks).toBe(2);
 
     rankStorage.clear();
   });

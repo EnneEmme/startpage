@@ -93,9 +93,10 @@ export const formatSvgToDataUrl = (svgCode: string): string => {
     const bytes = encoder.encode(cleanSvg);
     let binary = '';
     for (let i = 0; i < bytes.byteLength; i++) {
-      binary += String.fromCharCode(bytes[i]);
+      binary += String.fromCharCode(bytes[i] ?? 0);
     }
-    const base64 = typeof btoa === 'function' ? btoa(binary) : Buffer.from(cleanSvg).toString('base64');
+    // btoa is a browser builtin; no Node Buffer fallback (this ships in a browser bundle)
+    const base64 = btoa(binary);
     return `data:image/svg+xml;base64,${base64}`;
   } catch {
     return `data:image/svg+xml;utf8,${encodeURIComponent(cleanSvg)}`;

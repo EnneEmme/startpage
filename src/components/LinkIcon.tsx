@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { Globe } from 'lucide-preact';
 import { extractDomain, getFaviconCandidates, formatSvgToDataUrl } from '../engine';

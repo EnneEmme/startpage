@@ -1,9 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
-import { h } from 'preact';
 import { render, fireEvent, act } from '@testing-library/preact';
 import { ContextMenu } from '../src/components/ContextMenu';
 import { confirmSignal, settleConfirm } from '../src/stores/confirmStore';
-import { LinkItem } from '../src/types/startpage';
+import type { LinkItem } from '../src/types/startpage';
 
 describe('ContextMenu Component', () => {
   const sampleLink: LinkItem = {

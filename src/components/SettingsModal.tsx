@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { Check, Sliders, Palette, LayoutGrid, Type, Search, Download, Eye } from 'lucide-preact';
 import { ACCENT_COLORS } from '../engine';
 import { themeConfigSignal, settingsActions } from '../stores';

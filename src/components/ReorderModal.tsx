@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { ArrowUp, ArrowDown, Move } from 'lucide-preact';
 import { appActions } from '../stores';
 import { Modal } from './modals/Modal';
@@ -20,9 +19,11 @@ export const ReorderModal = ({
     const targetIdx = direction === 'up' ? index - 1 : index + 1;
     if (targetIdx < 0 || targetIdx >= newOrder.length) return;
 
-    const temp = newOrder[index];
-    newOrder[index] = newOrder[targetIdx];
-    newOrder[targetIdx] = temp;
+    const current = newOrder[index];
+    const target = newOrder[targetIdx];
+    if (current === undefined || target === undefined) return;
+    newOrder[index] = target;
+    newOrder[targetIdx] = current;
 
     appActions.setCategoryOrder(newOrder);
   };

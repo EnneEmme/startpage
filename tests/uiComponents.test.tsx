@@ -1,5 +1,4 @@
 import { describe, it, expect, vi } from 'vitest';
-import { h } from 'preact';
 import { render } from '@testing-library/preact';
 import { ActionToolbar } from '../src/components/ActionToolbar';
 import { JumpBar } from '../src/components/JumpBar';

@@ -39,7 +39,7 @@ describe('ReorderModal Component', () => {
     // Click Move Up on 'School' (second item)
     const moveUpBtns = document.querySelectorAll('button[title="Move Up / Left"]');
     expect(moveUpBtns.length).toBeGreaterThan(1);
-    fireEvent.click(moveUpBtns[1]);
+    fireEvent.click(moveUpBtns[1]!);
     expect(dataStore.getCategoryOrder()).toEqual(['School', 'Social', 'Fun']);
   });
 });

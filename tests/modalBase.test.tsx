@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { render, screen, fireEvent } from '@testing-library/preact';
 import { expect, test, vi } from 'vitest';
 import { Modal } from '../src/components/modals/Modal';

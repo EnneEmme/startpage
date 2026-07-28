@@ -1,7 +1,6 @@
-import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { ChevronDown } from 'lucide-preact';
-import { LinkItem, CategoryGroup } from '../types/startpage';
+import type { LinkItem, CategoryGroup } from '../types/startpage';
 import { executeLink } from '../engine';
 import { appActions, linksSignal, showToast } from '../stores';
 import { useDragAndDrop, useContextMenu, useColumnScrollMasks } from '../hooks';

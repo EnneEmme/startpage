@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { executeLink, isBookmarkletOrScript, extractScriptCode } from '../src/engine/linkExecutor';
-import { LinkItem } from '../src/types/startpage';
+import type { LinkItem } from '../src/types/startpage';
 
 describe('LinkExecutor Engine', () => {
   it('identifies bookmarklet and script links correctly', () => {

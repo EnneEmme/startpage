@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { useState, useRef, useEffect } from 'preact/hooks';
 import styles from './JumpBar.module.css';
 
@@ -42,7 +41,9 @@ export const JumpBar = ({
     onSelectCategory(categoryName);
   };
 
-  let fadeClass = '';
+  // CSS-module classes are typed string|undefined by noUncheckedIndexedAccess;
+  // the class names exist, and Preact's class prop tolerates undefined.
+  let fadeClass: string | undefined = '';
   if (scrollState.canScrollLeft && scrollState.canScrollRight) {
     fadeClass = styles.fadeBoth;
   } else if (scrollState.canScrollLeft && !scrollState.canScrollRight) {

@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { Tag, Check, Plus } from 'lucide-preact';
 import styles from '../VisualEditModal.module.css';
 

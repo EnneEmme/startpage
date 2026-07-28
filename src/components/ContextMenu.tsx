@@ -1,7 +1,6 @@
-import { h } from 'preact';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Edit3, Trash2, ArrowUp, ArrowDown, Folder, Move } from 'lucide-preact';
-import { LinkItem } from '../types/startpage';
+import type { LinkItem } from '../types/startpage';
 import { appActions, categoriesSignal, linksSignal, confirmDialog } from '../stores';
 import styles from './ContextMenu.module.css';
 

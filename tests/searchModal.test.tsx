@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { h } from 'preact';
 import { render, fireEvent } from '@testing-library/preact';
 import { SearchModal } from '../src/components/SearchModal';
-import { LinkItem } from '../src/types/startpage';
+import type { LinkItem } from '../src/types/startpage';
 
 const mockLinks: LinkItem[] = [
   {

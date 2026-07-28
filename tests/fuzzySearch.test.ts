@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { FuzzySearchEngine, getEngineFallback } from '../src/engine/fuzzySearch';
-import { LinkItem } from '../src/types/startpage';
+import type { LinkItem } from '../src/types/startpage';
 
 describe('FuzzySearchEngine & Edge Cases', () => {
   let engine: FuzzySearchEngine;
@@ -39,18 +39,18 @@ describe('FuzzySearchEngine & Edge Cases', () => {
   it('matches links by title, category, and alias', () => {
     const results = engine.search('gmail');
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].item.id).toBe('mail');
+    expect(results[0]!.item.id).toBe('mail');
   });
 
   it('matches links by alias (e.g. gh -> GitHub) with top priority', () => {
     const results = engine.search('gh');
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].item.id).toBe('github');
+    expect(results[0]!.item.id).toBe('github');
   });
 
   it('prioritizes exact alias match over general fuzzy match', () => {
     const results = engine.search('yt');
-    expect(results[0].item.id).toBe('youtube');
+    expect(results[0]!.item.id).toBe('youtube');
   });
 
   it('matches all links under a category query (e.g. "Social")', () => {

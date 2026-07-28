@@ -46,7 +46,9 @@ export const CategoryColumn = ({
 
   const isDragOver = drag.dragOverCategory === cat.name && !drag.dragOverLinkId;
 
-  let fadeClass = '';
+  // CSS-module classes are typed string|undefined by noUncheckedIndexedAccess;
+  // the class names exist, and Preact's class prop tolerates undefined.
+  let fadeClass: string | undefined = '';
   if (mask?.canScrollUp && mask?.canScrollDown) {
     fadeClass = styles.fadeBoth;
   } else if (mask?.canScrollUp) {
@@ -116,7 +118,7 @@ export const CategoryColumn = ({
           const isScript = isBookmarkletOrScript(link);
           const isItemDragOver = drag.dragOverLinkId === link.id;
 
-          let dragOverClass = '';
+          let dragOverClass: string | undefined = '';
           if (isItemDragOver) {
             dragOverClass = drag.dropPosition === 'below' ? styles.dragOverBelow : styles.dragOverAbove;
           }

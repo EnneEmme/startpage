@@ -6,6 +6,7 @@ interface KeyboardHandlers {
   onOpenCheatsheet?: () => void;
   onOpenVisualEdit?: () => void;
   onOpenSettings?: () => void;
+  onToggleShortcutsView?: () => void;
   onSelectCategoryIndex?: (index: number) => void;
 }
 

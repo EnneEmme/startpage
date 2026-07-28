@@ -1,10 +1,9 @@
-import { h } from 'preact';
 import { memo } from 'preact/compat';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'preact/hooks';
 import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles, X } from 'lucide-preact';
 import { fuzzySearchEngine, resolveDynamicUrl, executeLink, getEngineFallback } from '../engine';
 import { themeConfigSignal } from '../stores';
-import { LinkItem, SearchResult } from '../types/startpage';
+import type { LinkItem, SearchResult } from '../types/startpage';
 import { LinkIcon } from './LinkIcon';
 import { Modal } from './modals/Modal';
 import styles from './SearchModal.module.css';
@@ -231,7 +230,7 @@ export const SearchModal = ({
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="none"
-            spellCheck={false}
+            spellcheck={false}
             class={styles.searchInput}
             placeholder="Type link name, alias, or command (e.g. g meteo)..."
             value={query}

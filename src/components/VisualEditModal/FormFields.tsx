@@ -1,4 +1,3 @@
-import { h, Fragment } from 'preact';
 import { LinkIcon } from '../LinkIcon';
 import type { IconEntry } from '../iconRegistry';
 import { ICON_LIST } from '../iconRegistry';

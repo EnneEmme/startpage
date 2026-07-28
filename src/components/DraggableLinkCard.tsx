@@ -9,7 +9,7 @@ interface DraggableLinkCardProps {
   displayUrl: string;
   isScript: boolean;
   showShortcuts: boolean;
-  dragOverClass: string;
+  dragOverClass: string | undefined;
   isBeingDragged: boolean;
   isJustDropped: boolean;
   onDragStart: (e: DragEvent) => void;

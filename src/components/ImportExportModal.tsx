@@ -1,6 +1,5 @@
-import { h } from 'preact';
 import { useState } from 'preact/hooks';
-import { X, Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
+import { Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
 import { copyTextToClipboard } from '../engine';
 import { appActions, confirmDialog, showToast } from '../stores';
 import { Modal } from './modals/Modal';

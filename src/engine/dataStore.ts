@@ -370,6 +370,7 @@ export class DataStore {
     if (fromIdx === -1) return;
 
     const [draggedLink] = this.config.commands.splice(fromIdx, 1);
+    if (!draggedLink) return; // defensive: fromIdx validity already checked above
     draggedLink.category = targetCategoryId;
 
     const targetCategoryLinks = this.config.commands.filter(l => l.category === targetCategoryId);

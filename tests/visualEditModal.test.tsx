@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent, screen } from '@testing-library/preact';
 import { VisualEditModal } from '../src/components/VisualEditModal';
-import { h } from 'preact';
 
 describe('VisualEditModal Modular Architecture', () => {
   it('renders modal header correctly', () => {

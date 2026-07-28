@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { Eye, Zap } from 'lucide-preact';
 import { LinkIcon } from '../LinkIcon';
 import styles from '../VisualEditModal.module.css';

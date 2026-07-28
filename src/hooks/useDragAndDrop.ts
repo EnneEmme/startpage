@@ -135,6 +135,10 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
 
       if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
         const [dragged] = categoryNames.splice(fromIdx, 1);
+        if (dragged === undefined) {
+          setDraggedCategoryName(null);
+          return;
+        }
         categoryNames.splice(toIdx, 0, dragged);
         appActions.setCategoryOrder(categoryNames);
       }

@@ -204,7 +204,7 @@ export class FuzzySearchEngine {
 
       if (isMatch) {
         const existing = resultMap.get(item.id);
-        const currentFuseScore = existing ? existing.score : 0.2;
+        const currentFuseScore = existing?.score ?? 0.2;
         const computedScore = priorityScore + currentFuseScore - rankBonus * 0.15;
 
         resultMap.set(item.id, {

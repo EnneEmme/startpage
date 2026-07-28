@@ -22,7 +22,7 @@ describe('ColumnGrid Component', () => {
     const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
 
     // Default config contains two links titled 'Mail'; the Social one is first
-    const anchor = getAllByText('Mail')[0].closest('a');
+    const anchor = getAllByText('Mail')[0]!.closest('a');
     expect(anchor).not.toBeNull();
     expect(anchor?.getAttribute('href')).toContain('mail.google.com');
   });
@@ -30,7 +30,7 @@ describe('ColumnGrid Component', () => {
   it('click: records usage rank and prevents native navigation', () => {
     const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
 
-    const anchor = getAllByText('Mail')[0].closest('a') as HTMLAnchorElement;
+    const anchor = getAllByText('Mail')[0]!.closest('a') as HTMLAnchorElement;
     const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
     anchor.dispatchEvent(clickEvent);
 
@@ -40,7 +40,7 @@ describe('ColumnGrid Component', () => {
 
   it('cmd/ctrl+click opens in a new tab instead of navigating current page', () => {
     const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
-    const anchor = getAllByText('Mail')[0].closest('a') as HTMLAnchorElement;
+    const anchor = getAllByText('Mail')[0]!.closest('a') as HTMLAnchorElement;
 
     fireEvent.click(anchor, { metaKey: true });
     expect(window.open).toHaveBeenCalledWith(expect.stringContaining('mail.google.com'), '_blank', 'noopener,noreferrer');
@@ -69,7 +69,7 @@ describe('ColumnGrid Component', () => {
       <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />
     );
 
-    const anchor = getAllByText('Mail')[0].closest('a') as HTMLAnchorElement;
+    const anchor = getAllByText('Mail')[0]!.closest('a') as HTMLAnchorElement;
     fireEvent.contextMenu(anchor);
 
     expect(baseElement.textContent).toContain('Edit Link');

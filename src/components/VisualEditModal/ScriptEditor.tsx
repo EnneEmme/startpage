@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import styles from '../VisualEditModal.module.css';
 
 interface ScriptEditorProps {

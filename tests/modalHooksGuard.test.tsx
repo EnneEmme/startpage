@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/preact';
-import { h } from 'preact';
 import { SettingsModal } from '../src/components/SettingsModal';
 import { CheatsheetModal } from '../src/components/CheatsheetModal';
 import { VisualEditModal } from '../src/components/VisualEditModal';

@@ -141,7 +141,8 @@ export class ThemeEngine {
   public applyTheme(config: ThemeConfig): void {
     if (typeof document === 'undefined') return;
 
-    const accent = ACCENT_COLORS.find(c => c.id === config.accentColorId) || ACCENT_COLORS[0];
+    const accent = ACCENT_COLORS.find(c => c.id === config.accentColorId) ?? ACCENT_COLORS[0];
+    if (!accent) return; // ACCENT_COLORS is a non-empty constant; strict-mode guard
     const root = document.documentElement;
 
     root.style.setProperty('--accent-primary', accent.primary);
