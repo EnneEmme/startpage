@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { extractDomain, extractOrigin, getFaviconCandidates, getFaviconUrl, resolveIcon } from '../src/engine/iconResolver';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { extractDomain, extractOrigin, getCachedFaviconIndex, getFaviconCandidates, getFaviconUrl, resolveIcon, setCachedFaviconIndex } from '../src/engine/iconResolver';
 
 describe('iconResolver Engine', () => {
   it('extracts domain correctly from valid URL', () => {
@@ -18,15 +18,12 @@ describe('iconResolver Engine', () => {
     expect(extractOrigin('invalid-url')).toBe('');
   });
 
-  it('returns multi-tier candidate list for sub-service URLs', () => {
+  it('returns short multi-tier candidate list (3 providers, sz=64)', () => {
     const candidates = getFaviconCandidates('https://mail.google.com/mail/u/0/#inbox');
-    expect(candidates).toHaveLength(6);
-    expect(candidates[0]).toBe('https://www.google.com/s2/favicons?domain=https://mail.google.com&sz=128');
-    expect(candidates[1]).toBe('https://www.google.com/s2/favicons?domain=mail.google.com&sz=128');
-    expect(candidates[2]).toBe('https://icon.horse/icon/mail.google.com');
-    expect(candidates[3]).toBe('https://icons.duckduckgo.com/ip3/mail.google.com.ico');
-    expect(candidates[4]).toBe('https://mail.google.com/favicon.ico');
-    expect(candidates[5]).toBe('https://mail.google.com/favicon.ico');
+    expect(candidates).toHaveLength(3);
+    expect(candidates[0]).toBe('https://www.google.com/s2/favicons?domain=mail.google.com&sz=64');
+    expect(candidates[1]).toBe('https://icon.horse/icon/mail.google.com');
+    expect(candidates[2]).toBe('https://icons.duckduckgo.com/ip3/mail.google.com.ico');
   });
 
   it('returns candidate list with direct brand favicon overrides for NotebookLM', () => {
@@ -70,5 +67,24 @@ describe('iconResolver Engine', () => {
     const resolved = resolveIcon('https://twitter.com', 'Twitter');
     expect(resolved.type).toBe('lucide');
     expect(resolved.src).toBe('Twitter');
+  });
+
+  describe('favicon provider cache', () => {
+    beforeEach(() => localStorage.clear());
+
+    it('defaults to 0 and round-trips a winning candidate index', () => {
+      expect(getCachedFaviconIndex('github.com')).toBe(0);
+      setCachedFaviconIndex('github.com', 2);
+      expect(getCachedFaviconIndex('github.com')).toBe(2);
+    });
+
+    it('keeps domains isolated and survives corrupted JSON', () => {
+      setCachedFaviconIndex('a.com', 1);
+      expect(getCachedFaviconIndex('b.com')).toBe(0);
+      localStorage.setItem('startpage_favicon_cache', 'not-json{{{');
+      expect(getCachedFaviconIndex('a.com')).toBe(0);
+      localStorage.setItem('startpage_favicon_cache', '[1,2]');
+      expect(getCachedFaviconIndex('a.com')).toBe(0);
+    });
   });
 });
