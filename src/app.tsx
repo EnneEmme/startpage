@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import {
-  HeaderClock,
+  ActionToolbar,
   JumpBar,
   ColumnGrid,
   SearchModal,
@@ -9,7 +9,6 @@ import {
   ImportExportModal,
   VisualEditModal,
   SettingsModal,
-  MobileBottomNav,
   ReorderModal,
   Toast,
   ConfirmDialog
@@ -90,7 +89,8 @@ export const App = () => {
           onSelectCategory={handleSelectCategory}
         />
 
-        <HeaderClock
+        <ActionToolbar
+          variant="header"
           onOpenSearch={() => handleOpenSearch()}
           onOpenCheatsheet={() => openModal('cheatsheet')}
           onOpenVisualEdit={() => openVisualEdit(null)}
@@ -109,7 +109,8 @@ export const App = () => {
       </main>
 
       {/* Standalone Bottom Navigation Bar for Mobile & Tablet (< 1024px) */}
-      <MobileBottomNav
+      <ActionToolbar
+        variant="bottomNav"
         onOpenSearch={() => handleOpenSearch()}
         onOpenCheatsheet={() => openModal('cheatsheet')}
         onOpenVisualEdit={() => openVisualEdit(null)}

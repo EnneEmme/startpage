@@ -13,7 +13,7 @@ describe('App End-to-End Integration Flow', () => {
     window.scrollTo = vi.fn();
   });
 
-  it('renders full App UI with HeaderClock, JumpBar, and ColumnGrid', () => {
+  it('renders full App UI with ActionToolbar, JumpBar, and ColumnGrid', () => {
     const { container } = render(<App />);
     expect(container.textContent).toContain('Mail');
     expect(container.textContent).toContain('YouTube');

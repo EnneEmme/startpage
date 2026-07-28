@@ -1,0 +1,93 @@
+/* Shared styles for ActionToolbar.
+   - .topRightTools: header bubble, visible on >=1024px
+   - .floatingBottomNav: floating pill, visible on <1024px */
+
+.topRightTools {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--bg-glass, rgba(16, 16, 20, 0.78));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+  padding: 0.28rem 0.45rem;
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(255, 255, 255, 0.06) inset;
+  flex-shrink: 0;
+  pointer-events: auto;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.iconBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.iconBtn.activeIconBtn {
+  background: var(--accent-glow, rgba(226, 232, 240, 0.18));
+  color: var(--accent-highlight);
+  border: 1px solid var(--border-color-hover, rgba(226, 232, 240, 0.4));
+}
+
+.floatingBottomNav {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .topRightTools {
+    display: none !important;
+  }
+
+  .floatingBottomNav {
+    position: fixed !important;
+    bottom: 1.25rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: auto !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    background: var(--bg-glass, rgba(16, 16, 18, 0.94));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 0.5rem 1.3rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color-hover);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
+    animation: fadeIn var(--transition-normal) forwards;
+  }
+
+  .iconBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+    background: transparent;
+    border: none;
+  }
+
+  .iconBtn:hover,
+  .iconBtn:active {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--accent-highlight);
+    transform: scale(1.08);
+  }
+}

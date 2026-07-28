@@ -1,13 +1,14 @@
 import { describe, it, expect, vi } from 'vitest';
 import { h } from 'preact';
 import { render } from '@testing-library/preact';
-import { HeaderClock } from '../src/components/HeaderClock';
+import { ActionToolbar } from '../src/components/ActionToolbar';
 import { JumpBar } from '../src/components/JumpBar';
 
 describe('UI Components Unit Tests', () => {
-  it('renders HeaderClock tool buttons', () => {
+  it('renders ActionToolbar header tool buttons', () => {
     const { getAllByTitle } = render(
-      <HeaderClock
+      <ActionToolbar
+        variant="header"
         onOpenSearch={vi.fn()}
         onOpenCheatsheet={vi.fn()}
         onOpenVisualEdit={vi.fn()}
