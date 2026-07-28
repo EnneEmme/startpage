@@ -4,7 +4,7 @@
 > Ogni voce è una checkbox: spuntala quando il fix è completato e verificato.
 > **Regole (da gemini.md):** dopo ogni fix → `bun run test` verde, aggiorna `structure.md`/`TODO.md` se cambiano file, commit Conventional Commits.
 >
-> **Stato attuale misurato (post-P0/P1/P2):** 23 file test / 120 test PASS · `tsc --noEmit` = **0 errori** · `dist/index.html` = **254 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati: 34/99 spuntati.
+> **Stato attuale misurato (post-P0/P1/P2 + batch P3-CSS):** 23 file test / 121 test PASS · `tsc --noEmit` = **0 errori** · `dist/index.html` = **254 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati + 5 item P3 CSS/a11y: 39/99 spuntati.
 
 **Legenda severità:** 🔴 critica · 🟠 alta · 🟡 media · ⚪ bassa
 
@@ -129,17 +129,17 @@
 - [x] 🔴→🟠 **Modali senza focus trap, background non inert, focus non ripristinato** — `Modal.tsx`: `role="dialog"`/`aria-modal` ci sono, ma Tab esce dal dialogo, link dietro attivabili da tastiera (pointerEvents blocca solo mouse), nessun restore al trigger.
   **Fix:** focus trap + `inert` sul resto dell'albero + focus restore.
 
-- [ ] 🟠 **Nessun indicatore `:focus-visible` in tutta l'app** — `outline:none` globale (global.css:117-122) e zero focus ring su bottoni/tab/link/menu. JumpBar con mask-image può nascondere il focus ai bordi.
-  **Fix:** token `--focus-ring` + regola `:focus-visible` globale.
+- [x] 🟠 **Nessun indicatore `:focus-visible` in tutta l'app** — `outline:none` globale (global.css:117-122) e zero focus ring su bottoni/tab/link/menu. JumpBar con mask-image può nascondere il focus ai bordi.
+  **Fix:** token `--focus-ring` + regola `:focus-visible` globale. ✅ Fatto (element+pseudo selector; mask JumpBar ancora aperto come nota).
 
-- [ ] 🟠 **Contrasto `--text-muted` #64748b su #08080a ≈ 4.2:1 < 4.5:1 (WCAG AA)** — variables.css:33; usato per sottotitoli/hint/footer dei modali.
-  **Fix:** ~#8b9bb0 o equivalente ≥4.5:1.
+- [x] 🟠 **Contrasto `--text-muted` #64748b su #08080a ≈ 4.2:1 < 4.5:1 (WCAG AA)** — variables.css:33; usato per sottotitoli/hint/footer dei modali.
+  **Fix:** ~#8b9bb0 o equivalente ≥4.5:1. ✅ Fatto: #8b9bb0 ≈ 7.2:1.
 
 - [ ] 🟠 **SearchModal senza pattern ARIA combobox** — mancano `role="combobox"`, `aria-expanded/controls/activedescendant`, `role="listbox"/"option"`, live region risultati; selezione con frecce fuori viewport senza `scrollIntoView` (lista max-height 420px); Tab dirottato → clear button irraggiungibile da tastiera; Modal con `hideHeader` senza `aria-label`.
   **Fix:** pattern completo + `results[selectedIndex].scrollIntoView({block:'nearest'})` + prop `aria-label` su Modal.
 
-- [ ] 🟠 **Z-index: MobileBottomNav (99999) sopra i modali (1000)** — `MobileBottomNav.module.css:7-26` resta visibile e cliccabile sopra ogni overlay.
-  **Fix:** scala z-index centralizzata come token (nav 900 < overlay 1000 < menu 2000).
+- [x] 🟠 **Z-index: MobileBottomNav (99999) sopra i modali (1000)** — `MobileBottomNav.module.css:7-26` resta visibile e cliccabile sopra ogni overlay.
+  **Fix:** scala z-index centralizzata come token (nav 900 < overlay 1000 < menu 2000). ✅ Fatto: token `--z-*` in variables.css (ActionToolbar 99999!important → --z-nav; toast 3000).
 
 - [ ] 🟠 **Icon-button senza accessible name** — 8 bottoni HeaderClock/MobileBottomNav con solo `title`; toggle icon picker (FormFields.tsx:124-130); span-retry LinkIcon non focusabile.
   **Fix:** `aria-label` ovunque; span → button.
@@ -171,14 +171,14 @@
 - [ ] 🟡 **JumpBar: no `aria-current`, tab attiva non portata in vista, re-render a ogni frame di scroll** — `JumpBar.tsx:21-37`: `setScrollState` con oggetto nuovo a ogni evento scroll.
   **Fix:** bail-out su valori identici + `aria-current` + scrollIntoView della pill attiva.
 
-- [ ] 🟡 **Touch target sotto soglia** — LinkRow ~31px, context item ~32px, top tools 34px, clear 24px (consigliati ≥44px touch / WCAG min 24px).
-  **Fix:** padding minimo su `@media (pointer: coarse)`.
+- [x] 🟡 **Touch target sotto soglia** — LinkRow ~31px, context item ~32px, top tools 34px, clear 24px (consigliati ≥44px touch / WCAG min 24px).
+  **Fix:** padding minimo su `@media (pointer: coarse)`. ✅ Fatto: ≥24px su linkRow/clearBtn/clearSearchBtn (44px ideali ancora no).
 
 - [ ] 🟡 **Tooltip desktop-only: feature invisibili su touch** — `title` ovunque con istruzioni tastiera/drag su dispositivi senza hover.
   **Fix:** hint contestuali per `(hover:none)` + azioni alternative touch.
 
-- [ ] ⚪ **User-select:none troppo aggressivo** — global.css:26-38: non si può copiare un URL/titolo.
-  **Fix:** limitare ai controlli interattivi.
+- [x] ⚪ **User-select:none troppo aggressivo** — global.css:26-38: non si può copiare un URL/titolo.
+  **Fix:** limitare ai controlli interattivi. ✅ Fatto: globale solo su button/nav/img/svg; `.linkTitle` user-select:text.
 
 - [ ] ⚪ **Modale su tablet/landscape phone soffocato** — Modal.module.css:16-24 (`max-height:90vh`) + bottom-nav visibile su 601-1023px: header+footer comprimono il contenuto scrollabile; in landscape phone resta poco spazio utile.
   **Fix:** media query landscape (`max-height`) con layout compatto / full-screen sotto certa altezza.

@@ -202,7 +202,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 900;
+  z-index: var(--z-nav);
   cursor: pointer;
 }
 
@@ -354,8 +354,9 @@
   font-size: var(--font-size-link, 0.88rem);
   font-weight: 400;
   color: var(--text-primary);
-  user-select: none;
-  -webkit-user-select: none;
+  /* selezionabile: titolo/URL copiabili anche dentro il drag wrapper (none) */
+  user-select: text;
+  -webkit-user-select: text;
   transition: font-size 0.2s ease;
 }
 
@@ -389,5 +390,12 @@
   100% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+/* WCAG 2.5.8: touch target >= 24px su coarse pointer */
+@media (pointer: coarse) {
+  .linkRow {
+    padding: 0.55rem 0.45rem;
   }
 }
