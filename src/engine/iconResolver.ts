@@ -56,7 +56,6 @@ export const BRAND_FAVICON_OVERRIDES: Record<string, string[]> = {
 
 export const getFaviconCandidates = (url: string, cacheBustTimestamp: number = 0): string[] => {
   const domain = extractDomain(url);
-  const origin = extractOrigin(url);
   if (!domain) return [];
 
   const cbParam = cacheBustTimestamp > 0 ? `&_cb=${cacheBustTimestamp}` : '';
@@ -71,17 +70,45 @@ export const getFaviconCandidates = (url: string, cacheBustTimestamp: number = 0
     });
   }
 
-  // 2. Standard multi-tier provider chain
+  // 2. Standard multi-tier provider chain (corta: sz=64 basta per icone 18-24px)
   candidates.push(
-    `https://www.google.com/s2/favicons?domain=${origin || domain}&sz=128${cbParam}`,
-    `https://www.google.com/s2/favicons?domain=${domain}&sz=128${cbParam}`,
+    `https://www.google.com/s2/favicons?domain=${domain}&sz=64${cbParam}`,
     `https://icon.horse/icon/${domain}${cbParamPath}`,
-    `https://icons.duckduckgo.com/ip3/${domain}.ico${cbParamPath}`,
-    `https://${domain}/favicon.ico${cbParamPath}`,
-    `${origin}/favicon.ico${cbParamPath}`
+    `https://icons.duckduckgo.com/ip3/${domain}.ico${cbParamPath}`
   );
 
   return candidates;
+};
+
+/**
+ * Cache dominio -> indice candidato che ha funzionato. Evita la waterfall
+ * di provider a ogni avvio: al reload si parte dal provider vincente.
+ */
+const FAVICON_CACHE_KEY = 'startpage_favicon_cache';
+
+const readFaviconCache = (): Record<string, number> => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(FAVICON_CACHE_KEY) || '{}');
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+export const getCachedFaviconIndex = (domain: string): number => {
+  const idx = readFaviconCache()[domain];
+  return typeof idx === 'number' && idx >= 0 ? idx : 0;
+};
+
+export const setCachedFaviconIndex = (domain: string, index: number): void => {
+  if (!domain) return;
+  try {
+    const cache = readFaviconCache();
+    cache[domain] = index;
+    localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(cache));
+  } catch {
+    /* storage pieno/privato: cache best-effort */
+  }
 };
 
 export const formatSvgToDataUrl = (svgCode: string): string => {

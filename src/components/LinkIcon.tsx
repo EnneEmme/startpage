@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Globe } from 'lucide-preact';
-import { extractDomain, getFaviconCandidates, formatSvgToDataUrl } from '../engine';
+import { extractDomain, getFaviconCandidates, formatSvgToDataUrl, getCachedFaviconIndex, setCachedFaviconIndex } from '../engine';
 import { getLucideIcon } from './iconRegistry';
 import styles from './LinkIcon.module.css';
 
@@ -12,12 +12,13 @@ interface LinkIconProps {
 }
 
 export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => {
-  const [candidateIndex, setCandidateIndex] = useState<number>(0);
+  // Start dal provider che ha funzionato l'ultima volta per questo dominio
+  const [candidateIndex, setCandidateIndex] = useState<number>(() => getCachedFaviconIndex(extractDomain(url)));
   const [cacheBustTime, setCacheBustTime] = useState<number>(0);
   const [imgError, setImgError] = useState<boolean>(false);
 
   useEffect(() => {
-    setCandidateIndex(0);
+    setCandidateIndex(getCachedFaviconIndex(extractDomain(url)));
     setImgError(false);
     setCacheBustTime(0);
   }, [url, iconSpec]);
@@ -46,6 +47,7 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
           width={size}
           height={size}
           loading="lazy"
+          referrerPolicy="no-referrer"
           class={styles.faviconImg}
           onError={() => setImgError(true)}
         />
@@ -72,7 +74,9 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
     setCacheBustTime(Date.now());
   };
 
-  if (!domain || imgError || candidateIndex >= candidates.length) {
+  const safeIndex = candidates.length > 0 ? Math.min(candidateIndex, candidates.length - 1) : 0;
+
+  if (!domain || imgError || safeIndex >= candidates.length) {
     return (
       <button
         type="button"
@@ -87,7 +91,7 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
     );
   }
 
-  const currentSrc = candidates[candidateIndex];
+  const currentSrc = candidates[safeIndex];
 
   return (
     <img
@@ -96,7 +100,9 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
       width={size}
       height={size}
       loading="lazy"
+      referrerPolicy="no-referrer"
       class={styles.faviconImg}
+      onLoad={() => setCachedFaviconIndex(domain, safeIndex)}
       onError={() => {
         if (candidateIndex + 1 < candidates.length) {
           setCandidateIndex(prev => prev + 1);
