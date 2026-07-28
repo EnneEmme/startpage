@@ -52,7 +52,7 @@
 - [x] 🟠 **`fuzzySearch` crasha su item malformati (import/corruzione)** — `fuzzySearch.ts:132,148-149` accede a `item.aliases.find` senza guard; né `load()` né `importJson()` normalizzano i singoli item. `load()` ha `catch {}` unico che ingoia tutto (dataStore.ts:241).
   **Fix:** `sanitizeLinkItem()` (default `aliases: []`, url/category validati) applicata a load e import; warning su entry scartate.
 
-- [ ] 🟠 **Triplicata logica scroll-to-category con doppio scroll a ogni click** — `app.tsx:37-54` + `JumpBar.tsx:39-55` + slug in `ColumnGrid.tsx:321`. Offset `-85` e formula slug duplicati in 3 file; JumpBar fa lo scroll identico dopo che `onSelectCategory` l'ha già fatto.
+- [x] 🟠 **Triplicata logica scroll-to-category con doppio scroll a ogni click** — `app.tsx:37-54` + `JumpBar.tsx:39-55` + slug in `ColumnGrid.tsx:321`. Offset `-85` e formula slug duplicati in 3 file; JumpBar fa lo scroll identico dopo che `onSelectCategory` l'ha già fatto.
   **Fix:** util condiviso `scrollToCategory()`/`categorySlug()`; JumpBar notifica soltanto.
 
 - [ ] 🟠 **Duplicato `id="app"` → doppio padding, HTML invalido** — `index.html:11` + `app.tsx:96`. La regola `#app` (global.css:70-79) si applica due volte: doppio padding laterale e bottom.

@@ -1,3 +1,4 @@
+export * from './categoryScroll';
 export * from './cheatsheetData';
 export * from './dataStore';
 export * from './dynamicEvaluator';

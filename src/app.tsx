@@ -12,7 +12,7 @@ import {
   MobileBottomNav 
 } from './components';
 import { LinkItem } from './types/startpage';
-import { dataStore } from './engine';
+import { dataStore, scrollToCategory, scrollToTop } from './engine';
 
 // Custom Hooks
 import { useModals, useSettings, useKeyboardShortcuts } from './hooks';
@@ -39,17 +39,10 @@ export const App = () => {
     if (catName) {
       setHighlightedCategory(catName);
       setTimeout(() => setHighlightedCategory(null), 1400);
-
-      const columnId = `column-${catName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
-      const targetEl = document.getElementById(columnId);
-      if (targetEl) {
-        const yOffset = -85;
-        const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
+      scrollToCategory(catName);
     } else {
       setHighlightedCategory(null);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToTop();
     }
   };
 

@@ -4,7 +4,7 @@ import { ChevronDown, Zap } from 'lucide-preact';
 import { LinkItem, CategoryGroup } from '../types/startpage';
 import {  dataStore  } from '../engine';
 import {  resolveDynamicUrl  } from '../engine';
-import {  executeLink, isBookmarkletOrScript  } from '../engine';
+import {  executeLink, isBookmarkletOrScript, categoryColumnId  } from '../engine';
 import { LinkIcon } from './LinkIcon';
 import { ContextMenu } from './ContextMenu';
 import styles from './ColumnGrid.module.css';
@@ -318,7 +318,7 @@ export const ColumnGrid = ({
   return (
     <div class={styles.gridContainer}>
       {categories.map(cat => {
-        const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+        const columnId = categoryColumnId(cat.name);
         const isHighlighted = highlightedCategory === cat.name;
         const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
 
