@@ -1,15 +1,15 @@
 /* Transparent full-viewport backdrop: swallows the dismissing click so it
-   cannot activate elements below; sits under the menu (z-index 2000). */
+   cannot activate elements below; sits under the menu (--z-menu). */
 .menuBackdrop {
   position: fixed;
   inset: 0;
-  z-index: 1999;
+  z-index: var(--z-menu-backdrop);
   background: transparent;
 }
 
 .menuContainer {
   position: fixed;
-  z-index: 2000;
+  z-index: var(--z-menu);
   width: 180px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color-hover);
@@ -85,7 +85,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  z-index: 2010;
+  z-index: var(--z-submenu);
 }
 
 /* Open left when the submenu would overflow the right viewport edge */

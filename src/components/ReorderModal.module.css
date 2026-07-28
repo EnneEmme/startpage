@@ -3,7 +3,7 @@
   inset: 0;
   background: var(--bg-modal-overlay);
   backdrop-filter: blur(12px);
-  z-index: 1000;
+  z-index: var(--z-overlay);
   display: flex;
   justify-content: center;
   align-items: center;

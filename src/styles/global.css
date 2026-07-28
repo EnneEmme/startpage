@@ -22,18 +22,20 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Disable text selection on links, headers, icons, badges, and navigation UI */
-a,
+/* Disable text selection only on interactive controls; text stays copyable */
 button,
-h1, h2, h3, h4,
 .noSelect,
-nav,
-img,
-svg {
+nav {
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+}
+
+img,
+svg {
+  user-select: none;
+  -webkit-user-select: none;
   -webkit-user-drag: none;
 }
 
@@ -82,7 +84,7 @@ textarea,
 .unifiedHeader {
   position: sticky;
   top: 0;
-  z-index: 900;
+  z-index: var(--z-nav);
   width: 100%;
   padding: 0.5rem 0 0.25rem 0;
   margin-bottom: 0.5rem;
@@ -119,6 +121,17 @@ input, textarea {
   color: inherit;
   outline: none;
   border: none;
+}
+
+/* WCAG keyboard focus indicator (element+pseudo batte `outline:none` a classe) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* Keyframes */

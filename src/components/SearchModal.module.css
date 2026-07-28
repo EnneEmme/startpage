@@ -4,7 +4,7 @@
   background: rgba(4, 5, 8, 0.35);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  z-index: 1000;
+  z-index: var(--z-overlay);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -101,6 +101,14 @@
 .clearBtn:hover {
   background: rgba(255, 255, 255, 0.18);
   color: var(--text-primary);
+}
+
+/* WCAG 2.5.8: touch target >= 24px su coarse pointer */
+@media (pointer: coarse) {
+  .clearBtn {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .resultRow {

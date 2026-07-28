@@ -56,7 +56,7 @@
     left: 50% !important;
     transform: translateX(-50%) !important;
     top: auto !important;
-    z-index: 99999 !important;
+    z-index: var(--z-nav); /* sotto gli overlay modal (--z-overlay) */
     display: flex !important;
     align-items: center;
     justify-content: center;
