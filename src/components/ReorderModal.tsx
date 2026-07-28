@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { X, ArrowUp, ArrowDown, Move } from 'lucide-preact';
-import {  dataStore  } from '../engine';
+import { dataStore } from '../engine';
 import { Modal } from './modals/Modal';
 import styles from './ReorderModal.module.css';
 

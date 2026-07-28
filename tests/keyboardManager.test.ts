@@ -9,9 +9,7 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     onOpenCheatsheet: vi.fn(),
     onOpenVisualEdit: vi.fn(),
     onOpenSettings: vi.fn(),
-    onSelectCategoryIndex: vi.fn(),
-    onSelectQuickResult: vi.fn(),
-    onNavigateSearch: vi.fn()
+    onSelectCategoryIndex: vi.fn()
   };
 
   beforeEach(() => {
@@ -52,13 +50,11 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
   it('never intercepts Ctrl/Cmd+1-9 (browser tab switching must keep working)', () => {
     const ctrl1Event = new KeyboardEvent('keydown', { key: '1', code: 'Digit1', ctrlKey: true });
     keyboardManager.handleKeyDown(ctrl1Event);
-    expect(mockHandlers.onSelectQuickResult).not.toHaveBeenCalled();
     expect(mockHandlers.onSelectCategoryIndex).not.toHaveBeenCalled();
     expect(ctrl1Event.defaultPrevented).toBe(false);
 
     const cmd3Event = new KeyboardEvent('keydown', { key: '3', code: 'Digit3', metaKey: true });
     keyboardManager.handleKeyDown(cmd3Event);
-    expect(mockHandlers.onSelectQuickResult).not.toHaveBeenCalled();
     expect(cmd3Event.defaultPrevented).toBe(false);
   });
 
@@ -67,7 +63,6 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     const shift2 = new KeyboardEvent('keydown', { key: '"', code: 'Digit2', shiftKey: true, cancelable: true });
     keyboardManager.handleKeyDown(shift2);
     expect(mockHandlers.onSelectCategoryIndex).toHaveBeenCalledWith(1);
-    expect(mockHandlers.onSelectQuickResult).toHaveBeenCalledWith(1);
     expect(shift2.defaultPrevented).toBe(true);
   });
 
@@ -113,50 +108,42 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     expect(mockHandlers.onOpenSearch).not.toHaveBeenCalled();
   });
 
-  it('handles navigation keys (ArrowUp, ArrowDown, Enter) when search is active', () => {
-    keyboardManager.setSearchActive(true);
+  it('leaves navigation keys native inside inputs (SearchModal owns its keydown)', () => {
     const inputEl = document.createElement('input');
-    const downEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
+    const downEvent = new KeyboardEvent('keydown', { key: 'ArrowDown', cancelable: true });
     Object.defineProperty(downEvent, 'target', { value: inputEl });
 
     keyboardManager.handleKeyDown(downEvent);
-    expect(mockHandlers.onNavigateSearch).toHaveBeenCalledWith('down');
+    expect(mockHandlers.onOpenSearch).not.toHaveBeenCalled();
+    expect(downEvent.defaultPrevented).toBe(false);
 
-    const upEvent = new KeyboardEvent('keydown', { key: 'ArrowUp' });
+    const upEvent = new KeyboardEvent('keydown', { key: 'ArrowUp', cancelable: true });
     Object.defineProperty(upEvent, 'target', { value: inputEl });
     keyboardManager.handleKeyDown(upEvent);
-    expect(mockHandlers.onNavigateSearch).toHaveBeenCalledWith('up');
-
-    const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
-    Object.defineProperty(enterEvent, 'target', { value: inputEl });
-    keyboardManager.handleKeyDown(enterEvent);
-    expect(mockHandlers.onNavigateSearch).toHaveBeenCalledWith('enter');
+    expect(upEvent.defaultPrevented).toBe(false);
   });
 
-  it('leaves Enter and arrows native in inputs when search is NOT active (forms must submit)', () => {
+  it('leaves Enter native in inputs so forms can submit', () => {
     const inputEl = document.createElement('input');
     const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true });
     Object.defineProperty(enterEvent, 'target', { value: inputEl });
 
     keyboardManager.handleKeyDown(enterEvent);
-    expect(mockHandlers.onNavigateSearch).not.toHaveBeenCalled();
     expect(enterEvent.defaultPrevented).toBe(false);
-
-    const downEvent = new KeyboardEvent('keydown', { key: 'ArrowDown', cancelable: true });
-    Object.defineProperty(downEvent, 'target', { value: inputEl });
-    keyboardManager.handleKeyDown(downEvent);
-    expect(downEvent.defaultPrevented).toBe(false);
   });
 
-  it('never intercepts navigation keys inside a TEXTAREA (newlines/caret must work)', () => {
-    keyboardManager.setSearchActive(true);
+  it('never intercepts keys inside a TEXTAREA (newlines/caret must work)', () => {
     const textareaEl = document.createElement('textarea');
     const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true });
     Object.defineProperty(enterEvent, 'target', { value: textareaEl });
 
     keyboardManager.handleKeyDown(enterEvent);
-    expect(mockHandlers.onNavigateSearch).not.toHaveBeenCalled();
     expect(enterEvent.defaultPrevented).toBe(false);
+
+    const gEvent = new KeyboardEvent('keydown', { key: 'g', cancelable: true });
+    Object.defineProperty(gEvent, 'target', { value: textareaEl });
+    keyboardManager.handleKeyDown(gEvent);
+    expect(mockHandlers.onOpenSearch).not.toHaveBeenCalled();
   });
 
   it('suspends page shortcuts while a modal is active, except modal toggle keys', () => {

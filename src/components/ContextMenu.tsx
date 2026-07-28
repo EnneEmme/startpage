@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Edit3, Trash2, ArrowUp, ArrowDown, Folder, Move } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
-import {  dataStore  } from '../engine';
+import { dataStore } from '../engine';
 import { confirmDialog } from '../stores/confirmStore';
 import styles from './ContextMenu.module.css';
 

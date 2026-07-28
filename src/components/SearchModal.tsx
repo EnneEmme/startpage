@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { memo } from 'preact/compat';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'preact/hooks';
 import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles, X } from 'lucide-preact';
-import {  fuzzySearchEngine, resolveDynamicUrl, executeLink, getEngineFallback  } from '../engine';
+import { fuzzySearchEngine, resolveDynamicUrl, executeLink, getEngineFallback } from '../engine';
 import { themeConfigSignal } from '../stores';
 import { LinkItem, SearchResult } from '../types/startpage';
 import { LinkIcon } from './LinkIcon';

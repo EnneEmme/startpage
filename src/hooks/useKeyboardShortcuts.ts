@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import {  keyboardManager  } from '../engine';
+import { keyboardManager } from '../engine';
 
 interface KeyboardHandlers {
   onOpenSearch?: (char?: string) => void;
@@ -12,7 +12,6 @@ interface KeyboardHandlers {
 }
 
 interface KeyboardFlags {
-  searchActive?: boolean;
   modalActive?: boolean;
 }
 
@@ -22,13 +21,9 @@ export function useKeyboardShortcuts(
   dependencies: any[] = []
 ) {
   const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
-  const { searchActive = false, modalActive = false } = flags;
+  const { modalActive = false } = flags;
 
   // Keep engine state flags in sync so it can gate shortcuts correctly
-  useEffect(() => {
-    keyboardManager.setSearchActive(searchActive);
-  }, [searchActive]);
-
   useEffect(() => {
     keyboardManager.setModalActive(modalActive);
   }, [modalActive]);

@@ -192,7 +192,6 @@ export const sanitizeLinkItem = (raw: unknown): LinkItem | null => {
     ...(typeof item.searchPath === 'string' ? { searchPath: item.searchPath } : {}),
     ...(typeof item.searchTemplate === 'string' ? { searchTemplate: item.searchTemplate } : {}),
     ...(typeof item.dynamicUrlRule === 'string' ? { dynamicUrlRule: item.dynamicUrlRule } : {}),
-    ...(typeof item.quickLaunch === 'boolean' ? { quickLaunch: item.quickLaunch } : {}),
     ...(typeof item.isScript === 'boolean' ? { isScript: item.isScript } : {}),
     ...(typeof item.scriptContent === 'string' ? { scriptContent: item.scriptContent } : {})
   };

@@ -11,8 +11,6 @@ export interface KeyboardActionHandlers {
   onOpenCheatsheet?: () => void;
   onOpenVisualEdit?: () => void;
   onOpenSettings?: () => void;
-  onSelectQuickResult?: (index: number) => void;
-  onNavigateSearch?: (direction: 'up' | 'down' | 'enter') => void;
   onToggleShortcutsView?: () => void;
   onSelectCategoryIndex?: (index: number) => void;
 }
@@ -20,7 +18,6 @@ export interface KeyboardActionHandlers {
 export class KeyboardManager {
   private handlers: KeyboardActionHandlers = {};
   private active: boolean = false;
-  private searchActive: boolean = false;
   private modalActive: boolean = false;
 
   constructor(handlers?: KeyboardActionHandlers) {
@@ -32,10 +29,6 @@ export class KeyboardManager {
 
   public setHandlers(handlers: KeyboardActionHandlers): void {
     this.handlers = { ...this.handlers, ...handlers };
-  }
-
-  public setSearchActive(active: boolean): void {
-    this.searchActive = active;
   }
 
   public setModalActive(active: boolean): void {
@@ -88,29 +81,10 @@ export class KeyboardManager {
       return;
     }
 
-    // If typing inside an input field (e.g. search input)
-    if (isInput) {
-      // Fields outside the open search modal keep fully native behavior:
-      // Enter submits forms, newline works in textareas, caret moves freely.
-      // Navigation is intercepted only in the search input and only when a
-      // navigation handler is registered (SearchModal handles its own keys).
-      const isTextarea = (e.target as HTMLElement).tagName === 'TEXTAREA';
-      if (!this.searchActive || isTextarea) return;
-
-      if (this.handlers.onNavigateSearch) {
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          this.handlers.onNavigateSearch('down');
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          this.handlers.onNavigateSearch('up');
-        } else if (e.key === 'Enter') {
-          e.preventDefault();
-          this.handlers.onNavigateSearch('enter');
-        }
-      }
-      return;
-    }
+    // If typing inside an input field: fully native behavior everywhere
+    // (Enter submits forms, newline works in textareas, caret moves freely).
+    // Search result navigation is handled locally by SearchModal's own keydown.
+    if (isInput) return;
 
     // From here on: bare keys only. Any Ctrl/Meta/Alt combination belongs to
     // the browser (Ctrl+1-9 tab switch, Ctrl+L, Ctrl+C, ...) and is never intercepted.
@@ -144,7 +118,6 @@ export class KeyboardManager {
       e.preventDefault();
       const idx = parseInt(e.code.slice(5), 10) - 1;
       this.handlers.onSelectCategoryIndex?.(idx);
-      this.handlers.onSelectQuickResult?.(idx);
       return;
     }
 

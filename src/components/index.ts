@@ -12,5 +12,4 @@ export * from './SearchModal';
 export * from './SettingsModal';
 export * from './Toast';
 export * from './VisualEditModal';
-export * from './Widgets/LazyWidget';
 export * from './modals/Modal';

@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { X, Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
-import {  dataStore, rankStorage, copyTextToClipboard  } from '../engine';
+import { dataStore, rankStorage, copyTextToClipboard } from '../engine';
 import { confirmDialog } from '../stores/confirmStore';
 import { showToast } from '../stores/toastStore';
 import { Modal } from './modals/Modal';

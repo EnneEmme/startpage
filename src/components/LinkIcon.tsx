@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { Globe } from 'lucide-preact';
-import {  extractDomain, getFaviconCandidates, formatSvgToDataUrl  } from '../engine';
+import { extractDomain, getFaviconCandidates, formatSvgToDataUrl } from '../engine';
 import { getLucideIcon } from './iconRegistry';
 import styles from './LinkIcon.module.css';
 

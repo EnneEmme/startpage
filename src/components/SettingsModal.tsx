@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { X, Check, Sliders, Palette, LayoutGrid, Type, Search, Download, Eye, Sparkles } from 'lucide-preact';
-import {  themeEngine, ACCENT_COLORS, ThemeConfig  } from '../engine';
+import { themeEngine, ACCENT_COLORS, ThemeConfig } from '../engine';
 import { Modal } from './modals/Modal';
 import styles from './SettingsModal.module.css';
 
