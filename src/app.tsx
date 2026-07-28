@@ -71,7 +71,7 @@ export const App = () => {
     }
   }, {
     modalActive: isAnyModalOpen
-  }, [isAnyModalOpen]);
+  });
 
   const handleEditLinkFromContext = (link: LinkItem) => {
     openVisualEdit(link);

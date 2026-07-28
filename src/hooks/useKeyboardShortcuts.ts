@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { keyboardManager } from '../engine';
 
 interface KeyboardHandlers {
@@ -6,7 +6,6 @@ interface KeyboardHandlers {
   onOpenCheatsheet?: () => void;
   onOpenVisualEdit?: () => void;
   onOpenSettings?: () => void;
-  onToggleShortcutsView?: () => void;
   onSelectCategoryIndex?: (index: number) => void;
 }
 
@@ -14,34 +13,41 @@ interface KeyboardFlags {
   modalActive?: boolean;
 }
 
+/**
+ * Attaches the global keyboardManager exactly once. Handlers flow through a
+ * ref synced on every render: no detach/attach churn on modal toggles, no
+ * stale closures and no manual dependency array to forget.
+ */
 export function useKeyboardShortcuts(
   handlers: KeyboardHandlers,
-  flags: KeyboardFlags = {},
-  dependencies: any[] = []
+  flags: KeyboardFlags = {}
 ) {
   const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
-  const { modalActive = false } = flags;
 
-  // Keep engine state flags in sync so it can gate shortcuts correctly
-  useEffect(() => {
-    keyboardManager.setModalActive(modalActive);
-  }, [modalActive]);
+  const handlersRef = useRef<KeyboardHandlers>(handlers);
+  handlersRef.current = handlers;
 
   useEffect(() => {
     keyboardManager.setHandlers({
-      ...handlers,
+      onOpenSearch: (char) => handlersRef.current.onOpenSearch?.(char),
+      onOpenCheatsheet: () => handlersRef.current.onOpenCheatsheet?.(),
+      onOpenVisualEdit: () => handlersRef.current.onOpenVisualEdit?.(),
+      onOpenSettings: () => handlersRef.current.onOpenSettings?.(),
+      onSelectCategoryIndex: (index) => handlersRef.current.onSelectCategoryIndex?.(index),
       onToggleShortcutsView: () => {
         setShowShortcuts((prev) => !prev);
-        if (handlers.onToggleShortcutsView) {
-          handlers.onToggleShortcutsView();
-        }
+        handlersRef.current.onToggleShortcutsView?.();
       },
     });
 
     keyboardManager.attach();
     return () => keyboardManager.detach();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, dependencies);
+  }, []);
+
+  // Keep engine modal gate in sync so page shortcuts pause behind overlays
+  useEffect(() => {
+    keyboardManager.setModalActive(flags.modalActive ?? false);
+  }, [flags.modalActive]);
 
   return { showShortcuts, setShowShortcuts };
 }
