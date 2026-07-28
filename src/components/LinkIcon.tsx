@@ -7,7 +7,7 @@ import styles from './LinkIcon.module.css';
 
 interface LinkIconProps {
   url: string;
-  iconSpec?: string;
+  iconSpec?: string | undefined;
   title: string;
   size?: number;
 }

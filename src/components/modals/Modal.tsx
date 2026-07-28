@@ -13,7 +13,7 @@ interface ModalProps {
   footer?: ComponentChildren;
   maxWidth?: string;
   className?: string;
-  contentClassName?: string;
+  contentClassName?: string | undefined;
   hideHeader?: boolean;
 }
 

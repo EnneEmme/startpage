@@ -19,7 +19,7 @@ interface ContextMenuProps {
   onEdit: (link: LinkItem) => void;
   onRemove: (linkId: string) => void;
   onConfigChanged: () => void;
-  onReorderColumns?: () => void;
+  onReorderColumns?: (() => void) | undefined;
 }
 
 export const ContextMenu = ({
