@@ -1,8 +1,9 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
-import { X, Download, Upload, Copy, Check, RefreshCw } from 'lucide-preact';
+import { X, Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
 import { dataStore } from '../engine/dataStore';
 import { rankStorage } from '../engine/rankStorage';
+import { Modal } from './modals/Modal';
 import styles from './ImportExportModal.module.css';
 
 interface ImportExportModalProps {
@@ -19,8 +20,6 @@ export const ImportExportModal = ({
   const [jsonText, setJsonText] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
   const [statusMsg, setStatusMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
-
-  if (!isOpen) return null;
 
   const handleExport = () => {
     const jsonStr = dataStore.exportJson();
@@ -71,19 +70,26 @@ export const ImportExportModal = ({
   };
 
   return (
-    <div class={styles.overlay} onClick={onClose}>
-      <div class={`${styles.modalContainer} fade-in`} onClick={e => e.stopPropagation()}>
-        <div class={styles.header}>
-          <div class={styles.titleGroup}>
-            <Download size={22} class={styles.titleIcon} />
-            <h2>Import / Export Backup Configuration</h2>
-          </div>
-          <button class={styles.closeBtn} onClick={onClose} title="Close">
-            <X size={20} />
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Gestione Dati: Backup & Ripristino"
+      subtitle="Esporta i tuoi link per sicurezza o importa un backup precedente"
+      icon={<Database size={18} class={styles.headerIcon} />}
+      footer={
+        <>
+          <button type="button" class={styles.closeActionBtn} onClick={onClose}>
+            Chiudi
           </button>
-        </div>
-
-        <div class={styles.contentBody}>
+        </>
+      }
+    >
+      <div class={styles.contentBody}>
+        <div class={styles.sectionBlock}>
+          <div class={styles.sectionHeader}>
+            <Download size={16} class={styles.sectionIcon} />
+            <h3>Esporta Backup (JSON)</h3>
+          </div>
           <div class={styles.actionBar}>
             <button class={styles.actionBtn} onClick={handleExport}>
               <Download size={16} /> Export JSON
@@ -94,7 +100,6 @@ export const ImportExportModal = ({
             <button class={styles.actionBtn} onClick={handleDownloadFile}>
               <Download size={16} /> Download File
             </button>
-            <button class={`${styles.actionBtn} ${styles.resetBtn}`} onClick={handleResetDefaults}>
               <RefreshCw size={16} /> Reset Default
             </button>
           </div>

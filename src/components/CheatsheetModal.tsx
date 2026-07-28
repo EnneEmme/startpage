@@ -46,33 +46,32 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
         </span>
       }
     >
-      <div class={styles.modalContent}>
-        {/* Search Bar */}
-        <div class={styles.searchBarWrapper}>
-          <Search size={15} class={styles.searchIcon} />
-          <input
-            type="text"
-            class={styles.searchInput}
-            placeholder="Filtra scorciatoie (es. Alt, numeri, cerca, elimina)..."
-            value={searchQuery}
-            onInput={e => setSearchQuery((e.target as HTMLInputElement).value)}
-            autoFocus
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              class={styles.clearSearchBtn}
-              onClick={() => setSearchQuery('')}
-            >
-              <X size={13} />
-            </button>
-          )}
-        </div>
+      }
+    >
+      {/* Search Bar */}
+      <div class={styles.searchBarWrapper}>
+        <Search size={15} class={styles.searchIcon} />
+        <input
+          type="text"
+          class={styles.searchInput}
+          placeholder="Filtra scorciatoie (es. Alt, numeri, cerca, elimina)..."
+          value={searchQuery}
+          onInput={e => setSearchQuery((e.target as HTMLInputElement).value)}
+          autoFocus
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            class={styles.clearSearchBtn}
+            onClick={() => setSearchQuery('')}
+          >
+            <X size={13} />
+          </button>
+        )}
+      </div>
 
-        </div>
-
-        {/* Body Content */}
-        <div class={styles.cheatsheetBody}>
+      {/* Body Content */}
+      <div class={styles.cheatsheetBody}>
           {filteredGroups.length > 0 ? (
             filteredGroups.map(group => (
               <div key={group.category} class={styles.shortcutSection}>
