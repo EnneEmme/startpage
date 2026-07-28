@@ -161,9 +161,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
   ]
 };
 
-const cloneConfig = (config: StartpageConfig): StartpageConfig => {
-  return JSON.parse(JSON.stringify(config));
-};
+const cloneConfig = (config: StartpageConfig): StartpageConfig => structuredClone(config);
 
 /**
  * Validates and normalizes a single link item coming from storage or an
@@ -335,7 +333,9 @@ export class DataStore {
   }
 
   public getLinks(): LinkItem[] {
-    return [...this.config.commands];
+    // Deep-clone on the way out: callers receive snapshots they may freely
+    // mutate (forms, undo captures) without corrupting the store.
+    return structuredClone(this.config.commands);
   }
 
   public getCategoryOrder(): string[] {
@@ -412,10 +412,14 @@ export class DataStore {
       });
     }
 
-    return categoryNames.map(categoryName => ({
-      name: categoryName,
-      links: groupsMap[categoryName] ?? []
-    }));
+    // Deep-clone: group link arrays currently share live LinkItem references
+    // with the store; return an owned snapshot instead (see getLinks).
+    return structuredClone(
+      categoryNames.map(categoryName => ({
+        name: categoryName,
+        links: groupsMap[categoryName] ?? []
+      }))
+    );
   }
 
   public addLink(link: LinkItem): void {

@@ -18,12 +18,10 @@ class MemoryStorage implements Storage {
 }
 
 const getStorage = (): Storage => {
+  // Accessing window.localStorage throws in sandboxed/file:// contexts
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
       return window.localStorage;
-    }
-    if (typeof localStorage !== 'undefined' && localStorage) {
-      return localStorage;
     }
   } catch {}
   return new MemoryStorage();
@@ -38,14 +36,21 @@ export class RankStorage {
     this.load();
   }
 
+  private static isRankMap(value: unknown): value is Record<string, RankItem> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+  }
+
   public load(): void {
     try {
       const stored = this.storage.getItem(STORAGE_KEY);
-      if (stored) {
-        this.ranks = JSON.parse(stored);
-      } else {
+      if (!stored) {
         this.ranks = {};
+        return;
       }
+      const parsed: unknown = JSON.parse(stored);
+      // Accept only a plain object map; anything else (number, array, null,
+      // string) would make recordUsage/getRankBonus throw on property access.
+      this.ranks = RankStorage.isRankMap(parsed) ? parsed : {};
     } catch {
       this.ranks = {};
     }

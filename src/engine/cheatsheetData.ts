@@ -41,7 +41,7 @@ export const BASE_CHEATSHEET_SHORTCUTS: ShortcutGroup[] = [
 ];
 
 export function getDynamicCheatsheetShortcuts(): ShortcutGroup[] {
-  const groups = JSON.parse(JSON.stringify(BASE_CHEATSHEET_SHORTCUTS)) as ShortcutGroup[];
+  const groups = structuredClone(BASE_CHEATSHEET_SHORTCUTS);
 
   // Find custom user-created search engine links
   const customLinks = dataStore.getLinks().filter(l => Boolean(l.searchTemplate || l.searchPath));
