@@ -38,8 +38,6 @@ export const VisualEditModal = ({
   onSave,
   onConfigChanged
 }: VisualEditModalProps) => {
-  if (!isOpen) return null;
-
   const targetLink = initialEditLink || initialLink;
   const isEditing = Boolean(targetLink);
 
@@ -97,6 +95,9 @@ export const VisualEditModal = ({
       setSearchTemplate('');
     }
   }, [targetLink]);
+
+  // Rules of hooks: the guard below must stay after every hook declaration.
+  if (!isOpen) return null;
 
   const categories = dataStore.getCategories().map(c => c.name);
 
