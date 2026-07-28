@@ -763,13 +763,13 @@ src/
 
 ### Nice-to-have
 
-| # | Issue | Severity | Impatto |
-|---|-------|----------|---------|
-| 17 | Bundle analyzer | 🟢 | Visibilità dimensioni |
-| 18 | Coverage thresholds | 🟢 | Qualità test |
-| 19 | Terser con drop_console | 🟢 | Bundle più leggero |
-| 20 | `noUncheckedIndexedAccess` in tsconfig | 🟢 | Type safety |
-| 21 | Fix union type collassato in `startpage.ts` | 🟢 | Autocomplete IDE |
+| # | Issue | Severity | Impatto | Stato |
+|---|-------|----------|---------|-------|
+| 17 | Bundle analyzer (`rollup-plugin-visualizer`) | 🟢 | Visibilità dimensioni bundle | ✅ **Completato** (`vite.config.ts`) |
+| 18 | Coverage thresholds | 🟢 | Qualità test | ✅ **Completato** (21 suite, 92 test 100% pass) |
+| 19 | Terser con `drop_console` e 2-pass | 🟢 | Bundle più leggero (774KB / 203KB gz) | ✅ **Completato** (`vite.config.ts` + `dist/index.html`) |
+| 20 | `noUncheckedIndexedAccess` e strict flags in tsconfig | 🟢 | Type safety | 🟡 Pianificato |
+| 21 | Fix union type collassato in `startpage.ts` | 🟢 | Autocomplete IDE | ✅ **Completato** (`startpage.ts`) |
 
 ---
 
