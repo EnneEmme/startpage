@@ -43,12 +43,30 @@ export interface ParsedCommand {
   engineName?: string;
 }
 
+interface LowercaseEntry {
+  title: string;
+  category: string;
+  aliases: string[];
+}
+
 export class FuzzySearchEngine {
   private fuse: Fuse<LinkItem> | null = null;
   private links: LinkItem[] = [];
+  private lowercaseCache = new Map<string, LowercaseEntry>();
 
   public setLinks(links: LinkItem[]): void {
     this.links = links;
+    // Precompute lowercase fields once per data change instead of per keystroke
+    this.lowercaseCache = new Map(
+      links.map(link => [
+        link.id,
+        {
+          title: link.title.toLowerCase(),
+          category: link.category ? link.category.toLowerCase() : '',
+          aliases: (link.aliases ?? []).map(a => a.toLowerCase())
+        }
+      ])
+    );
     this.fuse = new Fuse(links, {
       keys: [
         { name: 'aliases', weight: 0.45 },
@@ -141,6 +159,19 @@ export class FuzzySearchEngine {
     // Map to collect and deduplicate search items
     const resultMap = new Map<string, SearchResult>();
 
+    const getLower = (item: LinkItem): LowercaseEntry => {
+      let entry = this.lowercaseCache.get(item.id);
+      if (!entry) {
+        entry = {
+          title: item.title.toLowerCase(),
+          category: item.category ? item.category.toLowerCase() : '',
+          aliases: (item.aliases ?? []).map(a => a.toLowerCase())
+        };
+        this.lowercaseCache.set(item.id, entry);
+      }
+      return entry;
+    };
+
     // 1. Check Fuse.js fuzzy search results
     if (this.fuse) {
       const fuseResults = this.fuse.search(trimmed);
@@ -148,7 +179,8 @@ export class FuzzySearchEngine {
         const item = res.item;
         const fuseScore = res.score ?? 1;
         const rankBonus = rankStorage.getRankBonus(item.id);
-        const matchedAlias = item.aliases.find(a => a.toLowerCase().includes(lowerQuery));
+        const aliasIdx = getLower(item).aliases.findIndex(a => a.includes(lowerQuery));
+        const matchedAlias = aliasIdx >= 0 ? item.aliases[aliasIdx] : undefined;
 
         resultMap.set(item.id, {
           item,
@@ -162,10 +194,13 @@ export class FuzzySearchEngine {
 
     // 2. Multi-Criteria Direct Boost Checks across ALL links
     for (const item of this.links) {
-      const lowerTitle = item.title.toLowerCase();
-      const lowerCategory = item.category ? item.category.toLowerCase() : '';
-      const matchedExactAlias = item.aliases.find(a => a.toLowerCase() === lowerQuery);
-      const matchedSubAlias = item.aliases.find(a => a.toLowerCase().includes(lowerQuery));
+      const lower = getLower(item);
+      const lowerTitle = lower.title;
+      const lowerCategory = lower.category;
+      const exactAliasIdx = lower.aliases.findIndex(a => a === lowerQuery);
+      const subAliasIdx = lower.aliases.findIndex(a => a.includes(lowerQuery));
+      const matchedExactAlias = exactAliasIdx >= 0 ? item.aliases[exactAliasIdx] : undefined;
+      const matchedSubAlias = subAliasIdx >= 0 ? item.aliases[subAliasIdx] : undefined;
       const rankBonus = rankStorage.getRankBonus(item.id);
 
       let isMatch = false;
@@ -187,7 +222,7 @@ export class FuzzySearchEngine {
         priorityScore = -10.0;
       }
       // Criteria D: Alias Starts With Query -> Priority #4
-      else if (matchedSubAlias && matchedSubAlias.toLowerCase().startsWith(lowerQuery)) {
+      else if (matchedSubAlias && subAliasIdx >= 0 && lower.aliases[subAliasIdx]!.startsWith(lowerQuery)) {
         isMatch = true;
         priorityScore = -5.0;
       }

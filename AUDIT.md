@@ -195,8 +195,8 @@
 - [ ] 🟠 **ColumnGrid: re-render intera griglia a 60fps durante dragover** — `ColumnGrid.tsx:228-260`: setState per pointermove → re-render ~120 card + LinkIcon non memoized.
   **Fix:** `LinkRow`/`ColumnCard` memoized o stato drag in signals/ref + classi DOM imperative.
 
-- [ ] 🟡 **FuzzySearch: doppio matching per keystroke + lowercase non precomputati** — `fuzzySearch.ts:114-207`: fuse.search + sweep lineare con `toLowerCase()` allocati per item.
-  **Fix:** cache lowercase in `setLinks`. (Re-indexing per keystroke assente ✓)
+- [x] 🟡 **FuzzySearch: doppio matching per keystroke + lowercase non precomputati** — `fuzzySearch.ts:114-207`: fuse.search + sweep lineare con `toLowerCase()` allocati per item.
+  **Fix:** cache lowercase in `setLinks` (Map id→{title,category,aliases}) + lazy fallback in `search`. ✅ Fatto. (Re-indexing per keystroke assente ✓)
 
 - [x] 🟡 **Icona bookmarklet = favicon Unimib hardcoded** — LinkIcon.tsx:56-59: qualunque URL `javascript:` → favicon Unimib. Reset a icona neutra (Globe). ✅ Fatto.
 
