@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { keyboardManager } from '../engine/keyboardManager';
+import {  keyboardManager  } from '../engine';
 
 interface KeyboardHandlers {
   onOpenSearch?: (char?: string) => void;

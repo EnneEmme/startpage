@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { X, Keyboard, Search, Sparkles, Command } from 'lucide-preact';
-import { getDynamicCheatsheetShortcuts } from '../engine/cheatsheetData';
+import {  getDynamicCheatsheetShortcuts  } from '../engine';
 import { Modal } from './modals/Modal';
 import styles from './CheatsheetModal.module.css';
 
@@ -44,8 +44,6 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
         <span class={styles.footerHint}>
           💡 Premi <kbd class={styles.miniKbd}>?</kbd> in qualsiasi momento per aprire/chiudere questa guida
         </span>
-      }
-    >
       }
     >
       {/* Search Bar */}
@@ -102,7 +100,6 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
             </div>
           )}
         </div>
-      </div>
     </Modal>
   );
 };

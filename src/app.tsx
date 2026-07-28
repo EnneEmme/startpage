@@ -1,21 +1,21 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { HeaderClock } from './components/HeaderClock';
-import { JumpBar } from './components/JumpBar';
-import { ColumnGrid } from './components/ColumnGrid';
-import { SearchModal } from './components/SearchModal';
-import { CheatsheetModal } from './components/CheatsheetModal';
-import { ImportExportModal } from './components/ImportExportModal';
-import { VisualEditModal } from './components/VisualEditModal';
-import { SettingsModal } from './components/SettingsModal';
-import { MobileBottomNav } from './components/MobileBottomNav';
+import { 
+  HeaderClock, 
+  JumpBar, 
+  ColumnGrid, 
+  SearchModal, 
+  CheatsheetModal, 
+  ImportExportModal, 
+  VisualEditModal, 
+  SettingsModal, 
+  MobileBottomNav 
+} from './components';
 import { LinkItem } from './types/startpage';
-import { dataStore } from './engine/dataStore';
+import { dataStore } from './engine';
 
 // Custom Hooks
-import { useModals } from './hooks/useModals';
-import { useSettings } from './hooks/useSettings';
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useModals, useSettings, useKeyboardShortcuts } from './hooks';
 
 export const App = () => {
   const { links, categories, refreshData } = useSettings();

@@ -1,8 +1,8 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { X, Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
-import { dataStore } from '../engine/dataStore';
-import { rankStorage } from '../engine/rankStorage';
+import {  dataStore  } from '../engine';
+import {  rankStorage  } from '../engine';
 import { Modal } from './modals/Modal';
 import styles from './ImportExportModal.module.css';
 
@@ -77,11 +77,9 @@ export const ImportExportModal = ({
       subtitle="Esporta i tuoi link per sicurezza o importa un backup precedente"
       icon={<Database size={18} class={styles.headerIcon} />}
       footer={
-        <>
-          <button type="button" class={styles.closeActionBtn} onClick={onClose}>
-            Chiudi
-          </button>
-        </>
+        <button type="button" class={styles.closeActionBtn} onClick={onClose}>
+          Chiudi
+        </button>
       }
     >
       <div class={styles.contentBody}>
@@ -100,6 +98,7 @@ export const ImportExportModal = ({
             <button class={styles.actionBtn} onClick={handleDownloadFile}>
               <Download size={16} /> Download File
             </button>
+            <button class={`${styles.actionBtn} ${styles.resetBtn}`} onClick={handleResetDefaults}>
               <RefreshCw size={16} /> Reset Default
             </button>
           </div>
@@ -125,6 +124,6 @@ export const ImportExportModal = ({
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };

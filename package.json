@@ -19,6 +19,8 @@
     "@testing-library/preact": "latest",
     "@types/node": "^22.13.9",
     "jsdom": "^26.0.0",
+    "rollup-plugin-visualizer": "^7.0.1",
+    "terser": "^5.49.0",
     "typescript": "^5.8.2",
     "vite": "^6.2.1",
     "vite-plugin-singlefile": "^2.1.2",

@@ -1,5 +1,5 @@
 import { signal, computed } from '@preact/signals';
-import { themeEngine, ThemeConfig } from '../engine/themeEngine';
+import {  themeEngine, ThemeConfig  } from '../engine';
 
 export const themeConfigSignal = signal<ThemeConfig>(themeEngine.getConfig());
 

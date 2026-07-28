@@ -1,7 +1,7 @@
 import { useCallback } from 'preact/hooks';
-import { linksSignal, categoriesSignal } from '../stores/appStore';
-import { themeConfigSignal } from '../stores/settingsStore';
-import { themeEngine } from '../engine/themeEngine';
+import {  linksSignal, categoriesSignal  } from '../stores';
+import {  themeConfigSignal  } from '../stores';
+import {  themeEngine  } from '../engine';
 
 export function useSettings() {
   const refreshData = useCallback(() => {

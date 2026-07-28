@@ -2,8 +2,8 @@ import { h, Fragment } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { X, Plus, Sliders, Globe, Zap, Search } from 'lucide-preact';
 import { LinkItem } from '../../types/startpage';
-import { dataStore } from '../../engine/dataStore';
-import { resolveDynamicUrl } from '../../engine/dynamicEvaluator';
+import { dataStore } from "../../engine/dataStore";
+import { resolveDynamicUrl } from "../../engine/dynamicEvaluator";
 import styles from '../VisualEditModal.module.css';
 import * as Icons from 'lucide-preact';
 
@@ -11,6 +11,7 @@ import { PreviewPanel } from './PreviewPanel';
 import { CategoryPicker } from './CategoryPicker';
 import { ScriptEditor } from './ScriptEditor';
 import { FormFields } from './FormFields';
+import { Modal } from '../modals/Modal';
 
 const ALL_LUCIDE_ICONS: { name: string; spec: string; icon: any }[] = Object.keys(Icons)
   .filter(key => /^[A-Z]/.test(key) && key !== 'createLucideIcon')
@@ -165,25 +166,16 @@ export const VisualEditModal = ({
   const firstAlias = aliases.split(',')[0]?.trim();
 
   return (
-    <div class={styles.overlay} onClick={onClose}>
-      <div class={`${styles.modalContainer} fade-in`} onClick={e => e.stopPropagation()}>
-        {/* Header */}
-        <div class={styles.modalHeader}>
-          <div class={styles.headerTitleGroup}>
-            <div class={styles.headerIconBadge}>
-              {isEditing ? <Sliders size={18} /> : <Plus size={18} />}
-            </div>
-            <div>
-              <h2 class={styles.modalTitle}>{isEditing ? 'Edit Link' : 'Add New Link'}</h2>
-              <span class={styles.modalSubtitle}>Configura collegamenti, script JS e motori di ricerca</span>
-            </div>
-          </div>
-          <button class={styles.closeBtn} onClick={onClose} type="button" title="Chiudi (Esc)">
-            <X size={18} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} class={styles.formContent}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isEditing ? 'Edit Link' : 'Add New Link'}
+      subtitle="Configura collegamenti, script JS e motori di ricerca"
+      icon={isEditing ? <Sliders size={18} /> : <Plus size={18} />}
+      contentClassName={styles.formContent}
+      hideHeader={false}
+    >
+      <form onSubmit={handleSubmit} class={styles.formContent}>
           <PreviewPanel
             title={title}
             url={url}
@@ -259,7 +251,6 @@ export const VisualEditModal = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 };

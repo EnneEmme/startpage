@@ -1,11 +1,12 @@
 import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles, X } from 'lucide-preact';
-import { fuzzySearchEngine } from '../engine/fuzzySearch';
-import { resolveDynamicUrl } from '../engine/dynamicEvaluator';
-import { executeLink } from '../engine/linkExecutor';
+import {  fuzzySearchEngine  } from '../engine';
+import {  resolveDynamicUrl  } from '../engine';
+import {  executeLink  } from '../engine';
 import { LinkItem, SearchResult } from '../types/startpage';
 import { LinkIcon } from './LinkIcon';
+import { Modal } from './modals/Modal';
 import styles from './SearchModal.module.css';
 
 interface SearchModalProps {
@@ -73,6 +74,7 @@ export const SearchModal = ({
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       e.preventDefault();
+      e.stopPropagation();
       onClose();
       return;
     }
@@ -147,8 +149,15 @@ export const SearchModal = ({
   };
 
   return (
-    <div class={styles.overlay} onClick={onClose}>
-      <div class={`${styles.modalContainer} fade-in-scale`} onClick={e => e.stopPropagation()}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      hideHeader={true}
+      className="fade-in-scale"
+      contentClassName={styles.searchContentOverrides}
+      maxWidth="660px"
+    >
+      <div class={styles.searchModalInner}>
         <div class={styles.inputWrapper}>
           <Search size={20} class={styles.searchIcon} />
           <input
@@ -291,6 +300,6 @@ export const SearchModal = ({
           </span>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };

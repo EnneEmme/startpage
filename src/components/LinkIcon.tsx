@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import * as Icons from 'lucide-preact';
-import { extractDomain, getFaviconCandidates, formatSvgToDataUrl } from '../engine/iconResolver';
+import {  extractDomain, getFaviconCandidates, formatSvgToDataUrl  } from '../engine';
 import styles from './LinkIcon.module.css';
 
 interface LinkIconProps {
