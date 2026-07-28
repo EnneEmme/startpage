@@ -4,7 +4,7 @@
 > Ogni voce è una checkbox: spuntala quando il fix è completato e verificato.
 > **Regole (da gemini.md):** dopo ogni fix → `bun run test` verde, aggiorna `structure.md`/`TODO.md` se cambiano file, commit Conventional Commits.
 >
-> **Stato attuale misurato:** 21 file test / 92 test PASS · `tsc --noEmit` = **100 errori** · `dist/index.html` = **774 KB** (~204 KB gzip, 81% lucide-preact) · working tree: 10 file modificati non committati.
+> **Stato attuale misurato (post-P0/P1/P2):** 23 file test / 120 test PASS · `tsc --noEmit` = **0 errori** · `dist/index.html` = **254 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati: 34/99 spuntati.
 
 **Legenda severità:** 🔴 critica · 🟠 alta · 🟡 media · ⚪ bassa
 
@@ -86,47 +86,47 @@
 
 ## P2 — ARCHITETTURA & STATE MANAGEMENT
 
-- [ ] 🟠 **Gestione stato incoerente: 3 vie parallele** — signals (`linksSignal`) + useState locali + chiamate engine dirette (`dataStore.getCategories()` in app.tsx:77). `useSettings.refreshData` (useSettings.ts:7-9) **non rilegge i dati**: riapplica solo il tema → tutta la catena `onConfigChanged` (app.tsx:126,160,170,176) è no-op mascherato. Effect mount app.tsx:84-86 → doppia applyTheme.
+- [x] 🟠 **Gestione stato incoerente: 3 vie parallele** — signals (`linksSignal`) + useState locali + chiamate engine dirette (`dataStore.getCategories()` in app.tsx:77). `useSettings.refreshData` (useSettings.ts:7-9) **non rilegge i dati**: riapplica solo il tema → tutta la catena `onConfigChanged` (app.tsx:126,160,170,176) è no-op mascherato. Effect mount app.tsx:84-86 → doppia applyTheme.
   **Fix:** unica via (signals); rinominare/eliminare `refreshData` e `onConfigChanged`; niente engine calls dai componenti.
 
-- [ ] 🟠 **Dead code diffuso** — `hooks/useDragAndDrop.ts`, `hooks/useContextMenu.ts` (mai importati; ColumnGrid re-implementa inline), `ReorderModal.tsx` + css (mai montato), `Widgets/LazyWidget.tsx` (mai usato), API keyboardManager morte (`onSelectQuickResult`, `setSearchActive/setModalActive`), computed inutilizzati (`linksCount/categoriesCount` appStore.ts:8-9, `currentAccentColor` settingsStore.ts:7), campi schema morti (`quickLaunch` types:16, `defaultSearchEngine` types:29). I test testano codice morto (illusione di copertura).
+- [x] 🟠 **Dead code diffuso** — `hooks/useDragAndDrop.ts`, `hooks/useContextMenu.ts` (mai importati; ColumnGrid re-implementa inline), `ReorderModal.tsx` + css (mai montato), `Widgets/LazyWidget.tsx` (mai usato), API keyboardManager morte (`onSelectQuickResult`, `setSearchActive/setModalActive`), computed inutilizzati (`linksCount/categoriesCount` appStore.ts:8-9, `currentAccentColor` settingsStore.ts:7), campi schema morti (`quickLaunch` types:16, `defaultSearchEngine` types:29). I test testano codice morto (illusione di copertura).
   **Fix:** integrare davvero (ColumnGrid usa i due hook + ReorderModal) oppure cancellare moduli, export barrel e test associati.
 
-- [ ] 🟠 **`ColumnGrid.tsx` god-component (470 righe)** — 11 state slice, ~20 handler: griglia, DnD con ghost DOM manuale (199-226), auto-scroll, rename inline, context menu, scroll-mask via `document.querySelectorAll` con chiave `textContent` (63-81, fragile). Effect 83-105 riattacca listener window a ogni cambio `categories` + `setTimeout(60)` (timing race).
+- [x] 🟠 **`ColumnGrid.tsx` god-component (470 righe)** — 11 state slice, ~20 handler: griglia, DnD con ghost DOM manuale (199-226), auto-scroll, rename inline, context menu, scroll-mask via `document.querySelectorAll` con chiave `textContent` (63-81, fragile). Effect 83-105 riattacca listener window a ogni cambio `categories` + `setTimeout(60)` (timing race).
   **Fix:** estrarre `CategoryColumn`, `DraggableLinkCard` (memo), hook `useColumnScrollMasks` con refs; misurazioni chiaveate per `cat.name`; dep su `categories.length`/version counter.
 
-- [ ] 🟠 **Separazione engine/componenti violata** — chiamate dirette `dataStore` in `ContextMenu.tsx:43,61,74`, `ColumnGrid.tsx:177,285,304,460`, `VisualEditModal/index.tsx:5-6` (path profondi `../../engine/...` con doppi apici, stile incoerente), `ImportExportModal.tsx:4-5`. Artefatti `{  x  }` da refactor.js in appStore.ts:2, useSettings.ts:2-4, LinkIcon.tsx:4.
+- [x] 🟠 **Separazione engine/componenti violata** — chiamate dirette `dataStore` in `ContextMenu.tsx:43,61,74`, `ColumnGrid.tsx:177,285,304,460`, `VisualEditModal/index.tsx:5-6` (path profondi `../../engine/...` con doppi apici, stile incoerente), `ImportExportModal.tsx:4-5`. Artefatti `{  x  }` da refactor.js in appStore.ts:2, useSettings.ts:2-4, LinkIcon.tsx:4.
   **Fix:** mutazioni solo via azioni store; import uniformi al barrel; ripulire formattazione (Prettier una volta configurato).
 
-- [ ] 🟠 **HeaderClock vs MobileBottomNav: 4 bottoni duplicati verbatim** — stessi title/icone/callback in due file; app.tsx passa due volte le stesse closure (106-117, 131-142). Bonus: nome "HeaderClock" ingannevole (nessun orologio).
+- [x] 🟠 **HeaderClock vs MobileBottomNav: 4 bottoni duplicati verbatim** — stessi title/icone/callback in due file; app.tsx passa due volte le stesse closure (106-117, 131-142). Bonus: nome "HeaderClock" ingannevole (nessun orologio).
   **Fix:** unico `ActionToolbar` con variante CSS; valutare rename.
 
-- [ ] 🟡 **Modal non è un portal; scroll-lock triplicato** — lock in `useModals.ts:22-35` + `pointerEvents:none` su `<main>` (app.tsx:120) + Modal nel flow normale.
+- [x] 🟡 **Modal non è un portal; scroll-lock triplicato** — lock in `useModals.ts:22-35` + `pointerEvents:none` su `<main>` (app.tsx:120) + Modal nel flow normale.
   **Fix:** portal su `document.body`, scroll-lock dentro Modal (con compensazione scrollbar-gutter), rimuovere workaround.
 
-- [ ] 🟡 **`useModals`: 6 boolean → stati impossibili** — `useModals.ts`: 2 modali possono aprirsi insieme; `isAnyModalOpen` mantenuto a mano.
+- [x] 🟡 **`useModals`: 6 boolean → stati impossibili** — `useModals.ts`: 2 modali possono aprirsi insieme; `isAnyModalOpen` mantenuto a mano.
   **Fix:** singolo stato discriminato `activeModal: 'search'|'settings'|...|null`.
 
-- [ ] 🟡 **`useKeyboardShortcuts` API fragile** — `dependencies: any[]` (buco di tipo), deps manuali dimenticabili, detach/attach del listener globale a ogni toggle modale, commento eslint morto (ESLint non esiste).
+- [x] 🟡 **`useKeyboardShortcuts` API fragile** — `dependencies: any[]` (buco di tipo), deps manuali dimenticabili, detach/attach del listener globale a ogni toggle modale, commento eslint morto (ESLint non esiste).
   **Fix:** handlers via ref corrente, effect senza deps, tipizzare, rimuovere commento.
 
-- [ ] 🟡 **Escape gestito 3 volte** — keyboardManager globale (59-63) + Modal per-modale (33-43) + input search (74-80).
+- [x] 🟡 **Escape gestito 3 volte** — keyboardManager globale (59-63) + Modal per-modale (33-43) + input search (74-80).
   **Fix:** un solo punto di verità (delegare a Modal/portal).
 
-- [ ] 🟡 **Barrel `export *` ovunque** — engine/components/hooks/stores index: collisioni silenti, API pubblica indeterminata; `barrelExports.test.ts` congela la forma.
+- [x] 🟡 **Barrel `export *` ovunque** — engine/components/hooks/stores index: collisioni silenti, API pubblica indeterminata; `barrelExports.test.ts` congela la forma.
   **Fix:** export nominati espliciti; cancellare il test.
 
-- [ ] ⚪ **Mutabilità esposta dallo store** — `dataStore.getLinks()` copia solo l'array (oggetti condivisi mutabili); `importJson` assegna senza clonare; `JSON.parse(JSON.stringify())` in dataStore.ts:162-164 e cheatsheetData.ts:44 (TODO dichiara structuredClone "✅", falso).
+- [x] ⚪ **Mutabilità esposta dallo store** — `dataStore.getLinks()` copia solo l'array (oggetti condivisi mutabili); `importJson` assegna senza clonare; `JSON.parse(JSON.stringify())` in dataStore.ts:162-164 e cheatsheetData.ts:44 (TODO dichiara structuredClone "✅", falso).
   **Fix:** `structuredClone` in uscita o deep-freeze in dev; update immutabili.
 
-- [ ] ⚪ **`rankStorage`: detector storage confuso + parsed non validato** — `rankStorage.ts:10-30`: `getStorage()` testa due volte la stessa cosa (ramo else irraggiungibile); `load()` (41-52) accetta qualsiasi JSON (es. `5`) → `recordUsage` può lanciare su shape non-oggetto in strict mode.
+- [x] ⚪ **`rankStorage`: detector storage confuso + parsed non validato** — `rankStorage.ts:10-30`: `getStorage()` testa due volte la stessa cosa (ramo else irraggiungibile); `load()` (41-52) accetta qualsiasi JSON (es. `5`) → `recordUsage` può lanciare su shape non-oggetto in strict mode.
   **Fix:** semplificare detector; validare che parsed sia plain object.
 
 ---
 
 ## P3 — UI/UX & ACCESSIBILITÀ
 
-- [ ] 🔴→🟠 **Modali senza focus trap, background non inert, focus non ripristinato** — `Modal.tsx`: `role="dialog"`/`aria-modal` ci sono, ma Tab esce dal dialogo, link dietro attivabili da tastiera (pointerEvents blocca solo mouse), nessun restore al trigger.
+- [x] 🔴→🟠 **Modali senza focus trap, background non inert, focus non ripristinato** — `Modal.tsx`: `role="dialog"`/`aria-modal` ci sono, ma Tab esce dal dialogo, link dietro attivabili da tastiera (pointerEvents blocca solo mouse), nessun restore al trigger.
   **Fix:** focus trap + `inert` sul resto dell'albero + focus restore.
 
 - [ ] 🟠 **Nessun indicatore `:focus-visible` in tutta l'app** — `outline:none` globale (global.css:117-122) e zero focus ring su bottoni/tab/link/menu. JumpBar con mask-image può nascondere il focus ai bordi.
