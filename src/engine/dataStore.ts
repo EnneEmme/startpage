@@ -131,8 +131,6 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'tinker', title: 'Tinker', url: 'https://tinker.thinkingmachines.ai/playground', aliases: ['tinker'], category: 'AI & LLMs', searchPath: '?q={}' },
     { id: 'motiftech', title: 'Motif Tech', url: 'https://chat.motiftech.io/chat', aliases: ['motiftech'], category: 'AI & LLMs', searchPath: '?q={}' },
     { id: 'llmstats', title: 'LLM Stats', url: 'https://llm-stats.com/leaderboards/llm-leaderboard', aliases: ['llmstats'], category: 'AI & LLMs', searchPath: '?q={}' },
-    { id: 'others_ai', title: 'Others', url: '/Users/mattianessi/Developer/whole/web/tilde-enhanced/ai.html', aliases: ['othersAi'], category: 'AI & LLMs' },
-
     // ImGen (Kept separate)
     { id: 'recraft', title: 'Recraft', url: 'https://www.recraft.ai/projects', aliases: ['recraft'], category: 'ImGen', searchPath: '?q={}' },
     { id: 'ideogram', title: 'Ideogram', url: 'https://ideogram.ai/t/explore', aliases: ['ideogram'], category: 'ImGen', searchPath: '?q={}' },
