@@ -99,7 +99,7 @@ export const App = () => {
         />
       </header>
 
-      <main style={{ width: '100%', pointerEvents: isAnyModalOpen ? 'none' : 'auto' }}>
+      <main style={{ width: '100%' }}>
         <ColumnGrid
           categories={categories}
           highlightedCategory={highlightedCategory}

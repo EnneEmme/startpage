@@ -38,19 +38,20 @@ describe('App End-to-End Integration Flow', () => {
   });
 
   it('opens keyboard cheatsheet modal when clicking help button', () => {
-    const { container, getAllByTitle } = render(<App />);
+    const { baseElement, getAllByTitle } = render(<App />);
     const helpBtn = getAllByTitle('Shortcuts Cheatsheet (? or F1)')[0];
     fireEvent.click(helpBtn);
 
-    expect(container.textContent).toContain('Keyboard Shortcuts Cheatsheet');
+    // Modals portal to document.body (baseElement)
+    expect(baseElement.textContent).toContain('Keyboard Shortcuts Cheatsheet');
   });
 
   it('opens visual edit modal and adds a new link successfully', () => {
-    const { container, getAllByTitle, getByPlaceholderText, getByText } = render(<App />);
+    const { baseElement, getAllByTitle, getByPlaceholderText, getByText } = render(<App />);
     const editBtn = getAllByTitle('Add or Edit Links (Shift+N)')[0];
     fireEvent.click(editBtn);
 
-    expect(container.textContent).toContain('Add New Link');
+    expect(baseElement.textContent).toContain('Add New Link');
 
     const titleInput = getByPlaceholderText(/e.g. GitHub/i);
     const urlInput = getByPlaceholderText('e.g. https://www.youtube.com');

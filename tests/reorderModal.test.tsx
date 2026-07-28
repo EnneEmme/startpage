@@ -10,7 +10,8 @@ describe('ReorderModal Component', () => {
 
   it('renders reorder modal with category names', () => {
     const categories = ['Social', 'School', 'Fun'];
-    const { container } = render(
+    // Modal portals to document.body, so assert against baseElement
+    const { baseElement } = render(
       <ReorderModal
         isOpen={true}
         categories={categories}
@@ -18,10 +19,10 @@ describe('ReorderModal Component', () => {
       />
     );
 
-    expect(container.textContent).toContain('Reorder Column Sections');
-    expect(container.textContent).toContain('Social');
-    expect(container.textContent).toContain('School');
-    expect(container.textContent).toContain('Fun');
+    expect(baseElement.textContent).toContain('Reorder Column Sections');
+    expect(baseElement.textContent).toContain('Social');
+    expect(baseElement.textContent).toContain('School');
+    expect(baseElement.textContent).toContain('Fun');
   });
 
   it('reorders categories via the store action when moving a category up', () => {

@@ -1,5 +1,6 @@
 import type { ComponentChildren } from 'preact';
-import { useEffect } from 'preact/hooks';
+import { createPortal } from 'preact/compat';
+import { useEffect, useRef } from 'preact/hooks';
 import { X } from 'lucide-preact';
 import styles from './Modal.module.css';
 
@@ -15,7 +16,12 @@ interface ModalProps {
   className?: string;
   contentClassName?: string | undefined;
   hideHeader?: boolean;
+  /** Accessible name, required when the header is hidden (no visible title). */
+  ariaLabel?: string | undefined;
 }
+
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export const Modal = ({
   isOpen,
@@ -28,30 +34,106 @@ export const Modal = ({
   maxWidth,
   className = '',
   contentClassName = '',
-  hideHeader = false
+  hideHeader = false,
+  ariaLabel
 }: ModalProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
+
+  // Open/close lifecycle: remember trigger, lock page scroll (with scrollbar
+  // compensation), make the app tree inert, restore focus on close.
   useEffect(() => {
+    if (!isOpen) return;
+
+    restoreFocusRef.current = document.activeElement as HTMLElement | null;
+
+    const appRoot = document.getElementById('app');
+    appRoot?.setAttribute('inert', '');
+
+    const scrollbarGap = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    if (scrollbarGap > 0) {
+      document.body.style.paddingRight = `${scrollbarGap}px`;
+    }
+
+    return () => {
+      appRoot?.removeAttribute('inert');
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+      document.body.style.paddingRight = '';
+      restoreFocusRef.current?.focus?.();
+      restoreFocusRef.current = null;
+    };
+  }, [isOpen]);
+
+  // Initial focus: explicit [autofocus] inside the dialog, otherwise the dialog itself.
+  useEffect(() => {
+    if (!isOpen) return;
+    const container = containerRef.current;
+    if (!container) return;
+    const autofocusTarget = container.querySelector<HTMLElement>('[autofocus]');
+    if (autofocusTarget) {
+      autofocusTarget.focus();
+    } else {
+      container.focus();
+    }
+  }, [isOpen]);
+
+  // Escape + focus trap: Tab/Shift+Tab cycle inside the dialog.
+  useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
         onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      const container = containerRef.current;
+      if (!container) return;
+      const focusable = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+        .filter(el => el.offsetParent !== null || el === document.activeElement);
+      if (focusable.length === 0) {
+        e.preventDefault();
+        container.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+
+      if (e.shiftKey) {
+        if (!active || active === first || !container.contains(active)) {
+          e.preventDefault();
+          last?.focus();
+        }
+      } else if (!active || active === last || !container.contains(active)) {
+        e.preventDefault();
+        first?.focus();
       }
     };
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-    }
+
+    document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div class={styles.overlay} onClick={onClose}>
-      <div 
-        class={`${styles.modalContainer} fade-in ${className}`} 
+      <div
+        ref={containerRef}
+        class={`${styles.modalContainer} fade-in ${className}`}
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
+        aria-labelledby={title ? 'modal-title' : undefined}
+        aria-label={!title ? ariaLabel : undefined}
+        tabIndex={-1}
         style={maxWidth ? { maxWidth } : undefined}
       >
         {!hideHeader && (title || icon || subtitle) && (
@@ -81,6 +163,7 @@ export const Modal = ({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

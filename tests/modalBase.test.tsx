@@ -15,13 +15,13 @@ test('renders Modal component correctly when open', () => {
 });
 
 test('does not render when isOpen is false', () => {
-  const { container } = render(
+  render(
     <Modal isOpen={false} onClose={() => {}} title="Hidden Modal">
       <div>Hidden Content</div>
     </Modal>
   );
 
-  expect(container.innerHTML).toBe('');
+  expect(screen.queryByRole('dialog')).toBeNull();
 });
 
 test('calls onClose when close button is clicked', () => {
@@ -40,14 +40,15 @@ test('calls onClose when close button is clicked', () => {
 
 test('calls onClose when backdrop is clicked', () => {
   const handleClose = vi.fn();
-  const { container } = render(
+  render(
     <Modal isOpen={true} onClose={handleClose} title="Backdrop Modal">
       <div>Content</div>
     </Modal>
   );
 
-  // The overlay is the first child of the container wrapper
-  const overlay = container.firstChild as HTMLElement;
+  // Modal portals to document.body; the overlay wraps the dialog
+  const dialog = screen.getByRole('dialog');
+  const overlay = dialog.parentElement as HTMLElement;
   fireEvent.click(overlay);
 
   expect(handleClose).toHaveBeenCalledTimes(1);

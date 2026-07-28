@@ -215,6 +215,7 @@ export const SearchModal = ({
       isOpen={isOpen}
       onClose={onClose}
       hideHeader={true}
+      ariaLabel="Search links and commands"
       className="fade-in-scale"
       contentClassName={styles.searchContentOverrides}
       maxWidth="660px"
