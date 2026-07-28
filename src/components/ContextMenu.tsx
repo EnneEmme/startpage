@@ -2,8 +2,7 @@ import { h } from 'preact';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Edit3, Trash2, ArrowUp, ArrowDown, Folder, Move } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
-import { appActions, categoriesSignal, linksSignal } from '../stores';
-import { confirmDialog } from '../stores/confirmStore';
+import { appActions, categoriesSignal, linksSignal, confirmDialog } from '../stores';
 import styles from './ContextMenu.module.css';
 
 /** Gap (px) kept between menu and viewport edges when clamping */

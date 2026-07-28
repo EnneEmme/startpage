@@ -1,5 +1,5 @@
 import { X } from 'lucide-preact';
-import { toastSignal, dismissToast } from '../stores/toastStore';
+import { toastSignal, dismissToast } from '../stores';
 import styles from './Toast.module.css';
 
 /** Global snackbar host: renders the current toast with optional action (Undo). */
