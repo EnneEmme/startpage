@@ -37,10 +37,10 @@
 
 ## P1 — BUG FUNZIONALI & UX CORE
 
-- [ ] 🟠 **Enter/frecce preventDefault in TUTTI gli input/textarea** — `keyboardManager.ts:107-119`: impossibile submit con Enter in VisualEditModal, impossibile a-capo in `jsonTextarea` (ImportExportModal.tsx:112) e ScriptEditor, caret bloccato. I handler `onNavigateSearch` non sono mai registrati → pura perdita.
+- [x] 🟠 **Enter/frecce preventDefault in TUTTI gli input/textarea** — `keyboardManager.ts:107-119`: impossibile submit con Enter in VisualEditModal, impossibile a-capo in `jsonTextarea` (ImportExportModal.tsx:112) e ScriptEditor, caret bloccato. I handler `onNavigateSearch` non sono mai registrati → pura perdita.
   **Fix:** intercettare solo con search aperta, escludere TEXTAREA, frecce/Enter solo in SearchModal.
 
-- [ ] 🟠 **Shortcut globali attive con modale aperta → modali impilati** — `modalActive`/`setModalActive` (keyboardManager.ts:37-43) mai usati: con Settings aperto, `n` apre VisualEdit sopra, `?` apre Cheatsheet sopra → doppio overlay, doppio `id="modal-title"` (HTML invalido), Esc chiude tutto insieme. Tasti 1-9 scrollano dietro il modale.
+- [x] 🟠 **Shortcut globali attive con modale aperta → modali impilati** — `modalActive`/`setModalActive` (keyboardManager.ts:37-43) mai usati: con Settings aperto, `n` apre VisualEdit sopra, `?` apre Cheatsheet sopra → doppio overlay, doppio `id="modal-title"` (HTML invalido), Esc chiude tutto insieme. Tasti 1-9 scrollano dietro il modale.
   **Fix:** filtrare tutti gli handler quando `isAnyModalOpen` (tranne Esc/toggle corrente).
 
 - [ ] 🟠 **Setting "Motore di Ricerca Predefinito" completamente finto** — `SettingsModal.tsx:220-250` permette la scelta, ma il fallback search è Google hardcoded in `SearchModal.tsx:146,270`. Il tipo include `'b'` (Bing) senza regola in `fuzzySearch.ts:11-17` né bottone UI. Doppio campo concorrente mai letto: `StartpageConfig.defaultSearchEngine` (types:29).

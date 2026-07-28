@@ -62,24 +62,30 @@ export const App = () => {
     },
     onCloseModals: closeAllModals,
     onOpenCheatsheet: () => {
-      setSearchOpen(false);
+      // Never stack a modal over another one: toggle only when nothing else is open
+      if (searchOpen || importExportOpen || visualEditOpen || settingsOpen) return;
       setCheatsheetOpen((prev) => !prev);
     },
     onOpenVisualEdit: () => {
+      if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen || settingsOpen) return;
       setEditTargetLink(null);
       setVisualEditOpen(true);
     },
     onOpenSettings: () => {
-      setSearchOpen(false);
+      if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen) return;
       setSettingsOpen((prev) => !prev);
     },
     onSelectCategoryIndex: (index: number) => {
+      if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen || settingsOpen) return;
       const currentCats = dataStore.getCategories();
       if (index >= 0 && index < currentCats.length) {
         handleSelectCategory(currentCats[index].name);
       }
     }
-  }, [cheatsheetOpen, importExportOpen, visualEditOpen, settingsOpen]);
+  }, {
+    searchActive: searchOpen,
+    modalActive: isAnyModalOpen
+  }, [searchOpen, cheatsheetOpen, importExportOpen, visualEditOpen, settingsOpen]);
 
   useEffect(() => {
     refreshData();

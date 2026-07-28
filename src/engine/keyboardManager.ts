@@ -62,6 +62,17 @@ export class KeyboardManager {
       return;
     }
 
+    // With any modal open, page-level shortcuts are suspended: only keys that
+    // toggle a modal ('?', F1, ',', Shift+N) reach the handlers — app-level
+    // handlers no-op when the key doesn't belong to the open modal. This
+    // prevents stacked modals and shortcuts firing behind an overlay.
+    if (this.modalActive && !isInput) {
+      const isModalToggleKey =
+        e.key === '?' || e.key === 'F1' || e.key === ',' ||
+        (e.shiftKey && (e.key === 'N' || e.key === 'n'));
+      if (!isModalToggleKey) return;
+    }
+
     // Toggle Shortcuts View mode: 'Alt' key tap, or 'Shift+Space'
     // (checked before the modifier guard since the Alt keydown itself may carry altKey)
     if (!isInput && (e.key === 'Alt' || (e.shiftKey && e.key === ' '))) {
@@ -79,15 +90,24 @@ export class KeyboardManager {
 
     // If typing inside an input field (e.g. search input)
     if (isInput) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.handlers.onNavigateSearch?.('down');
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.handlers.onNavigateSearch?.('up');
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        this.handlers.onNavigateSearch?.('enter');
+      // Fields outside the open search modal keep fully native behavior:
+      // Enter submits forms, newline works in textareas, caret moves freely.
+      // Navigation is intercepted only in the search input and only when a
+      // navigation handler is registered (SearchModal handles its own keys).
+      const isTextarea = (e.target as HTMLElement).tagName === 'TEXTAREA';
+      if (!this.searchActive || isTextarea) return;
+
+      if (this.handlers.onNavigateSearch) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          this.handlers.onNavigateSearch('down');
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          this.handlers.onNavigateSearch('up');
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          this.handlers.onNavigateSearch('enter');
+        }
       }
       return;
     }
