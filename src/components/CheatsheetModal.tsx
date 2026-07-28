@@ -2,6 +2,7 @@ import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { X, Keyboard, Search, Sparkles, Command } from 'lucide-preact';
 import { getDynamicCheatsheetShortcuts } from '../engine/cheatsheetData';
+import { Modal } from './modals/Modal';
 import styles from './CheatsheetModal.module.css';
 
 interface CheatsheetModalProps {
@@ -33,24 +34,19 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
   }).filter(group => group.items.length > 0);
 
   return (
-    <div class={styles.overlay} onClick={onClose}>
-      <div class={`${styles.modalContainer} fade-in`} onClick={e => e.stopPropagation()}>
-        {/* Header */}
-        <div class={styles.modalHeader}>
-          <div class={styles.headerTitleGroup}>
-            <div class={styles.headerIconBadge}>
-              <Keyboard size={18} class={styles.keyboardIcon} />
-            </div>
-            <div>
-              <h2 class={styles.modalTitle}>Keyboard Shortcuts Cheatsheet</h2>
-              <span class={styles.modalSubtitle}>Guida completa alle scorciatoie da tastiera e comandi rapidi</span>
-            </div>
-          </div>
-          <button class={styles.closeBtn} onClick={onClose} type="button" title="Chiudi (Esc)">
-            <X size={18} />
-          </button>
-        </div>
-
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Keyboard Shortcuts Cheatsheet"
+      subtitle="Guida completa alle scorciatoie da tastiera e comandi rapidi"
+      icon={<Keyboard size={18} class={styles.keyboardIcon} />}
+      footer={
+        <span class={styles.footerHint}>
+          💡 Premi <kbd class={styles.miniKbd}>?</kbd> in qualsiasi momento per aprire/chiudere questa guida
+        </span>
+      }
+    >
+      <div class={styles.modalContent}>
         {/* Search Bar */}
         <div class={styles.searchBarWrapper}>
           <Search size={15} class={styles.searchIcon} />
@@ -73,8 +69,10 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
           )}
         </div>
 
+        </div>
+
         {/* Body Content */}
-        <div class={styles.modalContent}>
+        <div class={styles.cheatsheetBody}>
           {filteredGroups.length > 0 ? (
             filteredGroups.map(group => (
               <div key={group.category} class={styles.shortcutSection}>
@@ -105,14 +103,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
             </div>
           )}
         </div>
-
-        {/* Footer Hint */}
-        <div class={styles.modalFooter}>
-          <span class={styles.footerHint}>
-            💡 Premi <kbd class={styles.miniKbd}>?</kbd> in qualsiasi momento per aprire/chiudere questa guida
-          </span>
-        </div>
       </div>
-    </div>
+    </Modal>
   );
 };

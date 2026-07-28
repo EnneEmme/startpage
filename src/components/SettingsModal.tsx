@@ -2,6 +2,7 @@ import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { X, Check, Sliders, Palette, LayoutGrid, Type, Search, Download, Eye, Sparkles } from 'lucide-preact';
 import { themeEngine, ACCENT_COLORS, ThemeConfig } from '../engine/themeEngine';
+import { Modal } from './modals/Modal';
 import styles from './SettingsModal.module.css';
 
 interface SettingsModalProps {
@@ -54,26 +55,19 @@ export const SettingsModal = ({
   const currentAccent = ACCENT_COLORS.find(c => c.id === config.accentColorId) || ACCENT_COLORS[0];
 
   return (
-    <div class={styles.overlay} onClick={onClose}>
-      <div class={`${styles.modalContainer} fade-in`} onClick={e => e.stopPropagation()}>
-        {/* Header */}
-        <div class={styles.modalHeader}>
-          <div class={styles.headerTitleGroup}>
-            <div class={styles.headerIconBadge}>
-              <Sliders size={18} class={styles.headerIcon} />
-            </div>
-            <div>
-              <h2 class={styles.modalTitle}>Impostazioni & Personalizzazione</h2>
-              <span class={styles.modalSubtitle}>Tema visivo, griglia, caratteri e preferenze</span>
-            </div>
-          </div>
-          <button class={styles.closeBtn} onClick={onClose} type="button" title="Chiudi (Esc)">
-            <X size={18} />
-          </button>
-        </div>
-
-        <div class={styles.modalContent}>
-          {/* Accent Color Theme Section */}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Impostazioni & Personalizzazione"
+      subtitle="Tema visivo, griglia, caratteri e preferenze"
+      icon={<Sliders size={18} class={styles.headerIcon} />}
+      footer={
+        <button type="button" class={styles.saveBtn} onClick={onClose}>
+          Salva e Chiudi
+        </button>
+      }
+    >
+      {/* Accent Color Theme Section */}
           <div class={styles.sectionGroup}>
             <div class={styles.sectionHeaderRow}>
               <label class={styles.sectionLabel}>
@@ -279,14 +273,6 @@ export const SettingsModal = ({
               </button>
             </div>
           </div>
-        </div>
-
-        <div class={styles.modalFooter}>
-          <button type="button" class={styles.saveBtn} onClick={onClose}>
-            Salva e Chiudi
-          </button>
-        </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
