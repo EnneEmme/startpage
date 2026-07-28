@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Edit3, Trash2, ArrowUp, ArrowDown, Folder, Move } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
-import { dataStore } from '../engine';
+import { appActions, categoriesSignal, linksSignal } from '../stores';
 import { confirmDialog } from '../stores/confirmStore';
 import styles from './ContextMenu.module.css';
 
@@ -18,7 +18,6 @@ interface ContextMenuProps {
   onClose: () => void;
   onEdit: (link: LinkItem) => void;
   onRemove: (linkId: string) => void;
-  onConfigChanged: () => void;
   onReorderColumns?: (() => void) | undefined;
 }
 
@@ -29,7 +28,6 @@ export const ContextMenu = ({
   onClose,
   onEdit,
   onRemove,
-  onConfigChanged,
   onReorderColumns
 }: ContextMenuProps) => {
   const [showCategorySubmenu, setShowCategorySubmenu] = useState<boolean>(false);
@@ -65,7 +63,7 @@ export const ContextMenu = ({
     };
   }, [onClose]);
 
-  const categories = dataStore.getCategories().map(c => c.name);
+  const categories = categoriesSignal.value.map(c => c.name);
 
   const handleEditClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -91,21 +89,19 @@ export const ContextMenu = ({
 
   const handleMoveLinkDirection = (e: MouseEvent, direction: 'up' | 'down') => {
     e.stopPropagation();
-    const categoryLinks = dataStore.getLinks().filter(l => l.category === link.category);
+    const categoryLinks = linksSignal.value.filter(l => l.category === link.category);
     const currentIdx = categoryLinks.findIndex(l => l.id === link.id);
     const targetIdx = direction === 'up' ? currentIdx - 1 : currentIdx + 1;
 
     if (currentIdx !== -1 && targetIdx >= 0 && targetIdx < categoryLinks.length) {
-      dataStore.moveLink(link.id, link.category, targetIdx);
-      onConfigChanged();
+      appActions.moveLink(link.id, link.category, targetIdx);
     }
     onClose();
   };
 
   const handleMoveToCategory = (e: MouseEvent, targetCategory: string) => {
     e.stopPropagation();
-    dataStore.moveLink(link.id, targetCategory);
-    onConfigChanged();
+    appActions.moveLink(link.id, targetCategory);
     onClose();
   };
 

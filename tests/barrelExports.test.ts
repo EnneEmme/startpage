@@ -17,7 +17,7 @@ describe('Barrel Exports', () => {
 
   it('should export hooks', () => {
     expect(hooks).toBeDefined();
-    expect(hooks.useSettings).toBeDefined();
+    expect(hooks.useModals).toBeDefined();
   });
 
   it('should export stores', () => {

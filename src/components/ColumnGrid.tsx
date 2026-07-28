@@ -2,9 +2,9 @@ import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { ChevronDown, Zap } from 'lucide-preact';
 import { LinkItem, CategoryGroup } from '../types/startpage';
-import { dataStore } from '../engine';
 import { resolveDynamicUrl } from '../engine';
 import { executeLink, isBookmarkletOrScript, categoryColumnId } from '../engine';
+import { appActions, linksSignal } from '../stores';
 import { showToast } from '../stores/toastStore';
 import { LinkIcon } from './LinkIcon';
 import { ContextMenu } from './ContextMenu';
@@ -14,7 +14,6 @@ interface ColumnGridProps {
   categories: CategoryGroup[];
   showShortcuts: boolean;
   highlightedCategory?: string | null;
-  onConfigChanged?: () => void;
   onEditLink?: (link: LinkItem) => void;
   onOpenReorder?: () => void;
 }
@@ -23,7 +22,6 @@ export const ColumnGrid = ({
   categories,
   showShortcuts,
   highlightedCategory,
-  onConfigChanged,
   onEditLink,
   onOpenReorder
 }: ColumnGridProps) => {
@@ -195,8 +193,7 @@ export const ColumnGrid = ({
 
   const handleRenameSubmit = (oldName: string) => {
     if (renameInputValue.trim() && renameInputValue.trim() !== oldName) {
-      dataStore.renameCategory(oldName, renameInputValue.trim());
-      if (onConfigChanged) onConfigChanged();
+      appActions.renameCategory(oldName, renameInputValue.trim());
     }
     setEditingCategoryName(null);
   };
@@ -303,14 +300,13 @@ export const ColumnGrid = ({
         finalIndex = targetLinkIndex + 1;
       }
 
-      dataStore.moveLink(draggedLinkId, targetCategoryName, finalIndex);
+      appActions.moveLink(draggedLinkId, targetCategoryName, finalIndex);
 
       // Trigger smooth spring drop animation
       setJustDroppedLinkId(draggedLinkId);
       setTimeout(() => setJustDroppedLinkId(null), 350);
 
       setDraggedLinkId(null);
-      if (onConfigChanged) onConfigChanged();
       return;
     }
 
@@ -322,8 +318,7 @@ export const ColumnGrid = ({
       if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
         const [dragged] = categoryNames.splice(fromIdx, 1);
         categoryNames.splice(toIdx, 0, dragged);
-        dataStore.setCategoryOrder(categoryNames);
-        if (onConfigChanged) onConfigChanged();
+        appActions.setCategoryOrder(categoryNames);
       }
       setDraggedCategoryName(null);
     }
@@ -481,28 +476,22 @@ export const ColumnGrid = ({
           }}
           onRemove={linkId => {
             // Capture the item + its in-category position so removal can be undone
-            const allLinks = dataStore.getLinks();
+            const allLinks = linksSignal.value;
             const removedLink = allLinks.find(l => l.id === linkId);
             const categoryIndex = removedLink
               ? allLinks.filter(l => l.category === removedLink.category).findIndex(l => l.id === linkId)
               : -1;
 
-            dataStore.removeLink(linkId);
-            if (onConfigChanged) onConfigChanged();
+            appActions.removeLink(linkId);
 
             if (removedLink) {
               showToast(`"${removedLink.title}" removed`, {
                 actionLabel: 'Undo',
                 onAction: () => {
-                  dataStore.addLink(removedLink);
-                  dataStore.moveLink(removedLink.id, removedLink.category, categoryIndex);
-                  if (onConfigChanged) onConfigChanged();
+                  appActions.restoreLink(removedLink, categoryIndex);
                 }
               });
             }
-          }}
-          onConfigChanged={() => {
-            if (onConfigChanged) onConfigChanged();
           }}
           onReorderColumns={onOpenReorder}
         />

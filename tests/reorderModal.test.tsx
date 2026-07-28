@@ -1,10 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
-import { h } from 'preact';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, fireEvent } from '@testing-library/preact';
 import { ReorderModal } from '../src/components/ReorderModal';
 import { dataStore } from '../src/engine/dataStore';
 
 describe('ReorderModal Component', () => {
+  beforeEach(() => {
+    dataStore.resetToDefault();
+  });
+
   it('renders reorder modal with category names', () => {
     const categories = ['Social', 'School', 'Fun'];
     const { container } = render(
@@ -12,7 +15,6 @@ describe('ReorderModal Component', () => {
         isOpen={true}
         categories={categories}
         onClose={() => {}}
-        onConfigChanged={() => {}}
       />
     );
 
@@ -22,25 +24,21 @@ describe('ReorderModal Component', () => {
     expect(container.textContent).toContain('Fun');
   });
 
-  it('triggers onConfigChanged when moving a category up', () => {
+  it('reorders categories via the store action when moving a category up', () => {
     const categories = ['Social', 'School', 'Fun'];
-    const onConfigChangedSpy = vi.fn();
 
-    const { getByTitle } = render(
+    render(
       <ReorderModal
         isOpen={true}
         categories={categories}
         onClose={() => {}}
-        onConfigChanged={onConfigChangedSpy}
       />
     );
 
     // Click Move Up on 'School' (second item)
     const moveUpBtns = document.querySelectorAll('button[title="Move Up / Left"]');
-    if (moveUpBtns.length > 1) {
-      fireEvent.click(moveUpBtns[1]);
-      expect(dataStore.getCategoryOrder()).toEqual(['School', 'Social', 'Fun']);
-      expect(onConfigChangedSpy).toHaveBeenCalled();
-    }
+    expect(moveUpBtns.length).toBeGreaterThan(1);
+    fireEvent.click(moveUpBtns[1]);
+    expect(dataStore.getCategoryOrder()).toEqual(['School', 'Social', 'Fun']);
   });
 });

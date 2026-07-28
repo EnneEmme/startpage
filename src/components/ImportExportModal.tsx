@@ -1,7 +1,8 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { X, Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
-import { dataStore, rankStorage, copyTextToClipboard } from '../engine';
+import { copyTextToClipboard } from '../engine';
+import { appActions } from '../stores';
 import { confirmDialog } from '../stores/confirmStore';
 import { showToast } from '../stores/toastStore';
 import { Modal } from './modals/Modal';
@@ -10,26 +11,24 @@ import styles from './ImportExportModal.module.css';
 interface ImportExportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfigChanged: () => void;
 }
 
 export const ImportExportModal = ({
   isOpen,
-  onClose,
-  onConfigChanged
+  onClose
 }: ImportExportModalProps) => {
   const [jsonText, setJsonText] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
   const [statusMsg, setStatusMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   const handleExport = () => {
-    const jsonStr = dataStore.exportJson();
+    const jsonStr = appActions.exportJson();
     setJsonText(jsonStr);
     setStatusMsg({ text: 'Configuration exported successfully!', type: 'success' });
   };
 
   const handleCopy = async () => {
-    const jsonStr = jsonText || dataStore.exportJson();
+    const jsonStr = jsonText || appActions.exportJson();
     const ok = await copyTextToClipboard(jsonStr);
     if (ok) {
       setCopied(true);
@@ -40,7 +39,7 @@ export const ImportExportModal = ({
   };
 
   const handleDownloadFile = () => {
-    const jsonStr = jsonText || dataStore.exportJson();
+    const jsonStr = jsonText || appActions.exportJson();
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -56,10 +55,9 @@ export const ImportExportModal = ({
       return;
     }
 
-    const success = dataStore.importJson(jsonText);
+    const success = appActions.importJson(jsonText);
     if (success) {
       setStatusMsg({ text: 'Configuration imported and applied successfully!', type: 'success' });
-      onConfigChanged();
     } else {
       setStatusMsg({ text: 'Failed to parse JSON. Please check JSON syntax.', type: 'error' });
     }
@@ -73,16 +71,13 @@ export const ImportExportModal = ({
       danger: true
     }).then(ok => {
       if (!ok) return;
-      const snapshot = dataStore.exportJson();
-      dataStore.resetToDefault();
-      rankStorage.clear();
-      onConfigChanged();
+      const snapshot = appActions.exportJson();
+      appActions.resetToDefaults();
       setStatusMsg({ text: 'Reset to default configuration complete.', type: 'success' });
       showToast('Configuration reset to defaults', {
         actionLabel: 'Undo',
         onAction: () => {
-          dataStore.importJson(snapshot);
-          onConfigChanged();
+          appActions.importJson(snapshot);
         }
       });
     });

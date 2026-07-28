@@ -1,6 +1,6 @@
 import { h } from 'preact';
-import { X, ArrowUp, ArrowDown, Move } from 'lucide-preact';
-import { dataStore } from '../engine';
+import { ArrowUp, ArrowDown, Move } from 'lucide-preact';
+import { appActions } from '../stores';
 import { Modal } from './modals/Modal';
 import styles from './ReorderModal.module.css';
 
@@ -8,14 +8,12 @@ interface ReorderModalProps {
   isOpen: boolean;
   categories: string[];
   onClose: () => void;
-  onConfigChanged: () => void;
 }
 
 export const ReorderModal = ({
   isOpen,
   categories,
-  onClose,
-  onConfigChanged
+  onClose
 }: ReorderModalProps) => {
   const handleMove = (index: number, direction: 'up' | 'down') => {
     const newOrder = [...categories];
@@ -26,8 +24,7 @@ export const ReorderModal = ({
     newOrder[index] = newOrder[targetIdx];
     newOrder[targetIdx] = temp;
 
-    dataStore.setCategoryOrder(newOrder);
-    onConfigChanged();
+    appActions.setCategoryOrder(newOrder);
   };
 
   return (

@@ -3,7 +3,6 @@ import { render } from '@testing-library/preact';
 import { useModals } from '../src/hooks/useModals';
 import { useContextMenu } from '../src/hooks/useContextMenu';
 import { useDragAndDrop } from '../src/hooks/useDragAndDrop';
-import { useSettings } from '../src/hooks/useSettings';
 import { useKeyboardShortcuts } from '../src/hooks/useKeyboardShortcuts';
 import { h } from 'preact';
 import { useEffect } from 'preact/hooks';
@@ -40,17 +39,6 @@ describe('Custom Hooks', () => {
     render(<TestComponent />);
     expect(result.draggingCategory).toBe(null);
     expect(result.draggingLink).toBe(null);
-  });
-
-  it('useSettings works', () => {
-    let result: any;
-    const TestComponent = () => {
-      result = useSettings();
-      return null;
-    };
-    render(<TestComponent />);
-    expect(result.links.length).toBeGreaterThan(0);
-    expect(result.categories.length).toBeGreaterThan(0);
   });
 
   it('useKeyboardShortcuts works', () => {

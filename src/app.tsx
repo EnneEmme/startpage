@@ -1,27 +1,31 @@
 import { h } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
-import { 
-  HeaderClock, 
-  JumpBar, 
-  ColumnGrid, 
-  SearchModal, 
-  CheatsheetModal, 
-  ImportExportModal, 
-  VisualEditModal, 
-  SettingsModal, 
+import { useState } from 'preact/hooks';
+import {
+  HeaderClock,
+  JumpBar,
+  ColumnGrid,
+  SearchModal,
+  CheatsheetModal,
+  ImportExportModal,
+  VisualEditModal,
+  SettingsModal,
   MobileBottomNav,
   ReorderModal,
   Toast,
   ConfirmDialog
 } from './components';
-import { LinkItem } from './types/startpage';
-import { dataStore, scrollToCategory, scrollToTop } from './engine';
+import type { LinkItem } from './types/startpage';
+import { scrollToCategory, scrollToTop } from './engine';
+import { linksSignal, categoriesSignal } from './stores';
 
 // Custom Hooks
-import { useModals, useSettings, useKeyboardShortcuts } from './hooks';
+import { useModals, useKeyboardShortcuts } from './hooks';
 
 export const App = () => {
-  const { links, categories, refreshData } = useSettings();
+  // Single source of truth: signals synced with dataStore/themeEngine.
+  // Mutations happen via appActions/settingsActions, never via engine calls.
+  const links = linksSignal.value;
+  const categories = categoriesSignal.value;
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string | null>(null);
   const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null);
 
@@ -74,23 +78,29 @@ export const App = () => {
     },
     onSelectCategoryIndex: (index: number) => {
       if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen || settingsOpen) return;
-      const currentCats = dataStore.getCategories();
-      if (index >= 0 && index < currentCats.length) {
-        handleSelectCategory(currentCats[index].name);
+      const currentCats = categoriesSignal.value;
+      const target = currentCats[index];
+      if (target) {
+        handleSelectCategory(target.name);
       }
     }
   }, {
-    searchActive: searchOpen,
     modalActive: isAnyModalOpen
   }, [searchOpen, cheatsheetOpen, importExportOpen, visualEditOpen, settingsOpen]);
-
-  useEffect(() => {
-    refreshData();
-  }, [refreshData]);
 
   const handleEditLinkFromContext = (link: LinkItem) => {
     setEditTargetLink(link);
     setVisualEditOpen(true);
+  };
+
+  const handleOpenAddLink = () => {
+    setEditTargetLink(null);
+    setVisualEditOpen(true);
+  };
+
+  const handleOpenSearch = () => {
+    setInitialSearchChar('');
+    setSearchOpen(true);
   };
 
   const categoryNames = categories.map(c => c.name);
@@ -107,15 +117,9 @@ export const App = () => {
         />
 
         <HeaderClock
-          onOpenSearch={() => {
-            setInitialSearchChar('');
-            setSearchOpen(true);
-          }}
+          onOpenSearch={handleOpenSearch}
           onOpenCheatsheet={() => setCheatsheetOpen(true)}
-          onOpenVisualEdit={() => {
-            setEditTargetLink(null);
-            setVisualEditOpen(true);
-          }}
+          onOpenVisualEdit={handleOpenAddLink}
           onOpenSettings={() => setSettingsOpen(true)}
         />
       </header>
@@ -126,22 +130,15 @@ export const App = () => {
           highlightedCategory={highlightedCategory}
           showShortcuts={showShortcuts}
           onEditLink={handleEditLinkFromContext}
-          onConfigChanged={refreshData}
           onOpenReorder={() => setReorderOpen(true)}
         />
       </main>
 
       {/* Standalone Bottom Navigation Bar for Mobile & Tablet (< 1024px) */}
       <MobileBottomNav
-        onOpenSearch={() => {
-          setInitialSearchChar('');
-          setSearchOpen(true);
-        }}
+        onOpenSearch={handleOpenSearch}
         onOpenCheatsheet={() => setCheatsheetOpen(true)}
-        onOpenVisualEdit={() => {
-          setEditTargetLink(null);
-          setVisualEditOpen(true);
-        }}
+        onOpenVisualEdit={handleOpenAddLink}
         onOpenSettings={() => setSettingsOpen(true)}
       />
 
@@ -161,7 +158,6 @@ export const App = () => {
       <ImportExportModal
         isOpen={importExportOpen}
         onClose={() => setImportExportOpen(false)}
-        onConfigChanged={refreshData}
       />
 
       <VisualEditModal
@@ -171,13 +167,11 @@ export const App = () => {
           setVisualEditOpen(false);
           setEditTargetLink(null);
         }}
-        onConfigChanged={refreshData}
       />
 
       <SettingsModal
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        onConfigChanged={refreshData}
         onOpenImportExport={() => setImportExportOpen(true)}
       />
 
@@ -185,7 +179,6 @@ export const App = () => {
         isOpen={reorderOpen}
         categories={categoryNames}
         onClose={() => setReorderOpen(false)}
-        onConfigChanged={refreshData}
       />
 
       {/* Global feedback overlays */}

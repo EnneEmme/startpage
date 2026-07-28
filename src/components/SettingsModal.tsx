@@ -1,59 +1,31 @@
 import { h } from 'preact';
-import { useState } from 'preact/hooks';
-import { X, Check, Sliders, Palette, LayoutGrid, Type, Search, Download, Eye, Sparkles } from 'lucide-preact';
-import { themeEngine, ACCENT_COLORS, ThemeConfig } from '../engine';
+import { Check, Sliders, Palette, LayoutGrid, Type, Search, Download, Eye } from 'lucide-preact';
+import { ACCENT_COLORS } from '../engine';
+import { themeConfigSignal, settingsActions } from '../stores';
 import { Modal } from './modals/Modal';
 import styles from './SettingsModal.module.css';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfigChanged?: () => void;
   onOpenImportExport?: () => void;
 }
 
 export const SettingsModal = ({
   isOpen,
   onClose,
-  onConfigChanged,
   onOpenImportExport
 }: SettingsModalProps) => {
-  // Rules of hooks: all hooks must run before any conditional return.
-  const [config, setConfig] = useState<ThemeConfig>(themeEngine.getConfig());
-
   if (!isOpen) return null;
 
-  const handleSelectAccent = (colorId: string) => {
-    themeEngine.setAccentColor(colorId);
-    setConfig(themeEngine.getConfig());
-    if (onConfigChanged) onConfigChanged();
-  };
+  // Live config straight from the signal: no stale local copy, no manual sync.
+  const config = themeConfigSignal.value;
 
-  const handleSelectDensity = (density: 'compact' | 'normal' | 'spaced') => {
-    themeEngine.setGridDensity(density);
-    setConfig(themeEngine.getConfig());
-    if (onConfigChanged) onConfigChanged();
-  };
-
-  const handleSelectFontSize = (size: 'small' | 'medium' | 'large' | 'xlarge') => {
-    themeEngine.setFontSize(size);
-    setConfig(themeEngine.getConfig());
-    if (onConfigChanged) onConfigChanged();
-  };
-
-  const handleSelectAliasVisibility = (visibility: 'smart' | 'always') => {
-    themeEngine.setAliasVisibility(visibility);
-    setConfig(themeEngine.getConfig());
-    if (onConfigChanged) onConfigChanged();
-  };
-
-  const handleSelectEngine = (engine: 'g' | 'ddg' | 'b' | 'yt' | 'gh') => {
-    themeEngine.setDefaultSearchEngine(engine);
-    setConfig(themeEngine.getConfig());
-    if (onConfigChanged) onConfigChanged();
-  };
-
-  const currentAccent = ACCENT_COLORS.find(c => c.id === config.accentColorId) || ACCENT_COLORS[0];
+  const handleSelectAccent = (colorId: string) => settingsActions.setAccentColor(colorId);
+  const handleSelectDensity = (density: 'compact' | 'normal' | 'spaced') => settingsActions.setGridDensity(density);
+  const handleSelectFontSize = (size: 'small' | 'medium' | 'large' | 'xlarge') => settingsActions.setFontSize(size);
+  const handleSelectAliasVisibility = (visibility: 'smart' | 'always') => settingsActions.setAliasVisibility(visibility);
+  const handleSelectEngine = (engine: 'g' | 'ddg' | 'b' | 'yt' | 'gh') => settingsActions.setDefaultSearchEngine(engine);
 
   return (
     <Modal

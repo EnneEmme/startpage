@@ -23,7 +23,6 @@ describe('ContextMenu Component', () => {
         onClose={() => {}}
         onEdit={() => {}}
         onRemove={() => {}}
-        onConfigChanged={() => {}}
       />
     );
 
@@ -46,7 +45,6 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={onEditSpy}
         onRemove={() => {}}
-        onConfigChanged={() => {}}
       />
     );
 
@@ -67,7 +65,6 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={() => {}}
         onRemove={onRemoveSpy}
-        onConfigChanged={() => {}}
       />
     );
 
@@ -94,7 +91,6 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={() => {}}
         onRemove={onRemoveSpy}
-        onConfigChanged={() => {}}
       />
     );
 
@@ -116,7 +112,6 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={() => {}}
         onRemove={() => {}}
-        onConfigChanged={() => {}}
       />
     );
 

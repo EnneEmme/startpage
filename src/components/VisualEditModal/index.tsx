@@ -2,8 +2,8 @@ import { h, Fragment } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { X, Plus, Sliders, Globe, Zap, Search } from 'lucide-preact';
 import { LinkItem } from '../../types/startpage';
-import { dataStore } from "../../engine/dataStore";
-import { resolveDynamicUrl } from "../../engine/dynamicEvaluator";
+import { resolveDynamicUrl } from '../../engine';
+import { appActions, categoriesSignal } from '../../stores';
 import styles from '../VisualEditModal.module.css';
 import { searchLucideIcons } from '../iconRegistry';
 
@@ -19,7 +19,6 @@ interface VisualEditModalProps {
   initialLink?: LinkItem | null;
   onClose: () => void;
   onSave?: () => void;
-  onConfigChanged?: () => void;
 }
 
 export const VisualEditModal = ({
@@ -27,8 +26,7 @@ export const VisualEditModal = ({
   initialEditLink,
   initialLink,
   onClose,
-  onSave,
-  onConfigChanged
+  onSave
 }: VisualEditModalProps) => {
   const targetLink = initialEditLink || initialLink;
   const isEditing = Boolean(targetLink);
@@ -91,7 +89,7 @@ export const VisualEditModal = ({
   // Rules of hooks: the guard below must stay after every hook declaration.
   if (!isOpen) return null;
 
-  const categories = dataStore.getCategories().map(c => c.name);
+  const categories = categoriesSignal.value.map(c => c.name);
 
   const handleSelectCategory = (catName: string) => {
     setCategory(catName);
@@ -148,12 +146,11 @@ export const VisualEditModal = ({
 
     // Edit must preserve position in column; only true additions go to the end
     if (isEditing) {
-      dataStore.updateLink(updatedLink);
+      appActions.updateLink(updatedLink);
     } else {
-      dataStore.addLink(updatedLink);
+      appActions.addLink(updatedLink);
     }
     if (onSave) onSave();
-    if (onConfigChanged) onConfigChanged();
     onClose();
   };
 
