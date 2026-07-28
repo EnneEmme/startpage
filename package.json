@@ -10,6 +10,7 @@
     "test": "bun ./node_modules/vitest/vitest.mjs run"
   },
   "dependencies": {
+    "@preact/signals": "^2.10.0",
     "fuse.js": "^7.1.0",
     "lucide-preact": "^1.16.0",
     "preact": "^10.26.4"
