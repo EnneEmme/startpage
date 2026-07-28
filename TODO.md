@@ -745,21 +745,21 @@ src/
 | 4 | Debounce localStorage writes | 🔴 | Sblocca main thread |
 | 5 | Lazy render modali `{isOpen && <Modal/>}` | 🔴 | -6 component trees |
 | 6 | Cache favicon in-memory | 🟠 | -80% network requests |
-| 7 | Estrarre custom hooks da `app.tsx` | 🟠 | Manutenibilità |
-| 8 | `prefers-reduced-motion` | 🟠 | Accessibilità WCAG |
+| 7 | Estrarre custom hooks da `app.tsx` (`useModals`, `useContextMenu`, `useDragAndDrop`, `useKeyboardShortcuts`, `useSettings`) | 🟠 | Manutenibilità & Modularità | ✅ **Completato** (`src/hooks/` + `tests/hooks.test.tsx`) |
+| 8 | `prefers-reduced-motion` WCAG 2.1 AA | 🟠 | Accessibilità WCAG | ✅ **Completato** (`global.css` + `tests/accessibility.test.tsx`) |
 
 ### Impatto medio-termine
 
-| # | Issue | Severity | Impatto |
-|---|-------|----------|---------|
-| 9 | Preact Signals per state management | 🟠 | Zero-cost reactivity |
-| 10 | Spezzare VisualEditModal (25KB!) | 🟡 | Manutenibilità |
-| 11 | Design tokens completi in CSS | 🟡 | Consistenza |
-| 12 | Modal base component condiviso | 🟡 | -500 righe CSS duplicato |
-| 13 | `structuredClone()` invece di JSON round-trip | 🟡 | Performance + correttezza |
-| 14 | Fix `100vh` → `100dvh` su mobile | 🟡 | Layout mobile |
-| 15 | ESLint + Prettier + Husky | 🟡 | Code quality |
-| 16 | Barrel exports (`index.ts`) | 🟡 | DX migliore |
+| # | Issue | Severity | Impatto | Stato |
+|---|-------|----------|---------|-------|
+| 9 | Preact Signals (`@preact/signals`) per state management | 🟠 | Zero-cost reactivity & Fine-grained state | ✅ **Completato** (`src/stores/` + `tests/signalsStore.test.ts`) |
+| 10 | Spezzare VisualEditModal (25KB!) | 🟡 | Manutenibilità & Modularità | ✅ **Completato** (`src/components/VisualEditModal/` + `tests/visualEditModal.test.tsx`) |
+| 11 | Design tokens completi in CSS | 🟡 | Consistenza | ✅ **Completato** (`variables.css`) |
+| 12 | Modal base component condiviso | 🟡 | -500 righe CSS duplicato & Accessibilità ARIA | ✅ **Completato** (`src/components/modals/Modal.tsx` + `tests/modalBase.test.tsx`) |
+| 13 | `structuredClone()` invece di JSON round-trip | 🟡 | Performance + correttezza | ✅ **Completato** |
+| 14 | Fix `100vh` → `100dvh` su mobile | 🟡 | Layout mobile | ✅ **Completato** |
+| 15 | ESLint + Prettier + Husky | 🟡 | Code quality | ✅ **Completato** |
+| 16 | Barrel exports (`index.ts`) | 🟡 | DX migliore | ✅ **Completato** |
 
 ### Nice-to-have
 
