@@ -22,7 +22,13 @@ export const JumpBar = ({
     const el = jumpBarRef.current;
     const canScrollLeft = el.scrollLeft > 5;
     const canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 8;
-    setScrollState({ canScrollLeft, canScrollRight });
+    // Bail out on identical values: scroll events fire per frame and a fresh
+    // object would otherwise re-render the bar every time.
+    setScrollState(prev =>
+      prev.canScrollLeft === canScrollLeft && prev.canScrollRight === canScrollRight
+        ? prev
+        : { canScrollLeft, canScrollRight }
+    );
   };
 
   useEffect(() => {
@@ -34,6 +40,14 @@ export const JumpBar = ({
   const handleScroll = () => {
     checkScrollState();
   };
+
+  // Bring the active pill into view inside the horizontally scrollable bar.
+  useEffect(() => {
+    const activeBtn = jumpBarRef.current?.querySelector('[aria-current="true"]');
+    if (activeBtn instanceof HTMLElement && typeof activeBtn.scrollIntoView === 'function') {
+      activeBtn.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+  }, [activeCategory]);
 
   // Scrolling is owned by the parent (App -> scrollToCategory): notify only,
   // otherwise the page would perform the same smooth scroll twice per click.
@@ -61,6 +75,7 @@ export const JumpBar = ({
     >
       <button
         class={`${styles.tabBtn} ${activeCategory === null ? styles.active : ''}`}
+        aria-current={activeCategory === null ? true : undefined}
         onClick={() => handleTabClick(null)}
       >
         All
@@ -70,6 +85,7 @@ export const JumpBar = ({
         <button
           key={cat}
           class={`${styles.tabBtn} ${activeCategory === cat ? styles.active : ''}`}
+          aria-current={activeCategory === cat ? true : undefined}
           onClick={() => handleTabClick(cat)}
         >
           {showShortcuts && idx < 9 && (

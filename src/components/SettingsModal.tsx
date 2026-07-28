@@ -35,7 +35,7 @@ export const SettingsModal = ({
       icon={<Sliders size={18} class={styles.headerIcon} />}
       footer={
         <button type="button" class={styles.saveBtn} onClick={onClose}>
-          Save & Close
+          Close
         </button>
       }
     >

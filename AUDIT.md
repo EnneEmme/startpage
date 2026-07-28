@@ -153,8 +153,8 @@
 - [x] 🟡 **`lang="en"` (index.html:2) con UI in gran parte italiana** — screen reader legge IT con fonetica EN; copy misto IT/EN ovunque (Settings IT, Search EN, Modal close "Close"/"Chiudi (Esc)").
   **Fix:** scegliere una lingua o dizionario stringhe centralizzato; `lang` coerente.
 
-- [ ] 🟡 **Reduced motion solo CSS** — scroll JS `behavior:'smooth'` (app.tsx:48,52, JumpBar, ColumnGrid:147) ignora `prefers-reduced-motion`.
-  **Fix:** gate JS con `matchMedia`.
+- [x] 🟡 **Reduced motion solo CSS** — scroll JS `behavior:'smooth'` (app.tsx:48,52, JumpBar, ColumnGrid:147) ignora `prefers-reduced-motion`.
+  **Fix:** gate JS con `matchMedia`. ✅ Fatto: `scrollBehavior()`/`prefersReducedMotion()` in categoryScroll (window.scrollTo gateato; scrollIntoView resta istantaneo).
 
 - [ ] 🟡 **AutoFocus sparsi e orchestrazione focus assente** — 5 autoFocus (SearchInput, Cheatsheet, rename, icon picker, new-category) + focus manuali duplicati (SearchModal:39-51).
   **Fix:** strategia unica gestita da Modal.
@@ -162,14 +162,14 @@
 - [ ] 🟡 **VisualEditModal: draft sporco persiste tra aperture; tab senza ARIA; nuova categoria non ordinata** — state sopravvive al Cancel (effetto del bug hooks + `useEffect` deps `[targetLink]`); CategoryPicker non aggiunge a `categoryOrder`; segmented senza `role="tablist"`; overlay-click perde il form senza conferma.
   **Fix:** reset state su close (o `key`), `dataStore.addCategory` completa, ARIA tabs, conferma dirty-form.
 
-- [ ] 🟡 **SettingsModal: bottone "Salva e Chiudi" ingannevole + state stale** — applica live, "Salva" è no-op; state locale copia di `getConfig()` non risincronizzata (esiste già `themeConfigSignal`); `currentAccent` mai usato.
-  **Fix:** label "Chiudi"; leggere direttamente `themeConfigSignal.value`; cancellare state locale.
+- [x] 🟡 **SettingsModal: bottone "Salva e Chiudi" ingannevole + state stale** — applica live, "Salva" è no-op; state locale copia di `getConfig()` non risincronizzata (esiste già `themeConfigSignal`); `currentAccent` mai usato.
+  **Fix:** label "Chiudi"; leggere direttamente `themeConfigSignal.value`; cancellare state locale. ✅ Fatto (signal diretto già da P2; label → "Close"; `currentAccent` già purged).
 
 - [ ] 🟡 **Empty/error states assenti** — categoria vuota, griglia vuota post-import/reset senza CTA; LazyWidget errore → `null` silenzioso; nessun skeleton favicon.
   **Fix:** empty states con CTA "Aggiungi il primo link".
 
-- [ ] 🟡 **JumpBar: no `aria-current`, tab attiva non portata in vista, re-render a ogni frame di scroll** — `JumpBar.tsx:21-37`: `setScrollState` con oggetto nuovo a ogni evento scroll.
-  **Fix:** bail-out su valori identici + `aria-current` + scrollIntoView della pill attiva.
+- [x] 🟡 **JumpBar: no `aria-current`, tab attiva non portata in vista, re-render a ogni frame di scroll** — `JumpBar.tsx:21-37`: `setScrollState` con oggetto nuovo a ogni evento scroll.
+  **Fix:** bail-out su valori identici + `aria-current` + scrollIntoView della pill attiva (feature-detect per jsdom). ✅ Fatto.
 
 - [x] 🟡 **Touch target sotto soglia** — LinkRow ~31px, context item ~32px, top tools 34px, clear 24px (consigliati ≥44px touch / WCAG min 24px).
   **Fix:** padding minimo su `@media (pointer: coarse)`. ✅ Fatto: ≥24px su linkRow/clearBtn/clearSearchBtn (44px ideali ancora no).
@@ -195,8 +195,8 @@
 - [ ] 🟠 **ColumnGrid: re-render intera griglia a 60fps durante dragover** — `ColumnGrid.tsx:228-260`: setState per pointermove → re-render ~120 card + LinkIcon non memoized.
   **Fix:** `LinkRow`/`ColumnCard` memoized o stato drag in signals/ref + classi DOM imperative.
 
-- [ ] 🟡 **FuzzySearch: doppio matching per keystroke + lowercase non precomputati** — `fuzzySearch.ts:114-207`: fuse.search + sweep lineare con `toLowerCase()` allocati per item.
-  **Fix:** cache lowercase in `setLinks`. (Re-indexing per keystroke assente ✓)
+- [x] 🟡 **FuzzySearch: doppio matching per keystroke + lowercase non precomputati** — `fuzzySearch.ts:114-207`: fuse.search + sweep lineare con `toLowerCase()` allocati per item.
+  **Fix:** cache lowercase in `setLinks` (Map id→{title,category,aliases}) + lazy fallback in `search`. ✅ Fatto. (Re-indexing per keystroke assente ✓)
 
 - [x] 🟡 **Icona bookmarklet = favicon Unimib hardcoded** — LinkIcon.tsx:56-59: qualunque URL `javascript:` → favicon Unimib. Reset a icona neutra (Globe). ✅ Fatto.
 

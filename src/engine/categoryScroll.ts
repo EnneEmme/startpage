@@ -12,6 +12,15 @@ export const categorySlug = (categoryName: string): string =>
 export const categoryColumnId = (categoryName: string): string =>
   `column-${categorySlug(categoryName)}`;
 
+/** True when the user requested reduced motion — JS smooth scrolling must respect it (CSS-only gating does not cover window.scrollTo) */
+export const prefersReducedMotion = (): boolean =>
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/** 'smooth' normally, 'auto' under prefers-reduced-motion */
+export const scrollBehavior = (): ScrollBehavior =>
+  prefersReducedMotion() ? 'auto' : 'smooth';
+
 /** Vertical offset (px) accounting for the fixed header when aligning a column */
 const HEADER_SCROLL_OFFSET = -85;
 
@@ -20,10 +29,10 @@ export const scrollToCategory = (categoryName: string): void => {
   const targetEl = document.getElementById(categoryColumnId(categoryName));
   if (!targetEl) return;
   const y = targetEl.getBoundingClientRect().top + window.scrollY + HEADER_SCROLL_OFFSET;
-  window.scrollTo({ top: y, behavior: 'smooth' });
+  window.scrollTo({ top: y, behavior: scrollBehavior() });
 };
 
 /** Smooth-scroll the page back to the very top ("All" categories view) */
 export const scrollToTop = (): void => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: scrollBehavior() });
 };
