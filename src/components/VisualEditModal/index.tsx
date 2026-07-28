@@ -1,0 +1,265 @@
+import { h, Fragment } from 'preact';
+import { useState, useEffect } from 'preact/hooks';
+import { X, Plus, Sliders, Globe, Zap, Search } from 'lucide-preact';
+import { LinkItem } from '../../types/startpage';
+import { dataStore } from '../../engine/dataStore';
+import { resolveDynamicUrl } from '../../engine/dynamicEvaluator';
+import styles from '../VisualEditModal.module.css';
+import * as Icons from 'lucide-preact';
+
+import { PreviewPanel } from './PreviewPanel';
+import { CategoryPicker } from './CategoryPicker';
+import { ScriptEditor } from './ScriptEditor';
+import { FormFields } from './FormFields';
+
+const ALL_LUCIDE_ICONS: { name: string; spec: string; icon: any }[] = Object.keys(Icons)
+  .filter(key => /^[A-Z]/.test(key) && key !== 'createLucideIcon')
+  .map(key => ({
+    name: key,
+    spec: key,
+    icon: (Icons as Record<string, any>)[key]
+  }));
+
+interface VisualEditModalProps {
+  isOpen?: boolean;
+  initialEditLink?: LinkItem | null;
+  initialLink?: LinkItem | null;
+  onClose: () => void;
+  onSave?: () => void;
+  onConfigChanged?: () => void;
+}
+
+export const VisualEditModal = ({
+  isOpen = true,
+  initialEditLink,
+  initialLink,
+  onClose,
+  onSave,
+  onConfigChanged
+}: VisualEditModalProps) => {
+  if (!isOpen) return null;
+
+  const targetLink = initialEditLink || initialLink;
+  const isEditing = Boolean(targetLink);
+
+  const resolvedDisplayUrl = targetLink ? resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) : '';
+
+  const [title, setTitle] = useState(targetLink?.title || '');
+  const [url, setUrl] = useState(targetLink?.url || resolvedDisplayUrl || '');
+  const [aliases, setAliases] = useState(targetLink?.aliases ? targetLink.aliases.join(', ') : '');
+  const [icon, setIcon] = useState(targetLink?.icon || '');
+  const [category, setCategory] = useState(targetLink?.category || 'General');
+
+  const initialMode = targetLink?.isScript || targetLink?.scriptContent || (targetLink?.url && targetLink.url.toLowerCase().startsWith('javascript:'))
+    ? 'script'
+    : (targetLink?.searchTemplate || targetLink?.searchPath ? 'search' : 'web');
+
+  const [activeTab, setActiveTab] = useState<'web' | 'script' | 'search'>(initialMode);
+  const [scriptSnippet, setScriptSnippet] = useState<string>(
+    targetLink?.scriptContent || (targetLink?.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : '')
+  );
+  const [searchTemplate, setSearchTemplate] = useState(targetLink?.searchTemplate || targetLink?.searchPath || '');
+
+  const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [isCategoryPickerOpen, setIsCategoryPickerOpen] = useState(false);
+
+  const [isIconDropdownOpen, setIsIconDropdownOpen] = useState(false);
+  const [iconSearchQuery, setIconSearchQuery] = useState('');
+
+  useEffect(() => {
+    if (targetLink) {
+      setTitle(targetLink.title || '');
+      setUrl(targetLink.url || resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) || '');
+      setAliases(targetLink.aliases ? targetLink.aliases.join(', ') : '');
+      setIcon(targetLink.icon || '');
+      setCategory(targetLink.category || 'General');
+
+      const isScript = Boolean(
+        targetLink.isScript ||
+        targetLink.scriptContent ||
+        (targetLink.url && targetLink.url.toLowerCase().startsWith('javascript:'))
+      );
+      const isSearch = Boolean(targetLink.searchTemplate || targetLink.searchPath);
+
+      setActiveTab(isScript ? 'script' : (isSearch ? 'search' : 'web'));
+      setScriptSnippet(targetLink.scriptContent || (targetLink.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : ''));
+      setSearchTemplate(targetLink.searchTemplate || targetLink.searchPath || '');
+    } else {
+      setTitle('');
+      setUrl('');
+      setAliases('');
+      setIcon('');
+      setCategory('General');
+      setActiveTab('web');
+      setScriptSnippet('');
+      setSearchTemplate('');
+    }
+  }, [targetLink]);
+
+  const categories = dataStore.getCategories().map(c => c.name);
+
+  const handleSelectCategory = (catName: string) => {
+    setCategory(catName);
+    setIsCategoryPickerOpen(false);
+    setIsCreatingNewCategory(false);
+  };
+
+  const handleCreateNewCategory = () => {
+    if (newCategoryName.trim()) {
+      setCategory(newCategoryName.trim());
+      setIsCreatingNewCategory(false);
+      setNewCategoryName('');
+      setIsCategoryPickerOpen(false);
+    }
+  };
+
+  const handleSubmit = (e: h.JSX.TargetedEvent<HTMLFormElement, Event>) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+
+    const parsedAliases = aliases
+      .split(',')
+      .map(a => a.trim().toLowerCase())
+      .filter(Boolean);
+
+    const linkId = targetLink?.id || `link_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const targetCat = isCreatingNewCategory && newCategoryName.trim() ? newCategoryName.trim() : category;
+
+    let finalUrl = url.trim();
+    let finalScriptContent: string | undefined = undefined;
+    const isScriptMode = activeTab === 'script';
+    const isSearchMode = activeTab === 'search';
+
+    if (isScriptMode) {
+      const code = scriptSnippet.trim();
+      finalScriptContent = code;
+      finalUrl = code.toLowerCase().startsWith('javascript:') ? code : `javascript:${encodeURI(code)}`;
+    }
+
+    const finalDynamicRule = targetLink?.dynamicUrlRule;
+
+    const updatedLink: LinkItem = {
+      id: linkId,
+      title: title.trim(),
+      url: finalUrl,
+      aliases: parsedAliases,
+      category: targetCat || 'General',
+      icon: icon.trim() || undefined,
+      isScript: isScriptMode || undefined,
+      scriptContent: finalScriptContent,
+      dynamicUrlRule: finalDynamicRule,
+      searchTemplate: isSearchMode && searchTemplate.trim() ? searchTemplate.trim() : undefined
+    };
+
+    dataStore.addLink(updatedLink);
+    if (onSave) onSave();
+    if (onConfigChanged) onConfigChanged();
+    onClose();
+  };
+
+  const iconQueryTrimmed = iconSearchQuery.trim().toLowerCase();
+  const filteredIcons = iconQueryTrimmed
+    ? ALL_LUCIDE_ICONS.filter(i => i.name.toLowerCase().includes(iconQueryTrimmed)).slice(0, 120)
+    : [];
+  const firstAlias = aliases.split(',')[0]?.trim();
+
+  return (
+    <div class={styles.overlay} onClick={onClose}>
+      <div class={`${styles.modalContainer} fade-in`} onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div class={styles.modalHeader}>
+          <div class={styles.headerTitleGroup}>
+            <div class={styles.headerIconBadge}>
+              {isEditing ? <Sliders size={18} /> : <Plus size={18} />}
+            </div>
+            <div>
+              <h2 class={styles.modalTitle}>{isEditing ? 'Edit Link' : 'Add New Link'}</h2>
+              <span class={styles.modalSubtitle}>Configura collegamenti, script JS e motori di ricerca</span>
+            </div>
+          </div>
+          <button class={styles.closeBtn} onClick={onClose} type="button" title="Chiudi (Esc)">
+            <X size={18} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} class={styles.formContent}>
+          <PreviewPanel
+            title={title}
+            url={url}
+            icon={icon}
+            firstAlias={firstAlias}
+            activeTab={activeTab}
+          />
+
+          {/* Mode Tab Switcher Segmented Control */}
+          <div class={styles.segmentedTabsWrapper}>
+            <button
+              type="button"
+              class={`${styles.tabSegment} ${activeTab === 'web' ? styles.activeTabSegment : ''}`}
+              onClick={() => setActiveTab('web')}
+            >
+              <Globe size={14} />
+              <span>Sito Web Standard</span>
+            </button>
+            <button
+              type="button"
+              class={`${styles.tabSegment} ${activeTab === 'script' ? styles.activeTabSegment : ''}`}
+              onClick={() => setActiveTab('script')}
+            >
+              <Zap size={14} />
+              <span>Script JS / Bookmarklet</span>
+            </button>
+            <button
+              type="button"
+              class={`${styles.tabSegment} ${activeTab === 'search' ? styles.activeTabSegment : ''}`}
+              onClick={() => setActiveTab('search')}
+            >
+              <Search size={14} />
+              <span>Motore di Ricerca</span>
+            </button>
+          </div>
+
+          <FormFields
+            activeTab={activeTab}
+            title={title} setTitle={setTitle}
+            url={url} setUrl={setUrl}
+            searchTemplate={searchTemplate} setSearchTemplate={setSearchTemplate}
+            aliases={aliases} setAliases={setAliases}
+            icon={icon} setIcon={setIcon}
+            isIconDropdownOpen={isIconDropdownOpen} setIsIconDropdownOpen={setIsIconDropdownOpen}
+            iconSearchQuery={iconSearchQuery} setIconSearchQuery={setIconSearchQuery}
+            filteredIcons={filteredIcons}
+          />
+
+          {activeTab === 'script' && (
+            <ScriptEditor scriptSnippet={scriptSnippet} setScriptSnippet={setScriptSnippet} />
+          )}
+
+          <CategoryPicker
+            categories={categories}
+            category={category}
+            isCreatingNewCategory={isCreatingNewCategory}
+            newCategoryName={newCategoryName}
+            isCategoryPickerOpen={isCategoryPickerOpen}
+            onSelectCategory={handleSelectCategory}
+            onCreateNewCategory={handleCreateNewCategory}
+            onSetIsCreatingNewCategory={setIsCreatingNewCategory}
+            onSetNewCategoryName={setNewCategoryName}
+            onSetIsCategoryPickerOpen={setIsCategoryPickerOpen}
+          />
+
+          {/* Actions */}
+          <div class={styles.modalFooter}>
+            <button type="button" class={styles.cancelBtn} onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" class={styles.saveBtn}>
+              {isEditing ? 'Save Changes' : 'Create Link'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
