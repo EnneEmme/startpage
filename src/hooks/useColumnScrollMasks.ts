@@ -31,10 +31,14 @@ export function useColumnScrollMasks(columnCount: number) {
 
   const registerList = useCallback((columnName: string, el: HTMLDivElement | null) => {
     if (el) {
+      // Skip re-registration of the same element (idempotent: no state churn)
+      if (listRefs.current.get(columnName) === el) return;
       listRefs.current.set(columnName, el);
       // Post-paint measurement (accurate heights on first load)
       requestAnimationFrame(() => measureList(columnName, el));
     } else {
+      // Skip unregister when nothing is registered (defensive idempotency)
+      if (!listRefs.current.has(columnName)) return;
       listRefs.current.delete(columnName);
       setMasks(prev => {
         if (!(columnName in prev)) return prev;

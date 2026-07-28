@@ -65,6 +65,24 @@ describe('Custom Hooks', () => {
     expect(result.masks).toEqual({});
   });
 
+  it('useColumnScrollMasks registerList is idempotent (no infinite re-render loop)', () => {
+    let result: any;
+    const el = document.createElement('div');
+    const TestComponent = () => {
+      result = useColumnScrollMasks(1);
+      return null;
+    };
+    render(<TestComponent />);
+
+    act(() => result.registerList('A', el));
+    act(() => result.registerList('A', el)); // same element again: must be a no-op
+    const masksAfterRegister = result.masks;
+
+    act(() => result.registerList('A', null));
+    act(() => result.registerList('A', null)); // unregister again: must be a no-op
+    expect(result.masks).toBe(masksAfterRegister);
+  });
+
   it('useKeyboardShortcuts works', () => {
     let result: any;
     const handlers = { onOpenSearch: vi.fn() };

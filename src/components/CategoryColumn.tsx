@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState, useCallback } from 'preact/hooks';
 import type { CategoryGroup, LinkItem } from '../types/startpage';
 import { appActions } from '../stores';
 import { resolveDynamicUrl, isBookmarkletOrScript, categoryColumnId } from '../engine';
@@ -43,6 +43,13 @@ export const CategoryColumn = ({
   // Inline category header rename state (local: only this column re-renders)
   const [isRenaming, setIsRenaming] = useState<boolean>(false);
   const [renameValue, setRenameValue] = useState<string>('');
+
+  // Stable ref: a fresh arrow each render would make Preact detach/attach on
+  // every render, churning mask state into an infinite re-render loop.
+  const listRef = useCallback(
+    (el: HTMLDivElement | null) => registerList(cat.name, el),
+    [cat.name, registerList]
+  );
 
   const isDragOver = drag.dragOverCategory === cat.name && !drag.dragOverLinkId;
 
@@ -109,7 +116,7 @@ export const CategoryColumn = ({
 
       {/* Viewport-Height Reactive Dynamic Top/Bottom Fade Masked Links List */}
       <div
-        ref={el => registerList(cat.name, el)}
+        ref={listRef}
         class={`${styles.linksList} ${fadeClass}`}
         onScroll={e => onListScroll(cat.name, e.currentTarget as HTMLDivElement)}
       >
