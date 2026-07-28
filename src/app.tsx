@@ -92,7 +92,7 @@ export const App = () => {
   const categoryNames = categories.map(c => c.name);
 
   return (
-    <div id="app">
+    <>
       {/* Unified Header */}
       <header class="unifiedHeader">
         <JumpBar
@@ -175,6 +175,6 @@ export const App = () => {
         onConfigChanged={refreshData}
         onOpenImportExport={() => setImportExportOpen(true)}
       />
-    </div>
+    </>
   );
 };

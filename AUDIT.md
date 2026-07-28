@@ -55,7 +55,7 @@
 - [x] 🟠 **Triplicata logica scroll-to-category con doppio scroll a ogni click** — `app.tsx:37-54` + `JumpBar.tsx:39-55` + slug in `ColumnGrid.tsx:321`. Offset `-85` e formula slug duplicati in 3 file; JumpBar fa lo scroll identico dopo che `onSelectCategory` l'ha già fatto.
   **Fix:** util condiviso `scrollToCategory()`/`categorySlug()`; JumpBar notifica soltanto.
 
-- [ ] 🟠 **Duplicato `id="app"` → doppio padding, HTML invalido** — `index.html:11` + `app.tsx:96`. La regola `#app` (global.css:70-79) si applica due volte: doppio padding laterale e bottom.
+- [x] 🟠 **Duplicato `id="app"` → doppio padding, HTML invalido** — `index.html:11` + `app.tsx:96`. La regola `#app` (global.css:70-79) si applica due volte: doppio padding laterale e bottom.
   **Fix:** rimuovere l'id/div interno.
 
 - [ ] 🟠 **Mobile: nessun percorso per edit/remove/reorder/rename** — D&D HTML5 non funziona su touch (ColumnGrid.tsx:192-316), context menu solo right-click, rename solo dblclick, ReorderModal esiste ma **mai renderizzato**. Su mobile si può solo aggiungere.
