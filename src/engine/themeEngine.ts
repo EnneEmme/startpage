@@ -83,6 +83,18 @@ const DEFAULT_THEME_CONFIG: ThemeConfig = {
 
 export class ThemeEngine {
   private config: ThemeConfig;
+  private subscribers: (() => void)[] = [];
+
+  public subscribe(callback: () => void): () => void {
+    this.subscribers.push(callback);
+    return () => {
+      this.subscribers = this.subscribers.filter(cb => cb !== callback);
+    };
+  }
+
+  private notify(): void {
+    this.subscribers.forEach(cb => cb());
+  }
 
   constructor() {
     this.config = this.loadConfig();
@@ -197,6 +209,7 @@ export class ThemeEngine {
   private saveAndApply(): void {
     this.saveConfig(this.config);
     this.applyTheme(this.config);
+    this.notify();
   }
 
   private loadConfig(): ThemeConfig {

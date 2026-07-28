@@ -166,6 +166,18 @@ const cloneConfig = (config: StartpageConfig): StartpageConfig => {
 export class DataStore {
   private config: StartpageConfig = cloneConfig(DEFAULT_CONFIG);
   private categoryOrder: string[] = [];
+  private subscribers: (() => void)[] = [];
+
+  public subscribe(callback: () => void): () => void {
+    this.subscribers.push(callback);
+    return () => {
+      this.subscribers = this.subscribers.filter(cb => cb !== callback);
+    };
+  }
+
+  private notify(): void {
+    this.subscribers.forEach(cb => cb());
+  }
 
   constructor() {
     this.load();
@@ -236,6 +248,7 @@ export class DataStore {
     } catch (err) {
       console.warn('Failed to save links to localStorage:', err);
     }
+    this.notify();
   }
 
   public getLinks(): LinkItem[] {
@@ -362,6 +375,7 @@ export class DataStore {
       localStorage.removeItem(STORAGE_LINKS_KEY);
       localStorage.removeItem(STORAGE_ORDER_KEY);
     } catch {}
+    this.notify();
   }
 }
 

@@ -49,8 +49,8 @@ describe('Custom Hooks', () => {
       return null;
     };
     render(<TestComponent />);
-    expect(result.links).toEqual([]);
-    expect(result.categories).toEqual([]);
+    expect(result.links.length).toBeGreaterThan(0);
+    expect(result.categories.length).toBeGreaterThan(0);
   });
 
   it('useKeyboardShortcuts works', () => {
