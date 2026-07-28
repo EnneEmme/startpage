@@ -48,7 +48,7 @@ export const HeaderClock = ({
       <button
         class={styles.iconBtn}
         onClick={onOpenVisualEdit}
-        title="Add or Edit Links (Shift+N or n)"
+        title="Add or Edit Links (Shift+N)"
       >
         <PenLine size={16} />
       </button>
