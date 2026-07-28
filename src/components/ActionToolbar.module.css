@@ -52,7 +52,7 @@
 
   .floatingBottomNav {
     position: fixed !important;
-    bottom: 1.25rem !important;
+    bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px)) !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     top: auto !important;

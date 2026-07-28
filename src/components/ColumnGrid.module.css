@@ -354,8 +354,9 @@
   font-size: var(--font-size-link, 0.88rem);
   font-weight: 400;
   color: var(--text-primary);
-  user-select: none;
-  -webkit-user-select: none;
+  /* selezionabile: titolo/URL copiabili anche dentro il drag wrapper (none) */
+  user-select: text;
+  -webkit-user-select: text;
   transition: font-size 0.2s ease;
 }
 
