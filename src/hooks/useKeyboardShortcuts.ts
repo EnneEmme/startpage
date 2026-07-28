@@ -11,8 +11,27 @@ interface KeyboardHandlers {
   onSelectCategoryIndex?: (index: number) => void;
 }
 
-export function useKeyboardShortcuts(handlers: KeyboardHandlers, dependencies: any[] = []) {
+interface KeyboardFlags {
+  searchActive?: boolean;
+  modalActive?: boolean;
+}
+
+export function useKeyboardShortcuts(
+  handlers: KeyboardHandlers,
+  flags: KeyboardFlags = {},
+  dependencies: any[] = []
+) {
   const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
+  const { searchActive = false, modalActive = false } = flags;
+
+  // Keep engine state flags in sync so it can gate shortcuts correctly
+  useEffect(() => {
+    keyboardManager.setSearchActive(searchActive);
+  }, [searchActive]);
+
+  useEffect(() => {
+    keyboardManager.setModalActive(modalActive);
+  }, [modalActive]);
 
   useEffect(() => {
     keyboardManager.setHandlers({

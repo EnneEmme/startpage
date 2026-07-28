@@ -146,7 +146,12 @@ export const VisualEditModal = ({
       searchTemplate: isSearchMode && searchTemplate.trim() ? searchTemplate.trim() : undefined
     };
 
-    dataStore.addLink(updatedLink);
+    // Edit must preserve position in column; only true additions go to the end
+    if (isEditing) {
+      dataStore.updateLink(updatedLink);
+    } else {
+      dataStore.addLink(updatedLink);
+    }
     if (onSave) onSave();
     if (onConfigChanged) onConfigChanged();
     onClose();
@@ -160,7 +165,7 @@ export const VisualEditModal = ({
       isOpen={isOpen}
       onClose={onClose}
       title={isEditing ? 'Edit Link' : 'Add New Link'}
-      subtitle="Configura collegamenti, script JS e motori di ricerca"
+      subtitle="Configure links, JS scripts and search engines"
       icon={isEditing ? <Sliders size={18} /> : <Plus size={18} />}
       contentClassName={styles.formContent}
       hideHeader={false}
@@ -182,7 +187,7 @@ export const VisualEditModal = ({
               onClick={() => setActiveTab('web')}
             >
               <Globe size={14} />
-              <span>Sito Web Standard</span>
+              <span>Standard Website</span>
             </button>
             <button
               type="button"
@@ -198,7 +203,7 @@ export const VisualEditModal = ({
               onClick={() => setActiveTab('search')}
             >
               <Search size={14} />
-              <span>Motore di Ricerca</span>
+              <span>Search Engine</span>
             </button>
           </div>
 

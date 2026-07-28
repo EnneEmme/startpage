@@ -13,8 +13,27 @@ export const DEFAULT_PREFIX_RULES: CommandPrefixRule[] = [
   { key: 'yt', name: 'YouTube Search', searchUrlTemplate: 'https://www.youtube.com/results?search_query={q}' },
   { key: 'gh', name: 'GitHub Search', searchUrlTemplate: 'https://github.com/search?q={q}' },
   { key: 'w', name: 'Wikipedia Search', searchUrlTemplate: 'https://wikipedia.org/w/index.php?search={q}' },
-  { key: 'ddg', name: 'DuckDuckGo Search', searchUrlTemplate: 'https://duckduckgo.com/?q={q}' }
+  { key: 'ddg', name: 'DuckDuckGo Search', searchUrlTemplate: 'https://duckduckgo.com/?q={q}' },
+  { key: 'b', name: 'Bing Search', searchUrlTemplate: 'https://www.bing.com/search?q={q}' }
 ];
+
+const GOOGLE_FALLBACK_RULE: CommandPrefixRule = DEFAULT_PREFIX_RULES[0] ?? {
+  key: 'g',
+  name: 'Google Search',
+  searchUrlTemplate: 'https://www.google.com/search?q={q}'
+};
+
+/**
+ * Resolves a plain web search URL for the configured default engine.
+ * Falls back to Google when the key is unknown (e.g. legacy stored values).
+ */
+export const getEngineFallback = (engineKey: string, query: string): { name: string; url: string } => {
+  const rule = DEFAULT_PREFIX_RULES.find(r => r.key === engineKey) ?? GOOGLE_FALLBACK_RULE;
+  return {
+    name: rule.name.replace(/\s+Search$/, ''),
+    url: rule.searchUrlTemplate.replace('{q}', encodeURIComponent(query))
+  };
+};
 
 export interface ParsedCommand {
   isPrefixCommand: boolean;

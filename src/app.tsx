@@ -9,10 +9,13 @@ import {
   ImportExportModal, 
   VisualEditModal, 
   SettingsModal, 
-  MobileBottomNav 
+  MobileBottomNav,
+  ReorderModal,
+  Toast,
+  ConfirmDialog
 } from './components';
 import { LinkItem } from './types/startpage';
-import { dataStore } from './engine';
+import { dataStore, scrollToCategory, scrollToTop } from './engine';
 
 // Custom Hooks
 import { useModals, useSettings, useKeyboardShortcuts } from './hooks';
@@ -29,6 +32,7 @@ export const App = () => {
     importExportOpen, setImportExportOpen,
     visualEditOpen, setVisualEditOpen,
     settingsOpen, setSettingsOpen,
+    reorderOpen, setReorderOpen,
     editTargetLink, setEditTargetLink,
     isAnyModalOpen,
     closeAllModals
@@ -39,17 +43,10 @@ export const App = () => {
     if (catName) {
       setHighlightedCategory(catName);
       setTimeout(() => setHighlightedCategory(null), 1400);
-
-      const columnId = `column-${catName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
-      const targetEl = document.getElementById(columnId);
-      if (targetEl) {
-        const yOffset = -85;
-        const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
+      scrollToCategory(catName);
     } else {
       setHighlightedCategory(null);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToTop();
     }
   };
 
@@ -62,24 +59,30 @@ export const App = () => {
     },
     onCloseModals: closeAllModals,
     onOpenCheatsheet: () => {
-      setSearchOpen(false);
+      // Never stack a modal over another one: toggle only when nothing else is open
+      if (searchOpen || importExportOpen || visualEditOpen || settingsOpen) return;
       setCheatsheetOpen((prev) => !prev);
     },
     onOpenVisualEdit: () => {
+      if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen || settingsOpen) return;
       setEditTargetLink(null);
       setVisualEditOpen(true);
     },
     onOpenSettings: () => {
-      setSearchOpen(false);
+      if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen) return;
       setSettingsOpen((prev) => !prev);
     },
     onSelectCategoryIndex: (index: number) => {
+      if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen || settingsOpen) return;
       const currentCats = dataStore.getCategories();
       if (index >= 0 && index < currentCats.length) {
         handleSelectCategory(currentCats[index].name);
       }
     }
-  }, [cheatsheetOpen, importExportOpen, visualEditOpen, settingsOpen]);
+  }, {
+    searchActive: searchOpen,
+    modalActive: isAnyModalOpen
+  }, [searchOpen, cheatsheetOpen, importExportOpen, visualEditOpen, settingsOpen]);
 
   useEffect(() => {
     refreshData();
@@ -93,7 +96,7 @@ export const App = () => {
   const categoryNames = categories.map(c => c.name);
 
   return (
-    <div id="app">
+    <>
       {/* Unified Header */}
       <header class="unifiedHeader">
         <JumpBar
@@ -124,6 +127,7 @@ export const App = () => {
           showShortcuts={showShortcuts}
           onEditLink={handleEditLinkFromContext}
           onConfigChanged={refreshData}
+          onOpenReorder={() => setReorderOpen(true)}
         />
       </main>
 
@@ -176,6 +180,17 @@ export const App = () => {
         onConfigChanged={refreshData}
         onOpenImportExport={() => setImportExportOpen(true)}
       />
-    </div>
+
+      <ReorderModal
+        isOpen={reorderOpen}
+        categories={categoryNames}
+        onClose={() => setReorderOpen(false)}
+        onConfigChanged={refreshData}
+      />
+
+      {/* Global feedback overlays */}
+      <Toast />
+      <ConfirmDialog />
+    </>
   );
 };

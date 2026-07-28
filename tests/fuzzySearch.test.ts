@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { FuzzySearchEngine } from '../src/engine/fuzzySearch';
+import { FuzzySearchEngine, getEngineFallback } from '../src/engine/fuzzySearch';
 import { LinkItem } from '../src/types/startpage';
 
 describe('FuzzySearchEngine & Edge Cases', () => {
@@ -74,5 +74,33 @@ describe('FuzzySearchEngine & Edge Cases', () => {
     const emptyEngine = new FuzzySearchEngine();
     emptyEngine.setLinks([]);
     expect(emptyEngine.search('test')).toEqual([]);
+  });
+});
+
+describe('getEngineFallback (default web search engine)', () => {
+  it('builds the URL from the configured engine key', () => {
+    expect(getEngineFallback('ddg', 'meteo milano')).toEqual({
+      name: 'DuckDuckGo',
+      url: 'https://duckduckgo.com/?q=meteo%20milano'
+    });
+    expect(getEngineFallback('b', 'test')).toEqual({
+      name: 'Bing',
+      url: 'https://www.bing.com/search?q=test'
+    });
+    expect(getEngineFallback('g', 'test')).toEqual({
+      name: 'Google',
+      url: 'https://www.google.com/search?q=test'
+    });
+  });
+
+  it('falls back to Google for unknown or legacy keys', () => {
+    expect(getEngineFallback('*', 'x').url).toContain('google.com');
+    expect(getEngineFallback('', 'x').url).toContain('google.com');
+  });
+
+  it('encodes special characters in the query', () => {
+    expect(getEngineFallback('g', 'c++ & co').url).toBe(
+      `https://www.google.com/search?q=${encodeURIComponent('c++ & co')}`
+    );
   });
 });

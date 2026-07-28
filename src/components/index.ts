@@ -1,5 +1,6 @@
 export * from './CheatsheetModal';
 export * from './ColumnGrid';
+export * from './ConfirmDialog';
 export * from './ContextMenu';
 export * from './HeaderClock';
 export * from './ImportExportModal';
@@ -9,6 +10,7 @@ export * from './MobileBottomNav';
 export * from './ReorderModal';
 export * from './SearchModal';
 export * from './SettingsModal';
+export * from './Toast';
 export * from './VisualEditModal';
 export * from './Widgets/LazyWidget';
 export * from './modals/Modal';

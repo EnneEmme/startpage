@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DataStore, DEFAULT_CONFIG } from '../src/engine/dataStore';
+import { DataStore, DEFAULT_CONFIG, sanitizeLinkItem } from '../src/engine/dataStore';
+import { rankStorage } from '../src/engine/rankStorage';
 import { LinkItem } from '../src/types/startpage';
 
 describe('DataStore Engine & Edge Cases', () => {
@@ -111,5 +112,64 @@ describe('DataStore Engine & Edge Cases', () => {
     localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: links }));
     const secondLoad = new DataStore();
     expect(secondLoad.getLinks()[0].category).toBe('LLMs 2');
+  });
+
+  it('edits a link in place preserving its position in the category column', () => {
+    const social = dataStore.getCategories().find(c => c.name === 'Social')!;
+    const firstId = social.links[0].id;
+    const edited = { ...social.links[0], title: 'Renamed First' };
+
+    dataStore.updateLink(edited);
+
+    const after = dataStore.getCategories().find(c => c.name === 'Social')!;
+    expect(after.links[0].id).toBe(firstId);
+    expect(after.links[0].title).toBe('Renamed First');
+  });
+
+  it('sanitizeLinkItem drops unrecoverable entries and fills defaults', () => {
+    expect(sanitizeLinkItem(null)).toBeNull();
+    expect(sanitizeLinkItem(42)).toBeNull();
+    expect(sanitizeLinkItem({ title: 'No Id', url: 'https://x.com' })).toBeNull();
+    expect(sanitizeLinkItem({ id: 'x', url: 'https://x.com' })).toBeNull();
+
+    const clean = sanitizeLinkItem({ id: 'x', title: 'X', url: 'https://x.com', aliases: 'not-an-array' });
+    expect(clean).not.toBeNull();
+    expect(clean!.aliases).toEqual([]);
+    expect(clean!.category).toBe('General');
+  });
+
+  it('sanitizes malformed items coming from localStorage instead of crashing', () => {
+    const malformed = [
+      { id: 'ok', title: 'Ok', url: 'https://ok.com' }, // missing aliases -> []
+      { id: 'broken-no-url', title: 'Broken' },          // dropped
+      'not-an-object',                                    // dropped
+      { id: 'ok2', title: 'Ok2', url: 'https://ok2.com', aliases: ['a', 7, 'b'] } // aliases filtered
+    ];
+    localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: malformed }));
+
+    const store = new DataStore();
+    const links = store.getLinks();
+    expect(links.map(l => l.id)).toEqual(['ok', 'ok2']);
+    expect(links[0].aliases).toEqual([]);
+    expect(links[1].aliases).toEqual(['a', 'b']);
+  });
+
+  it('export includes rank data and import restores it', () => {
+    rankStorage.clear();
+    rankStorage.recordUsage('mail');
+    rankStorage.recordUsage('mail');
+
+    const exported = dataStore.exportJson();
+    expect(exported).toContain('"ranks"');
+    expect(exported).toContain('"mail"');
+
+    rankStorage.clear();
+    expect(rankStorage.getRankBonus('mail')).toBe(0);
+
+    const success = dataStore.importJson(exported);
+    expect(success).toBe(true);
+    expect(rankStorage.getRankData()['mail'].clicks).toBe(2);
+
+    rankStorage.clear();
   });
 });

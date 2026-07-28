@@ -37,49 +37,49 @@
 
 ## P1 — BUG FUNZIONALI & UX CORE
 
-- [ ] 🟠 **Enter/frecce preventDefault in TUTTI gli input/textarea** — `keyboardManager.ts:107-119`: impossibile submit con Enter in VisualEditModal, impossibile a-capo in `jsonTextarea` (ImportExportModal.tsx:112) e ScriptEditor, caret bloccato. I handler `onNavigateSearch` non sono mai registrati → pura perdita.
+- [x] 🟠 **Enter/frecce preventDefault in TUTTI gli input/textarea** — `keyboardManager.ts:107-119`: impossibile submit con Enter in VisualEditModal, impossibile a-capo in `jsonTextarea` (ImportExportModal.tsx:112) e ScriptEditor, caret bloccato. I handler `onNavigateSearch` non sono mai registrati → pura perdita.
   **Fix:** intercettare solo con search aperta, escludere TEXTAREA, frecce/Enter solo in SearchModal.
 
-- [ ] 🟠 **Shortcut globali attive con modale aperta → modali impilati** — `modalActive`/`setModalActive` (keyboardManager.ts:37-43) mai usati: con Settings aperto, `n` apre VisualEdit sopra, `?` apre Cheatsheet sopra → doppio overlay, doppio `id="modal-title"` (HTML invalido), Esc chiude tutto insieme. Tasti 1-9 scrollano dietro il modale.
+- [x] 🟠 **Shortcut globali attive con modale aperta → modali impilati** — `modalActive`/`setModalActive` (keyboardManager.ts:37-43) mai usati: con Settings aperto, `n` apre VisualEdit sopra, `?` apre Cheatsheet sopra → doppio overlay, doppio `id="modal-title"` (HTML invalido), Esc chiude tutto insieme. Tasti 1-9 scrollano dietro il modale.
   **Fix:** filtrare tutti gli handler quando `isAnyModalOpen` (tranne Esc/toggle corrente).
 
-- [ ] 🟠 **Setting "Motore di Ricerca Predefinito" completamente finto** — `SettingsModal.tsx:220-250` permette la scelta, ma il fallback search è Google hardcoded in `SearchModal.tsx:146,270`. Il tipo include `'b'` (Bing) senza regola in `fuzzySearch.ts:11-17` né bottone UI. Doppio campo concorrente mai letto: `StartpageConfig.defaultSearchEngine` (types:29).
+- [x] 🟠 **Setting "Motore di Ricerca Predefinito" completamente finto** — `SettingsModal.tsx:220-250` permette la scelta, ma il fallback search è Google hardcoded in `SearchModal.tsx:146,270`. Il tipo include `'b'` (Bing) senza regola in `fuzzySearch.ts:11-17` né bottone UI. Doppio campo concorrente mai letto: `StartpageConfig.defaultSearchEngine` (types:29).
   **Fix:** leggere `themeConfig.defaultSearchEngine` nel fallback (mappato su DEFAULT_PREFIX_RULES), implementare o rimuovere Bing, eliminare campo duplicato.
 
-- [ ] 🟠 **Edit di un link lo sposta in fondo alla colonna** — `dataStore.ts:338-342` (`addLink` = filter+push) usato per l'edit da `VisualEditModal/index.tsx:156`.
+- [x] 🟠 **Edit di un link lo sposta in fondo alla colonna** — `dataStore.ts:338-342` (`addLink` = filter+push) usato per l'edit da `VisualEditModal/index.tsx:156`.
   **Fix:** update in-place per id, preservando l'indice.
 
-- [ ] 🟠 **`fuzzySearch` crasha su item malformati (import/corruzione)** — `fuzzySearch.ts:132,148-149` accede a `item.aliases.find` senza guard; né `load()` né `importJson()` normalizzano i singoli item. `load()` ha `catch {}` unico che ingoia tutto (dataStore.ts:241).
+- [x] 🟠 **`fuzzySearch` crasha su item malformati (import/corruzione)** — `fuzzySearch.ts:132,148-149` accede a `item.aliases.find` senza guard; né `load()` né `importJson()` normalizzano i singoli item. `load()` ha `catch {}` unico che ingoia tutto (dataStore.ts:241).
   **Fix:** `sanitizeLinkItem()` (default `aliases: []`, url/category validati) applicata a load e import; warning su entry scartate.
 
-- [ ] 🟠 **Triplicata logica scroll-to-category con doppio scroll a ogni click** — `app.tsx:37-54` + `JumpBar.tsx:39-55` + slug in `ColumnGrid.tsx:321`. Offset `-85` e formula slug duplicati in 3 file; JumpBar fa lo scroll identico dopo che `onSelectCategory` l'ha già fatto.
+- [x] 🟠 **Triplicata logica scroll-to-category con doppio scroll a ogni click** — `app.tsx:37-54` + `JumpBar.tsx:39-55` + slug in `ColumnGrid.tsx:321`. Offset `-85` e formula slug duplicati in 3 file; JumpBar fa lo scroll identico dopo che `onSelectCategory` l'ha già fatto.
   **Fix:** util condiviso `scrollToCategory()`/`categorySlug()`; JumpBar notifica soltanto.
 
-- [ ] 🟠 **Duplicato `id="app"` → doppio padding, HTML invalido** — `index.html:11` + `app.tsx:96`. La regola `#app` (global.css:70-79) si applica due volte: doppio padding laterale e bottom.
+- [x] 🟠 **Duplicato `id="app"` → doppio padding, HTML invalido** — `index.html:11` + `app.tsx:96`. La regola `#app` (global.css:70-79) si applica due volte: doppio padding laterale e bottom.
   **Fix:** rimuovere l'id/div interno.
 
-- [ ] 🟠 **Mobile: nessun percorso per edit/remove/reorder/rename** — D&D HTML5 non funziona su touch (ColumnGrid.tsx:192-316), context menu solo right-click, rename solo dblclick, ReorderModal esiste ma **mai renderizzato**. Su mobile si può solo aggiungere.
+- [x] 🟠 **Mobile: nessun percorso per edit/remove/reorder/rename** — D&D HTML5 non funziona su touch (ColumnGrid.tsx:192-316), context menu solo right-click, rename solo dblclick, ReorderModal esiste ma **mai renderizzato**. Su mobile si può solo aggiungere.
   **Fix:** bottom-sheet azioni su long-press (`@media (hover:none)`), montare ReorderModal, edit via tap.
 
-- [ ] 🟠 **`navigator.clipboard` non protetto** — `ImportExportModal.tsx:31-35`: su `file://` o http LAN (scenario tipico single-file) è `undefined` → TypeError al click "Copy". `confirm()` nativi (ImportExportModal.tsx:64, ContextMenu.tsx:53) bloccanti e non temabili.
+- [x] 🟠 **`navigator.clipboard` non protetto** — `ImportExportModal.tsx:31-35`: su `file://` o http LAN (scenario tipico single-file) è `undefined` → TypeError al click "Copy". `confirm()` nativi (ImportExportModal.tsx:64, ContextMenu.tsx:53) bloccanti e non temabili.
   **Fix:** feature-detect + fallback `execCommand`; dialog custom di conferma.
 
-- [ ] 🟠 **ContextMenu: posizionamento e chiusura** — `ContextMenu.tsx:80-81`: clamp magic 190/220, submenu apre sempre a destra (fuori schermo al bordo), non si chiude su scroll/resize/right-click altrove, il click di chiusura attiva anche l'elemento sottostante; `onClose()` fuori dall'if del confirm (riga 53-56: chiude anche se annulli).
+- [x] 🟠 **ContextMenu: posizionamento e chiusura** — `ContextMenu.tsx:80-81`: clamp magic 190/220, submenu apre sempre a destra (fuori schermo al bordo), non si chiude su scroll/resize/right-click altrove, il click di chiusura attiva anche l'elemento sottostante; `onClose()` fuori dall'if del confirm (riga 53-56: chiude anche se annulli).
   **Fix:** misura con ref post-mount, flip submenu, chiusura su contextmenu/scroll/resize in capture phase.
 
-- [ ] 🟠 **SearchModal: ricerca eseguita a ogni render + lista senza cap** — `SearchModal.tsx:57-60,223-261`: `search()` a ogni render (hover incluso), nessun `slice`, nessun `memo` sulle row, `resolveDynamicUrl` ricalcolato per riga → rischio typing lag (viola gemini.md §4).
+- [x] 🟠 **SearchModal: ricerca eseguita a ogni render + lista senza cap** — `SearchModal.tsx:57-60,223-261`: `search()` a ogni render (hover incluso), nessun `slice`, nessun `memo` sulle row, `resolveDynamicUrl` ricalcolato per riga → rischio typing lag (viola gemini.md §4).
   **Fix:** `useMemo` su query/links, `slice(0,10)`, `SearchResultRow` con `memo()`.
 
-- [ ] 🟠 **`handleWheel` custom dannoso in ColumnGrid** — `ColumnGrid.tsx:108-120`: scroll-trap a fine colonna (la pagina non scrolla più), jank su trackpad; `overscroll-behavior: contain` (CSS:158) già sufficiente.
+- [x] 🟠 **`handleWheel` custom dannoso in ColumnGrid** — `ColumnGrid.tsx:108-120`: scroll-trap a fine colonna (la pagina non scrolla più), jank su trackpad; `overscroll-behavior: contain` (CSS:158) già sufficiente.
   **Fix:** rimuovere l'handler JS.
 
-- [ ] 🟠 **Nessun feedback sulle azioni (no toast/undo)** — Remove link istantaneo e irreversibile; rename/move/import/reset senza conferma visiva.
+- [x] 🟠 **Nessun feedback sulle azioni (no toast/undo)** — Remove link istantaneo e irreversibile; rename/move/import/reset senza conferma visiva.
   **Fix:** snackbar/toast con Undo dopo le mutazioni.
 
-- [ ] 🟠 **Backup/restore asimmetrico** — `dataStore.exportJson` (349-354) non include i rank, ma `ImportExportModal.handleResetDefaults` (63-70) li cancella.
+- [x] 🟠 **Backup/restore asimmetrico** — `dataStore.exportJson` (349-354) non include i rank, ma `ImportExportModal.handleResetDefaults` (63-70) li cancella.
   **Fix:** includere `rankStorage.getRankData()` in export/import.
 
-- [ ] 🟠 **LinkIcon: retry propaga il click al link padre** — `LinkIcon.tsx:70-77`: span-retry dentro `<a>` senza `preventDefault`/`stopPropagation` → cliccando "ricarica icona" si naviga.
+- [x] 🟠 **LinkIcon: retry propaga il click al link padre** — `LinkIcon.tsx:70-77`: span-retry dentro `<a>` senza `preventDefault`/`stopPropagation` → cliccando "ricarica icona" si naviga.
   **Fix:** bloccare propagazione; rendere lo span un `<button>` (a11y).
 
 ---
@@ -150,7 +150,7 @@
 - [ ] 🟡 **Context menu inaccessibile da tastiera** — no `role="menu"/"menuitem"`, no roving tabindex, no tasto Menu/Shift+F10, focus non entra nel menu.
   **Fix:** pattern ARIA menu completo.
 
-- [ ] 🟡 **`lang="en"` (index.html:2) con UI in gran parte italiana** — screen reader legge IT con fonetica EN; copy misto IT/EN ovunque (Settings IT, Search EN, Modal close "Close"/"Chiudi (Esc)").
+- [x] 🟡 **`lang="en"` (index.html:2) con UI in gran parte italiana** — screen reader legge IT con fonetica EN; copy misto IT/EN ovunque (Settings IT, Search EN, Modal close "Close"/"Chiudi (Esc)").
   **Fix:** scegliere una lingua o dizionario stringhe centralizzato; `lang` coerente.
 
 - [ ] 🟡 **Reduced motion solo CSS** — scroll JS `behavior:'smooth'` (app.tsx:48,52, JumpBar, ColumnGrid:147) ignora `prefers-reduced-motion`.
@@ -310,7 +310,7 @@
 
 - [ ] ⚪ **Inline styles sparsi** — app.tsx:120, ScriptEditor:14, FormFields:169-176, ghost drag (giustificato), ambra ×2. Spostare in CSS/token.
 
-- [ ] ⚪ **i18n misto IT/EN** — centralizzare stringhe se si vuole coerenza.
+- [x] ⚪ **i18n misto IT/EN** — centralizzare stringhe se si vuole coerenza.
 
 - [ ] ⚪ **Scrollbar solo `-webkit`** — global.css:51-67: Firefox mostra scrollbar nativa chiara; manca `scrollbar-color`.
 

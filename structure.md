@@ -36,6 +36,8 @@ startpage/
 │   │   ├── rankStorage.ts     # Usage counter & recency scoring engine
       │   ├── iconResolver.ts    # Multi-tier icon resolution (Lucide / Images / Favicon API)
 │   │   ├── keyboardManager.ts # Global keystroke listener & shortcuts dispatcher
+│   │   ├── categoryScroll.ts  # Category column DOM ids & smooth scroll helpers (shared)
+│   │   ├── clipboard.ts       # Defensive clipboard write (legacy execCommand fallback)
 │   │   └── cheatsheetData.ts  # Shortcuts cheatsheet data registry
 │   │
 │   ├── components/            # Preact Functional UI Components
@@ -59,7 +61,17 @@ startpage/
 │   │   ├── ImportExportModal.tsx # JSON backup/sync import & export modal
 │   │   ├── ImportExportModal.module.css
 │   │   ├── VisualEditModal.tsx# Custom dark link creator modal with category picker & JS script mode
-│   │   └── VisualEditModal.module.css
+│   │   ├── VisualEditModal.module.css
+│   │   ├── Toast.tsx          # Global snackbar host (feedback + Undo actions)
+│   │   ├── Toast.module.css
+│   │   ├── ConfirmDialog.tsx  # Global themed confirm dialog host (replaces native confirm)
+│   │   └── ConfirmDialog.module.css
+│   │
+│   ├── stores/                # Preact Signals shared state layer
+│   │   ├── appStore.ts        # links/categories signals synced with dataStore
+│   │   ├── settingsStore.ts   # theme config signal synced with themeEngine
+│   │   ├── toastStore.ts      # Transient toast/snackbar queue signal
+│   │   └── confirmStore.ts    # Promise-based confirm dialog signal
 │   │
 │   ├── types/                 # TypeScript Type Definitions
 │   │   └── startpage.ts       # Interfaces for LinkItem, CategoryGroup, SearchResult, ThemeConfig, etc.
@@ -82,5 +94,6 @@ startpage/
     ├── searchModal.test.tsx
     ├── dragDrop.test.ts
     ├── reorderModal.test.tsx
+    ├── categoryScroll.test.ts
     └── integrationFlow.test.tsx
 ```

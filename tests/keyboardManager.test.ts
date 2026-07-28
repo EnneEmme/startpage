@@ -8,6 +8,7 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     onCloseModals: vi.fn(),
     onOpenCheatsheet: vi.fn(),
     onOpenVisualEdit: vi.fn(),
+    onOpenSettings: vi.fn(),
     onSelectCategoryIndex: vi.fn(),
     onSelectQuickResult: vi.fn(),
     onNavigateSearch: vi.fn()
@@ -112,7 +113,8 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     expect(mockHandlers.onOpenSearch).not.toHaveBeenCalled();
   });
 
-  it('handles navigation keys (ArrowUp, ArrowDown, Enter) when inside input', () => {
+  it('handles navigation keys (ArrowUp, ArrowDown, Enter) when search is active', () => {
+    keyboardManager.setSearchActive(true);
     const inputEl = document.createElement('input');
     const downEvent = new KeyboardEvent('keydown', { key: 'ArrowDown' });
     Object.defineProperty(downEvent, 'target', { value: inputEl });
@@ -129,6 +131,73 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     Object.defineProperty(enterEvent, 'target', { value: inputEl });
     keyboardManager.handleKeyDown(enterEvent);
     expect(mockHandlers.onNavigateSearch).toHaveBeenCalledWith('enter');
+  });
+
+  it('leaves Enter and arrows native in inputs when search is NOT active (forms must submit)', () => {
+    const inputEl = document.createElement('input');
+    const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true });
+    Object.defineProperty(enterEvent, 'target', { value: inputEl });
+
+    keyboardManager.handleKeyDown(enterEvent);
+    expect(mockHandlers.onNavigateSearch).not.toHaveBeenCalled();
+    expect(enterEvent.defaultPrevented).toBe(false);
+
+    const downEvent = new KeyboardEvent('keydown', { key: 'ArrowDown', cancelable: true });
+    Object.defineProperty(downEvent, 'target', { value: inputEl });
+    keyboardManager.handleKeyDown(downEvent);
+    expect(downEvent.defaultPrevented).toBe(false);
+  });
+
+  it('never intercepts navigation keys inside a TEXTAREA (newlines/caret must work)', () => {
+    keyboardManager.setSearchActive(true);
+    const textareaEl = document.createElement('textarea');
+    const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true });
+    Object.defineProperty(enterEvent, 'target', { value: textareaEl });
+
+    keyboardManager.handleKeyDown(enterEvent);
+    expect(mockHandlers.onNavigateSearch).not.toHaveBeenCalled();
+    expect(enterEvent.defaultPrevented).toBe(false);
+  });
+
+  it('suspends page shortcuts while a modal is active, except modal toggle keys', () => {
+    keyboardManager.setModalActive(true);
+
+    // type-to-search char must NOT open search behind a modal
+    const charEvent = new KeyboardEvent('keydown', { key: 'g' });
+    keyboardManager.handleKeyDown(charEvent);
+    expect(mockHandlers.onOpenSearch).not.toHaveBeenCalled();
+
+    // Shift+digit category jump must NOT fire behind a modal
+    const shift2 = new KeyboardEvent('keydown', { key: '"', code: 'Digit2', shiftKey: true });
+    keyboardManager.handleKeyDown(shift2);
+    expect(mockHandlers.onSelectCategoryIndex).not.toHaveBeenCalled();
+
+    // modal toggle keys still reach handlers (app decides stacking vs toggle)
+    const questionEvent = new KeyboardEvent('keydown', { key: '?' });
+    keyboardManager.handleKeyDown(questionEvent);
+    expect(mockHandlers.onOpenCheatsheet).toHaveBeenCalledTimes(1);
+
+    const commaEvent = new KeyboardEvent('keydown', { key: ',', cancelable: true });
+    keyboardManager.handleKeyDown(commaEvent);
+    // comma is a toggle key: it passes the gate and reaches its handler
+    expect(mockHandlers.onOpenSettings).toHaveBeenCalledTimes(1);
+    expect(commaEvent.defaultPrevented).toBe(true);
+
+    // Escape still closes everything
+    const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+    keyboardManager.handleKeyDown(escEvent);
+    expect(mockHandlers.onCloseModals).toHaveBeenCalledTimes(1);
+  });
+
+  it('typing in an input inside a modal is never treated as a page shortcut', () => {
+    keyboardManager.setModalActive(true);
+    const inputEl = document.createElement('input');
+    const charEvent = new KeyboardEvent('keydown', { key: 'g' });
+    Object.defineProperty(charEvent, 'target', { value: inputEl });
+
+    keyboardManager.handleKeyDown(charEvent);
+    expect(mockHandlers.onOpenSearch).not.toHaveBeenCalled();
+    expect(charEvent.defaultPrevented).toBe(false);
   });
 
   it('attaches and detaches window event listener safely', () => {

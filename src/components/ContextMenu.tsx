@@ -1,9 +1,15 @@
 import { h } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
-import { Edit3, Trash2, ArrowUp, ArrowDown, Folder } from 'lucide-preact';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { Edit3, Trash2, ArrowUp, ArrowDown, Folder, Move } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
 import {  dataStore  } from '../engine';
+import { confirmDialog } from '../stores/confirmStore';
 import styles from './ContextMenu.module.css';
+
+/** Gap (px) kept between menu and viewport edges when clamping */
+const VIEWPORT_GAP = 8;
+/** Approx submenu width + gap, used only to decide flip direction pre-paint */
+const SUBMENU_FOOTPRINT = 165;
 
 interface ContextMenuProps {
   x: number;
@@ -13,6 +19,7 @@ interface ContextMenuProps {
   onEdit: (link: LinkItem) => void;
   onRemove: (linkId: string) => void;
   onConfigChanged: () => void;
+  onReorderColumns?: (() => void) | undefined;
 }
 
 export const ContextMenu = ({
@@ -22,21 +29,39 @@ export const ContextMenu = ({
   onClose,
   onEdit,
   onRemove,
-  onConfigChanged
+  onConfigChanged,
+  onReorderColumns
 }: ContextMenuProps) => {
   const [showCategorySubmenu, setShowCategorySubmenu] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState<{ left: number; top: number }>({ left: x, top: y });
+  const [submenuOpensLeft, setSubmenuOpensLeft] = useState<boolean>(false);
+
+  // Measure the real rendered size (no magic 190/220 clamps) and keep the
+  // menu fully inside the viewport before paint.
+  useLayoutEffect(() => {
+    const el = menuRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const left = Math.max(VIEWPORT_GAP, Math.min(x, window.innerWidth - rect.width - VIEWPORT_GAP));
+    const top = Math.max(VIEWPORT_GAP, Math.min(y, window.innerHeight - rect.height - VIEWPORT_GAP));
+    setPosition({ left, top });
+    setSubmenuOpensLeft(left + rect.width + SUBMENU_FOOTPRINT > window.innerWidth);
+  }, [x, y]);
 
   useEffect(() => {
-    const handleOutsideClick = () => onClose();
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
 
-    window.addEventListener('click', handleOutsideClick);
     window.addEventListener('keydown', handleKeyDown);
+    // capture phase: any scroll (also inside columns) or window resize closes the menu
+    window.addEventListener('scroll', onClose, true);
+    window.addEventListener('resize', onClose);
     return () => {
-      window.removeEventListener('click', handleOutsideClick);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('scroll', onClose, true);
+      window.removeEventListener('resize', onClose);
     };
   }, [onClose]);
 
@@ -50,10 +75,18 @@ export const ContextMenu = ({
 
   const handleRemoveClick = (e: MouseEvent) => {
     e.stopPropagation();
-    if (confirm(`Are you sure you want to remove this link?`)) {
-      onRemove(link.id);
-    }
-    onClose();
+    // Cancelling keeps the menu open; removal offers toast-based Undo upstream
+    void confirmDialog({
+      title: 'Remove link',
+      message: `Remove "${link.title}"?`,
+      confirmLabel: 'Remove',
+      danger: true
+    }).then(ok => {
+      if (ok) {
+        onRemove(link.id);
+        onClose();
+      }
+    });
   };
 
   const handleMoveLinkDirection = (e: MouseEvent, direction: 'up' | 'down') => {
@@ -76,16 +109,29 @@ export const ContextMenu = ({
     onClose();
   };
 
-  // Keep menu inside viewport boundaries
-  const adjustedX = Math.min(x, window.innerWidth - 190);
-  const adjustedY = Math.min(y, window.innerHeight - 220);
-
   return (
-    <div
-      class={`${styles.menuContainer} fade-in`}
-      style={{ left: `${adjustedX}px`, top: `${adjustedY}px` }}
-      onClick={e => e.stopPropagation()}
-    >
+    <>
+      {/* Backdrop swallows the dismissing click so it cannot activate
+          whatever element is underneath; also handles right-click elsewhere. */}
+      <div
+        class={styles.menuBackdrop}
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          onClose();
+        }}
+        onContextMenu={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          onClose();
+        }}
+      />
+      <div
+        ref={menuRef}
+        class={`${styles.menuContainer} fade-in`}
+        style={{ left: `${position.left}px`, top: `${position.top}px` }}
+        onClick={e => e.stopPropagation()}
+      >
       <div class={styles.menuHeader}>{link.title}</div>
 
       <button class={styles.menuItem} onClick={handleEditClick}>
@@ -112,7 +158,7 @@ export const ContextMenu = ({
         </button>
 
         {showCategorySubmenu && (
-          <div class={styles.categorySubmenu}>
+          <div class={`${styles.categorySubmenu} ${submenuOpensLeft ? styles.flipLeft : ''}`}>
             {categories.map(cat => (
               <button
                 key={cat}
@@ -126,11 +172,28 @@ export const ContextMenu = ({
         )}
       </div>
 
+      {onReorderColumns && (
+        <>
+          <div class={styles.divider} />
+          <button
+            class={styles.menuItem}
+            onClick={e => {
+              e.stopPropagation();
+              onClose();
+              onReorderColumns();
+            }}
+          >
+            <Move size={15} /> Reorder Columns...
+          </button>
+        </>
+      )}
+
       <div class={styles.divider} />
 
       <button class={`${styles.menuItem} ${styles.danger}`} onClick={handleRemoveClick}>
         <Trash2 size={15} /> Remove Link
       </button>
-    </div>
+      </div>
+    </>
   );
 };

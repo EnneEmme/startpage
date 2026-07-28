@@ -1,3 +1,12 @@
+/* Transparent full-viewport backdrop: swallows the dismissing click so it
+   cannot activate elements below; sits under the menu (z-index 2000). */
+.menuBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1999;
+  background: transparent;
+}
+
 .menuContainer {
   position: fixed;
   z-index: 2000;
@@ -65,6 +74,7 @@
   top: 0;
   left: 100%;
   width: 150px;
+  max-width: calc(100vw - 2rem);
   max-height: 180px;
   overflow-y: auto;
   background: var(--bg-secondary);
@@ -76,6 +86,52 @@
   flex-direction: column;
   gap: 0.15rem;
   z-index: 2010;
+}
+
+/* Open left when the submenu would overflow the right viewport edge */
+.categorySubmenu.flipLeft {
+  left: auto;
+  right: 100%;
+}
+
+/* Touch devices: render the menu as a bottom sheet (no hover, coarse pointer) */
+@media (hover: none), (pointer: coarse) {
+  .menuContainer {
+    left: 0.75rem !important;
+    right: 0.75rem;
+    bottom: 1rem;
+    top: auto !important;
+    width: auto;
+    padding: 0.6rem;
+  }
+
+  .menuItem {
+    padding: 0.8rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .menuHeader {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.9rem;
+  }
+
+  .categorySubmenu {
+    left: 5%;
+    right: 5%;
+    top: auto;
+    bottom: 100%;
+    width: auto;
+  }
+
+  .categorySubmenu.flipLeft {
+    left: 5%;
+    right: 5%;
+  }
+
+  .submenuItem {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.92rem;
+  }
 }
 
 .submenuItem {

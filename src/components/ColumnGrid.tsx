@@ -4,7 +4,8 @@ import { ChevronDown, Zap } from 'lucide-preact';
 import { LinkItem, CategoryGroup } from '../types/startpage';
 import {  dataStore  } from '../engine';
 import {  resolveDynamicUrl  } from '../engine';
-import {  executeLink, isBookmarkletOrScript  } from '../engine';
+import {  executeLink, isBookmarkletOrScript, categoryColumnId  } from '../engine';
+import { showToast } from '../stores/toastStore';
 import { LinkIcon } from './LinkIcon';
 import { ContextMenu } from './ContextMenu';
 import styles from './ColumnGrid.module.css';
@@ -15,6 +16,7 @@ interface ColumnGridProps {
   highlightedCategory?: string | null;
   onConfigChanged?: () => void;
   onEditLink?: (link: LinkItem) => void;
+  onOpenReorder?: () => void;
 }
 
 export const ColumnGrid = ({
@@ -22,13 +24,19 @@ export const ColumnGrid = ({
   showShortcuts,
   highlightedCategory,
   onConfigChanged,
-  onEditLink
+  onEditLink,
+  onOpenReorder
 }: ColumnGridProps) => {
   const [contextMenuState, setContextMenuState] = useState<{
     x: number;
     y: number;
     link: LinkItem;
   } | null>(null);
+
+  // Long-press (touch) gestures open the context menu; the synthetic click
+  // that follows must be swallowed so it does not navigate the link.
+  const longPressTimer = useRef<number | null>(null);
+  const longPressTriggered = useRef<boolean>(false);
 
   // Inline Category Header Rename State
   const [editingCategoryName, setEditingCategoryName] = useState<string | null>(null);
@@ -104,21 +112,6 @@ export const ColumnGrid = ({
     };
   }, [categories]);
 
-  // Isolate mousewheel scrolling to inner column list only
-  const handleWheel = (e: WheelEvent) => {
-    const container = e.currentTarget as HTMLDivElement;
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    const delta = e.deltaY;
-
-    if (delta > 0 && scrollTop + clientHeight >= scrollHeight - 1) {
-      container.scrollTop = scrollHeight;
-      e.preventDefault();
-    } else if (delta < 0 && scrollTop <= 0) {
-      container.scrollTop = 0;
-      e.preventDefault();
-    }
-  };
-
   const updateScrollMasksForColumn = (columnName: string, container: HTMLDivElement) => {
     const { scrollTop, scrollHeight, clientHeight } = container;
     const canScrollUp = scrollTop > 4;
@@ -158,13 +151,41 @@ export const ColumnGrid = ({
     });
   };
 
+  /** Touch long-press (~500ms) opens the context menu: the mobile path to edit/remove/move */
+  const handleTouchStart = (e: TouchEvent, link: LinkItem) => {
+    longPressTriggered.current = false;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const { clientX, clientY } = touch;
+    longPressTimer.current = window.setTimeout(() => {
+      longPressTriggered.current = true;
+      setContextMenuState({ x: clientX, y: clientY, link });
+    }, 500);
+  };
+
+  const cancelLongPress = () => {
+    if (longPressTimer.current !== null) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
+    // Swallow the synthetic click fired right after a long-press gesture
+    if (longPressTriggered.current) {
+      longPressTriggered.current = false;
+      e.preventDefault();
+      return;
+    }
     // executeLink owns all navigation (scripts included): always prevent the
     // native anchor navigation to avoid double navigation. Cmd/Ctrl+click
     // opens in a new tab via window.open (native new-tab default is prevented).
     e.preventDefault();
     executeLink(link, e.metaKey || e.ctrlKey ? '_blank' : '_self');
   };
+
+  // Cleanup any pending long-press timer on unmount
+  useEffect(() => cancelLongPress, []);
 
   const handleHeaderDoubleClick = (e: MouseEvent, categoryName: string) => {
     e.stopPropagation();
@@ -318,7 +339,7 @@ export const ColumnGrid = ({
   return (
     <div class={styles.gridContainer}>
       {categories.map(cat => {
-        const columnId = `column-${cat.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+        const columnId = categoryColumnId(cat.name);
         const isHighlighted = highlightedCategory === cat.name;
         const isDragOver = dragOverCategory === cat.name && !dragOverLinkId;
 
@@ -372,7 +393,6 @@ export const ColumnGrid = ({
             <div
               class={`${styles.linksList} ${fadeClass}`}
               onScroll={e => handleScroll(e, cat.name)}
-              onWheel={handleWheel}
             >
               {cat.links.map((link, linkIdx) => {
                 const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
@@ -405,6 +425,9 @@ export const ColumnGrid = ({
                       draggable={false}
                       onClick={e => handleLinkClick(e, link)}
                       onContextMenu={e => handleContextMenu(e, link)}
+                      onTouchStart={e => handleTouchStart(e, link)}
+                      onTouchEnd={cancelLongPress}
+                      onTouchMove={cancelLongPress}
                     >
                       <div class={styles.iconContainer}>
                         <LinkIcon
@@ -457,12 +480,31 @@ export const ColumnGrid = ({
             if (onEditLink) onEditLink(link);
           }}
           onRemove={linkId => {
+            // Capture the item + its in-category position so removal can be undone
+            const allLinks = dataStore.getLinks();
+            const removedLink = allLinks.find(l => l.id === linkId);
+            const categoryIndex = removedLink
+              ? allLinks.filter(l => l.category === removedLink.category).findIndex(l => l.id === linkId)
+              : -1;
+
             dataStore.removeLink(linkId);
             if (onConfigChanged) onConfigChanged();
+
+            if (removedLink) {
+              showToast(`"${removedLink.title}" removed`, {
+                actionLabel: 'Undo',
+                onAction: () => {
+                  dataStore.addLink(removedLink);
+                  dataStore.moveLink(removedLink.id, removedLink.category, categoryIndex);
+                  if (onConfigChanged) onConfigChanged();
+                }
+              });
+            }
           }}
           onConfigChanged={() => {
             if (onConfigChanged) onConfigChanged();
           }}
+          onReorderColumns={onOpenReorder}
         />
       )}
     </div>
