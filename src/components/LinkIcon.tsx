@@ -1,7 +1,8 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import * as Icons from 'lucide-preact';
+import { Globe } from 'lucide-preact';
 import {  extractDomain, getFaviconCandidates, formatSvgToDataUrl  } from '../engine';
+import { getLucideIcon } from './iconRegistry';
 import styles from './LinkIcon.module.css';
 
 interface LinkIconProps {
@@ -23,8 +24,8 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
   }, [url, iconSpec]);
 
   // If explicit Lucide icon name provided and not a standard url/favicon/svg spec
-  if (iconSpec && iconSpec in Icons && !iconSpec.startsWith('http') && !iconSpec.includes('<svg')) {
-    const IconComponent = (Icons as Record<string, any>)[iconSpec];
+  if (iconSpec && !iconSpec.startsWith('http') && !iconSpec.startsWith('data:') && !iconSpec.includes('<svg')) {
+    const IconComponent = getLucideIcon(iconSpec);
     if (IconComponent) {
       return <IconComponent size={size} class={styles.lucideIcon} />;
     }
@@ -68,10 +69,9 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
   };
 
   if (!domain || imgError || candidateIndex >= candidates.length) {
-    const DefaultGlobe = Icons.Globe;
     return (
       <span onClick={handleRetry} title="Clicca per ricaricare icona" style={{ display: 'inline-flex', cursor: 'pointer' }}>
-        <DefaultGlobe size={size} class={styles.lucideIcon} />
+        <Globe size={size} class={styles.lucideIcon} />
       </span>
     );
   }

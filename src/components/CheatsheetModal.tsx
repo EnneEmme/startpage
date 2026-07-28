@@ -11,9 +11,10 @@ interface CheatsheetModalProps {
 }
 
 export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
-  if (!isOpen) return null;
-
+  // Rules of hooks: all hooks must run before any conditional return.
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  if (!isOpen) return null;
   const shortcutGroups = getDynamicCheatsheetShortcuts();
 
   // Filter shortcuts by search query

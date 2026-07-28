@@ -7,6 +7,8 @@ import type { LinkItem, CategoryGroup, StartpageConfig } from '../types/startpag
 
 const STORAGE_LINKS_KEY = 'startpage_custom_links';
 const STORAGE_ORDER_KEY = 'startpage_category_order';
+const STORAGE_MIGRATIONS_KEY = 'startpage_migrations';
+const MIGRATION_V2 = 'v2_legacy_normalization';
 
 export const ORARI_SCRIPT = `(function() {
   var parseDate = function(date) {
@@ -163,6 +165,35 @@ const cloneConfig = (config: StartpageConfig): StartpageConfig => {
   return JSON.parse(JSON.stringify(config));
 };
 
+/**
+ * One-shot legacy normalization (migration v2):
+ * - merges the old 'LLMs 2'/'LLMs' categories into 'AI & LLMs'
+ * - normalizes the built-in Unimib script links (legacy items identified by
+ *   id or exact default title) so they keep working after refactors.
+ * Idempotent: safe to run on imports of old backups as well.
+ * Returns true when the item was modified.
+ */
+const normalizeLegacyItem = (item: LinkItem): boolean => {
+  let dirty = false;
+  if (item.category === 'LLMs 2' || item.category === 'LLMs') {
+    item.category = 'AI & LLMs';
+    dirty = true;
+  }
+  if (item.id === 'unimib_orari' || item.id === 'orari' || item.title === 'Orari') {
+    item.isScript = true;
+    item.url = 'javascript:updateOrari()';
+    item.scriptContent = ORARI_SCRIPT;
+    dirty = true;
+  }
+  if (item.id === 'unimib_esami' || item.id === 'esami' || item.title === 'Esami') {
+    item.isScript = true;
+    item.url = 'javascript:updateEsami()';
+    item.scriptContent = ESAMI_SCRIPT;
+    dirty = true;
+  }
+  return dirty;
+};
+
 export class DataStore {
   private config: StartpageConfig = cloneConfig(DEFAULT_CONFIG);
   private categoryOrder: string[] = [];
@@ -183,62 +214,64 @@ export class DataStore {
     this.load();
   }
 
+  /**
+   * Loads the persisted configuration.
+   * User data is the source of truth: stored links are NEVER re-sorted to
+   * match DEFAULT_CONFIG order (drag&drop reordering must survive reloads)
+   * and default fields are NEVER force-applied over user edits (renames must
+   * survive reloads). DEFAULT_CONFIG only seeds a fresh install.
+   */
   public load(): void {
     try {
       const stored = localStorage.getItem(STORAGE_LINKS_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && Array.isArray(parsed.commands)) {
-          const defaultOrderMap = new Map<string, number>();
-          DEFAULT_CONFIG.commands.forEach((d, idx) => {
-            defaultOrderMap.set(d.id, idx);
-          });
-
-          parsed.commands.forEach((item: LinkItem) => {
-            const def = DEFAULT_CONFIG.commands.find(d => d.id === item.id);
-            if (def) {
-              item.title = def.title;
-              item.category = def.category;
-              if (def.searchPath) item.searchPath = def.searchPath;
-              if (def.searchTemplate) item.searchTemplate = def.searchTemplate;
-              if (def.isScript) {
-                item.isScript = true;
-                item.scriptContent = def.scriptContent;
-                item.url = def.url;
-              }
-              if (def.aliases && def.aliases.length > 0) {
-                item.aliases = def.aliases;
-              }
-            }
-            if (item.category === 'LLMs 2' || item.category === 'LLMs') {
-              item.category = 'AI & LLMs';
-            }
-            if (item.id === 'unimib_orari' || item.id === 'orari' || item.title === 'Orari') {
-              item.isScript = true;
-              item.url = 'javascript:updateOrari()';
-              item.scriptContent = ORARI_SCRIPT;
-            }
-            if (item.id === 'unimib_esami' || item.id === 'esami' || item.title === 'Esami') {
-              item.isScript = true;
-              item.url = 'javascript:updateEsami()';
-              item.scriptContent = ESAMI_SCRIPT;
-            }
-          });
-
-          parsed.commands.sort((a: LinkItem, b: LinkItem) => {
-            const idxA = defaultOrderMap.has(a.id) ? defaultOrderMap.get(a.id)! : 999;
-            const idxB = defaultOrderMap.has(b.id) ? defaultOrderMap.get(b.id)! : 999;
-            return idxA - idxB;
-          });
-
           this.config = parsed;
         }
       }
       const storedOrder = localStorage.getItem(STORAGE_ORDER_KEY);
       if (storedOrder) {
-        this.categoryOrder = JSON.parse(storedOrder);
+        const parsedOrder = JSON.parse(storedOrder);
+        if (Array.isArray(parsedOrder)) {
+          this.categoryOrder = parsedOrder;
+        }
       }
-    } catch {}
+    } catch (err) {
+      console.warn('[DataStore] Failed to load stored configuration, falling back to defaults:', err);
+    }
+    this.runMigrations();
+  }
+
+  /**
+   * Applies one-shot data migrations, tracked via a flag in localStorage so
+   * each migration runs exactly once per profile (idempotent per version key).
+   */
+  private runMigrations(): void {
+    let done: Record<string, boolean> = {};
+    try {
+      const raw = localStorage.getItem(STORAGE_MIGRATIONS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') done = parsed;
+      }
+    } catch (err) {
+      console.warn('[DataStore] Failed to read migration flags:', err);
+    }
+
+    if (!done[MIGRATION_V2]) {
+      let dirty = false;
+      this.config.commands.forEach(item => {
+        if (normalizeLegacyItem(item)) dirty = true;
+      });
+      done[MIGRATION_V2] = true;
+      try {
+        localStorage.setItem(STORAGE_MIGRATIONS_KEY, JSON.stringify(done));
+      } catch (err) {
+        console.warn('[DataStore] Failed to persist migration flags:', err);
+      }
+      if (dirty) this.save();
+    }
   }
 
   public save(): void {
@@ -358,10 +391,13 @@ export class DataStore {
       const parsed = JSON.parse(jsonString);
       if (parsed && Array.isArray(parsed.commands)) {
         this.config = parsed;
+        // Old backups may contain legacy categories/scripts: normalize on import
+        this.config.commands.forEach(normalizeLegacyItem);
         this.save();
         return true;
       } else if (parsed && parsed.config && Array.isArray(parsed.config.commands)) {
         this.config = parsed.config;
+        this.config.commands.forEach(normalizeLegacyItem);
         if (Array.isArray(parsed.categoryOrder)) {
           this.categoryOrder = parsed.categoryOrder;
         }

@@ -1,8 +1,8 @@
 /**
  * Global Keyboard Manager & Shortcuts Engine
  * Handles keystroke listeners, input field filtering, shortcuts cheatsheet triggers,
- * search auto-activation on typing, shortcut view toggle mode, link creation shortcut (Shift+N / n),
- * and numerical category selection (1..9).
+ * search auto-activation on typing, shortcut view toggle mode, link creation shortcut (Shift+N),
+ * and numerical category selection (Shift+1..9).
  */
 
 export interface KeyboardActionHandlers {
@@ -63,41 +63,15 @@ export class KeyboardManager {
     }
 
     // Toggle Shortcuts View mode: 'Alt' key tap, or 'Shift+Space'
+    // (checked before the modifier guard since the Alt keydown itself may carry altKey)
     if (!isInput && (e.key === 'Alt' || (e.shiftKey && e.key === ' '))) {
       e.preventDefault();
       this.handlers.onToggleShortcutsView?.();
       return;
     }
 
-    // Shortcut to open Settings Modal: ',' (comma) key outside inputs
-    if (!isInput && e.key === ',') {
-      e.preventDefault();
-      this.handlers.onOpenSettings?.();
-      return;
-    }
-
-    // Shortcut to Create New Link: Shift+N or 'n' key outside inputs
-    if (!isInput && ((e.shiftKey && (e.key === 'N' || e.key === 'n')) || e.key === 'n')) {
-      e.preventDefault();
-      this.handlers.onOpenVisualEdit?.();
-      return;
-    }
-
-    // Category Quick-Select Badges (1..9) when outside input fields
-    if (!isInput && e.key >= '1' && e.key <= '9') {
-      e.preventDefault();
-      const index = parseInt(e.key, 10) - 1;
-      this.handlers.onSelectCategoryIndex?.(index);
-      this.handlers.onSelectQuickResult?.(index);
-      return;
-    }
-
-    // Interactive Cheatsheet trigger: '?' (Shift+/), F1, or Cmd+/ / Ctrl+/
-    if (
-      (!isInput && e.key === '?') ||
-      e.key === 'F1' ||
-      ((e.metaKey || e.ctrlKey) && e.key === '/')
-    ) {
+    // Explicit modifier combo kept: Cmd+/ / Ctrl+/ opens cheatsheet
+    if ((e.metaKey || e.ctrlKey) && e.key === '/') {
       e.preventDefault();
       this.handlers.onOpenCheatsheet?.();
       return;
@@ -118,12 +92,47 @@ export class KeyboardManager {
       return;
     }
 
-    // Single key press outside input fields
-    // Ignore modifier combinations (Ctrl, Alt, Meta)
-    if (e.ctrlKey || e.altKey || e.metaKey) return;
+    // From here on: bare keys only. Any Ctrl/Meta/Alt combination belongs to
+    // the browser (Ctrl+1-9 tab switch, Ctrl+L, Ctrl+C, ...) and is never intercepted.
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-    // Single printable character (length == 1) auto-opens search
-    if (e.key.length === 1 && e.key !== ' ' && e.key.toLowerCase() !== 'n' && e.key !== ',') {
+    // Interactive Cheatsheet trigger: '?' (Shift+/) or F1
+    if (e.key === '?' || e.key === 'F1') {
+      e.preventDefault();
+      this.handlers.onOpenCheatsheet?.();
+      return;
+    }
+
+    // Shortcut to open Settings Modal: ',' (comma) key
+    if (e.key === ',') {
+      e.preventDefault();
+      this.handlers.onOpenSettings?.();
+      return;
+    }
+
+    // Shortcut to Create New Link: Shift+N (plain 'n' must stay free for type-to-search)
+    if (e.shiftKey && (e.key === 'N' || e.key === 'n')) {
+      e.preventDefault();
+      this.handlers.onOpenVisualEdit?.();
+      return;
+    }
+
+    // Category Quick-Select Badges: Shift+digit (plain digits are now
+    // type-to-search characters, so queries like "3d" must be possible).
+    // e.code ('Digit1'..'Digit9') is layout-independent (Shift+2 is '"' on IT, '@' on US).
+    if (e.shiftKey && /^Digit[1-9]$/.test(e.code)) {
+      e.preventDefault();
+      const idx = parseInt(e.code.slice(5), 10) - 1;
+      this.handlers.onSelectCategoryIndex?.(idx);
+      this.handlers.onSelectQuickResult?.(idx);
+      return;
+    }
+
+    // Single printable character auto-opens search ('n', digits, '/' included).
+    // preventDefault blocks Firefox quick-find on '/' and any other native
+    // single-key browser behavior for intercepted characters.
+    if (e.key.length === 1 && e.key !== ' ' && e.key !== ',') {
+      e.preventDefault();
       this.handlers.onOpenSearch?.(e.key);
     }
   }

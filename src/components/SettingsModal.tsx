@@ -18,9 +18,10 @@ export const SettingsModal = ({
   onConfigChanged,
   onOpenImportExport
 }: SettingsModalProps) => {
-  if (!isOpen) return null;
-
+  // Rules of hooks: all hooks must run before any conditional return.
   const [config, setConfig] = useState<ThemeConfig>(themeEngine.getConfig());
+
+  if (!isOpen) return null;
 
   const handleSelectAccent = (colorId: string) => {
     themeEngine.setAccentColor(colorId);

@@ -57,4 +57,19 @@ describe('LinkExecutor Engine', () => {
 
     windowSpy.mockRestore();
   });
+
+  it('returns true when navigation is handled, false when there is nothing to do', () => {
+    const windowSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+    const normalLink: LinkItem = { id: '10', title: 'GitHub', url: 'https://github.com', aliases: [], category: 'Main' };
+    const emptyLink: LinkItem = { id: '11', title: 'Empty', url: '', aliases: [], category: 'Main' };
+
+    expect(executeLink(normalLink, '_blank')).toBe(true);
+    expect(windowSpy).toHaveBeenCalledWith('https://github.com', '_blank', 'noopener,noreferrer');
+
+    expect(executeLink(emptyLink)).toBe(false);
+    expect(executeLink(undefined as unknown as LinkItem)).toBe(false);
+
+    windowSpy.mockRestore();
+  });
 });
