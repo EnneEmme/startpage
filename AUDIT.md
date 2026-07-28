@@ -46,10 +46,10 @@
 - [x] 🟠 **Setting "Motore di Ricerca Predefinito" completamente finto** — `SettingsModal.tsx:220-250` permette la scelta, ma il fallback search è Google hardcoded in `SearchModal.tsx:146,270`. Il tipo include `'b'` (Bing) senza regola in `fuzzySearch.ts:11-17` né bottone UI. Doppio campo concorrente mai letto: `StartpageConfig.defaultSearchEngine` (types:29).
   **Fix:** leggere `themeConfig.defaultSearchEngine` nel fallback (mappato su DEFAULT_PREFIX_RULES), implementare o rimuovere Bing, eliminare campo duplicato.
 
-- [ ] 🟠 **Edit di un link lo sposta in fondo alla colonna** — `dataStore.ts:338-342` (`addLink` = filter+push) usato per l'edit da `VisualEditModal/index.tsx:156`.
+- [x] 🟠 **Edit di un link lo sposta in fondo alla colonna** — `dataStore.ts:338-342` (`addLink` = filter+push) usato per l'edit da `VisualEditModal/index.tsx:156`.
   **Fix:** update in-place per id, preservando l'indice.
 
-- [ ] 🟠 **`fuzzySearch` crasha su item malformati (import/corruzione)** — `fuzzySearch.ts:132,148-149` accede a `item.aliases.find` senza guard; né `load()` né `importJson()` normalizzano i singoli item. `load()` ha `catch {}` unico che ingoia tutto (dataStore.ts:241).
+- [x] 🟠 **`fuzzySearch` crasha su item malformati (import/corruzione)** — `fuzzySearch.ts:132,148-149` accede a `item.aliases.find` senza guard; né `load()` né `importJson()` normalizzano i singoli item. `load()` ha `catch {}` unico che ingoia tutto (dataStore.ts:241).
   **Fix:** `sanitizeLinkItem()` (default `aliases: []`, url/category validati) applicata a load e import; warning su entry scartate.
 
 - [ ] 🟠 **Triplicata logica scroll-to-category con doppio scroll a ogni click** — `app.tsx:37-54` + `JumpBar.tsx:39-55` + slug in `ColumnGrid.tsx:321`. Offset `-85` e formula slug duplicati in 3 file; JumpBar fa lo scroll identico dopo che `onSelectCategory` l'ha già fatto.
@@ -76,7 +76,7 @@
 - [ ] 🟠 **Nessun feedback sulle azioni (no toast/undo)** — Remove link istantaneo e irreversibile; rename/move/import/reset senza conferma visiva.
   **Fix:** snackbar/toast con Undo dopo le mutazioni.
 
-- [ ] 🟠 **Backup/restore asimmetrico** — `dataStore.exportJson` (349-354) non include i rank, ma `ImportExportModal.handleResetDefaults` (63-70) li cancella.
+- [x] 🟠 **Backup/restore asimmetrico** — `dataStore.exportJson` (349-354) non include i rank, ma `ImportExportModal.handleResetDefaults` (63-70) li cancella.
   **Fix:** includere `rankStorage.getRankData()` in export/import.
 
 - [ ] 🟠 **LinkIcon: retry propaga il click al link padre** — `LinkIcon.tsx:70-77`: span-retry dentro `<a>` senza `preventDefault`/`stopPropagation` → cliccando "ricarica icona" si naviga.

@@ -4,6 +4,7 @@
  */
 
 import type { LinkItem, CategoryGroup, StartpageConfig } from '../types/startpage';
+import { rankStorage } from './rankStorage';
 
 const STORAGE_LINKS_KEY = 'startpage_custom_links';
 const STORAGE_ORDER_KEY = 'startpage_category_order';
@@ -165,6 +166,57 @@ const cloneConfig = (config: StartpageConfig): StartpageConfig => {
 };
 
 /**
+ * Validates and normalizes a single link item coming from storage or an
+ * imported backup. Returns null for unrecoverable entries (missing identity
+ * fields); otherwise fills safe defaults (aliases, category) so downstream
+ * code (fuzzy search, grid) never crashes on malformed data.
+ */
+export const sanitizeLinkItem = (raw: unknown): LinkItem | null => {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const item = raw as Partial<LinkItem>;
+
+  if (typeof item.id !== 'string' || !item.id.trim()) return null;
+  if (typeof item.title !== 'string' || !item.title.trim()) return null;
+  if (typeof item.url !== 'string' || !item.url.trim()) return null;
+
+  return {
+    id: item.id,
+    title: item.title,
+    url: item.url,
+    aliases: Array.isArray(item.aliases)
+      ? item.aliases.filter((a): a is string => typeof a === 'string' && a.trim().length > 0)
+      : [],
+    category: typeof item.category === 'string' && item.category.trim() ? item.category : 'General',
+    ...(typeof item.icon === 'string' ? { icon: item.icon } : {}),
+    ...(typeof item.color === 'string' ? { color: item.color } : {}),
+    ...(typeof item.searchPath === 'string' ? { searchPath: item.searchPath } : {}),
+    ...(typeof item.searchTemplate === 'string' ? { searchTemplate: item.searchTemplate } : {}),
+    ...(typeof item.dynamicUrlRule === 'string' ? { dynamicUrlRule: item.dynamicUrlRule } : {}),
+    ...(typeof item.quickLaunch === 'boolean' ? { quickLaunch: item.quickLaunch } : {}),
+    ...(typeof item.isScript === 'boolean' ? { isScript: item.isScript } : {}),
+    ...(typeof item.scriptContent === 'string' ? { scriptContent: item.scriptContent } : {})
+  };
+};
+
+const sanitizeCommands = (raw: unknown, source: string): LinkItem[] => {
+  if (!Array.isArray(raw)) return [];
+  const clean: LinkItem[] = [];
+  let dropped = 0;
+  for (const entry of raw) {
+    const item = sanitizeLinkItem(entry);
+    if (item) {
+      clean.push(item);
+    } else {
+      dropped++;
+    }
+  }
+  if (dropped > 0) {
+    console.warn(`[DataStore] Discarded ${dropped} malformed link(s) from ${source}`);
+  }
+  return clean;
+};
+
+/**
  * One-shot legacy normalization (migration v2):
  * - merges the old 'LLMs 2'/'LLMs' categories into 'AI & LLMs'
  * - normalizes the built-in Unimib script links (legacy items identified by
@@ -226,7 +278,7 @@ export class DataStore {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && Array.isArray(parsed.commands)) {
-          this.config = parsed;
+          this.config = { commands: sanitizeCommands(parsed.commands, 'localStorage') };
         }
       }
       const storedOrder = localStorage.getItem(STORAGE_ORDER_KEY);
@@ -373,6 +425,21 @@ export class DataStore {
     this.save();
   }
 
+  /**
+   * In-place update for edits: replaces the item by id preserving its
+   * position in the master list (addLink would push it to the end and thus
+   * to the bottom of its category column).
+   */
+  public updateLink(link: LinkItem): void {
+    const idx = this.config.commands.findIndex(l => l.id === link.id);
+    if (idx === -1) {
+      this.config.commands.push(link);
+    } else {
+      this.config.commands[idx] = link;
+    }
+    this.save();
+  }
+
   public removeLink(linkId: string): void {
     this.config.commands = this.config.commands.filter(l => l.id !== linkId);
     this.save();
@@ -381,25 +448,34 @@ export class DataStore {
   public exportJson(): string {
     return JSON.stringify({
       config: this.config,
-      categoryOrder: this.categoryOrder
+      categoryOrder: this.categoryOrder,
+      ranks: rankStorage.getRankData()
     }, null, 2);
   }
 
   public importJson(jsonString: string): boolean {
+    const applyRanks = (candidate: unknown) => {
+      if (candidate && typeof candidate === 'object' && !Array.isArray(candidate)) {
+        rankStorage.importRankData(candidate as Parameters<typeof rankStorage.importRankData>[0]);
+      }
+    };
+
     try {
       const parsed = JSON.parse(jsonString);
       if (parsed && Array.isArray(parsed.commands)) {
-        this.config = parsed;
+        this.config = { commands: sanitizeCommands(parsed.commands, 'import') };
         // Old backups may contain legacy categories/scripts: normalize on import
         this.config.commands.forEach(normalizeLegacyItem);
+        applyRanks(parsed.ranks);
         this.save();
         return true;
       } else if (parsed && parsed.config && Array.isArray(parsed.config.commands)) {
-        this.config = parsed.config;
+        this.config = { commands: sanitizeCommands(parsed.config.commands, 'import') };
         this.config.commands.forEach(normalizeLegacyItem);
         if (Array.isArray(parsed.categoryOrder)) {
-          this.categoryOrder = parsed.categoryOrder;
+          this.categoryOrder = parsed.categoryOrder.filter((c: unknown): c is string => typeof c === 'string');
         }
+        applyRanks(parsed.ranks);
         this.save();
         return true;
       }

@@ -146,7 +146,12 @@ export const VisualEditModal = ({
       searchTemplate: isSearchMode && searchTemplate.trim() ? searchTemplate.trim() : undefined
     };
 
-    dataStore.addLink(updatedLink);
+    // Edit must preserve position in column; only true additions go to the end
+    if (isEditing) {
+      dataStore.updateLink(updatedLink);
+    } else {
+      dataStore.addLink(updatedLink);
+    }
     if (onSave) onSave();
     if (onConfigChanged) onConfigChanged();
     onClose();
