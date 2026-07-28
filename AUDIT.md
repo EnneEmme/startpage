@@ -4,7 +4,7 @@
 > Ogni voce è una checkbox: spuntala quando il fix è completato e verificato.
 > **Regole (da gemini.md):** dopo ogni fix → `bun run test` verde, aggiorna `structure.md`/`TODO.md` se cambiano file, commit Conventional Commits.
 >
-> **Stato attuale misurato (post-P0/P1/P2 + batch P3-CSS):** 23 file test / 121 test PASS · `tsc --noEmit` = **0 errori** · `dist/index.html` = **254 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati + 5 item P3 CSS/a11y + 1 P4: 40/99 spuntati.
+> **Stato attuale misurato (post-P0/P1/P2 + batch P3-CSS):** 23 file test / 123 test PASS · `tsc --noEmit` = **0 errori** · `dist/index.html` = **254 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati + 5 item P3 CSS/a11y + 2 P4: 41/99 spuntati.
 
 **Legenda severità:** 🔴 critica · 🟠 alta · 🟡 media · ⚪ bassa
 
@@ -189,8 +189,8 @@
 
 ## P4 — PERFORMANCE
 
-- [ ] 🟠 **Waterfall favicon all'avvio: fino a ~720 richieste** — iconResolver.ts:54-82 (6 candidati/dominio) × ~120 link, retry con cache-bust su tutta la catena, nessuna persistenza dominio→candidato, `sz=128` per icone 18px, nessun `referrerpolicy`. Privacy: telemetria implicita a Google/icon.horse/DDG.
-  **Fix:** cache localStorage `domain→candidateIndex`, catena ridotta a 2-3, `sz=64`, referrerPolicy, IntersectionObserver.
+- [x] 🟠 **Waterfall favicon all'avvio: fino a ~720 richieste** — iconResolver.ts:54-82 (6 candidati/dominio) × ~120 link, retry con cache-bust su tutta la catena, nessuna persistenza dominio→candidato, `sz=128` per icone 18px, nessun `referrerpolicy`. Privacy: telemetria implicita a Google/icon.horse/DDG.
+  **Fix:** cache localStorage `domain→candidateIndex`, catena ridotta a 2-3, `sz=64`, referrerPolicy, IntersectionObserver. ✅ Fatto (cache+3 tier+sz=64+no-referrer); IntersectionObserver non necessario (img già loading=lazy).
 
 - [ ] 🟠 **ColumnGrid: re-render intera griglia a 60fps durante dragover** — `ColumnGrid.tsx:228-260`: setState per pointermove → re-render ~120 card + LinkIcon non memoized.
   **Fix:** `LinkRow`/`ColumnCard` memoized o stato drag in signals/ref + classi DOM imperative.
