@@ -159,11 +159,11 @@ export const ColumnGrid = ({
   };
 
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
-    // Intercept JS scripts & bookmarklets
-    const handled = executeLink(link);
-    if (handled) {
-      e.preventDefault();
-    }
+    // executeLink owns all navigation (scripts included): always prevent the
+    // native anchor navigation to avoid double navigation. Cmd/Ctrl+click
+    // opens in a new tab via window.open (native new-tab default is prevented).
+    e.preventDefault();
+    executeLink(link, e.metaKey || e.ctrlKey ? '_blank' : '_self');
   };
 
   const handleHeaderDoubleClick = (e: MouseEvent, categoryName: string) => {

@@ -39,9 +39,13 @@ export const extractScriptCode = (link: LinkItem): string => {
  * Central Link Executor:
  * Resolves dynamic URLs (Unimib orari/esami & dates), records usage ranking,
  * and either executes JS bookmarklets or navigates to standard web URLs.
+ *
+ * Returns `true` when the click was fully handled (navigation performed or
+ * script executed) so the caller must `preventDefault()` on the anchor to
+ * avoid double navigation. Returns `false` when there was nothing to do.
  */
-export const executeLink = (link: LinkItem, targetWindow: '_blank' | '_self' = '_self'): void => {
-  if (!link) return;
+export const executeLink = (link: LinkItem, targetWindow: '_blank' | '_self' = '_self'): boolean => {
+  if (!link) return false;
 
   // Record usage click
   rankStorage.recordUsage(link.id);
@@ -64,7 +68,7 @@ export const executeLink = (link: LinkItem, targetWindow: '_blank' | '_self' = '
         console.error('[LinkExecutor] Fallback script execution error:', fallbackErr);
       }
     }
-    return;
+    return true;
   }
 
   // 3. Standard / Dynamic Web URL navigation
@@ -74,5 +78,8 @@ export const executeLink = (link: LinkItem, targetWindow: '_blank' | '_self' = '
     } else {
       window.location.href = targetUrl;
     }
+    return true;
   }
+
+  return false;
 };
