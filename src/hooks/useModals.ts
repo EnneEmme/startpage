@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { LinkItem } from '../types/startpage';
+import type { LinkItem } from '../types/startpage';
 
 export function useModals() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false);

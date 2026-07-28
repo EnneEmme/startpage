@@ -3,7 +3,7 @@
  * Handles links configuration, category grouping, custom category ordering, category renaming, precise link reordering/insertion, dynamic link rules, and localStorage persistence.
  */
 
-import { LinkItem, CategoryGroup, StartpageConfig } from '../types/startpage';
+import type { LinkItem, CategoryGroup, StartpageConfig } from '../types/startpage';
 
 const STORAGE_LINKS_KEY = 'startpage_custom_links';
 const STORAGE_ORDER_KEY = 'startpage_category_order';
@@ -293,8 +293,12 @@ export class DataStore {
 
     if (typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex < targetCategoryLinks.length) {
       const referenceLink = targetCategoryLinks[targetIndex];
-      const insertMasterIndex = this.config.commands.indexOf(referenceLink);
-      this.config.commands.splice(insertMasterIndex, 0, draggedLink);
+      if (referenceLink) {
+        const insertMasterIndex = this.config.commands.indexOf(referenceLink);
+        this.config.commands.splice(insertMasterIndex, 0, draggedLink);
+      } else {
+        this.config.commands.push(draggedLink);
+      }
     } else {
       this.config.commands.push(draggedLink);
     }
@@ -309,7 +313,7 @@ export class DataStore {
       if (!groupsMap[cat]) {
         groupsMap[cat] = [];
       }
-      groupsMap[cat].push(link);
+      groupsMap[cat]?.push(link);
     });
 
     const categoryNames = Object.keys(groupsMap);
@@ -327,7 +331,7 @@ export class DataStore {
 
     return categoryNames.map(categoryName => ({
       name: categoryName,
-      links: groupsMap[categoryName]
+      links: groupsMap[categoryName] ?? []
     }));
   }
 

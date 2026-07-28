@@ -1,4 +1,4 @@
-import { h, ComponentChildren } from 'preact';
+import type { ComponentChildren } from 'preact';
 import { useEffect } from 'preact/hooks';
 import { X } from 'lucide-preact';
 import styles from './Modal.module.css';

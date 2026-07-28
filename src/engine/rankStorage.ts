@@ -3,7 +3,7 @@
  * Manages link click counts and usage timestamps in localStorage to boost frequently & recently used links.
  */
 
-import { RankItem } from '../types/startpage';
+import type { RankItem } from '../types/startpage';
 
 const STORAGE_KEY = 'startpage_ranks';
 

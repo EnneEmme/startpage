@@ -37,10 +37,10 @@ export interface RankItem {
 
 export interface SearchResult {
   item: LinkItem;
-  score?: number;
+  score?: number | undefined;
   rankBonus: number;
   finalScore: number;
-  matchedAlias?: string;
+  matchedAlias?: string | undefined;
 }
 
 export interface CommandPrefixRule {

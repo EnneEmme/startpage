@@ -5,7 +5,7 @@
  */
 
 import Fuse from 'fuse.js';
-import { LinkItem, SearchResult, CommandPrefixRule } from '../types/startpage';
+import type { LinkItem, SearchResult, CommandPrefixRule } from '../types/startpage';
 import { rankStorage } from './rankStorage';
 
 export const DEFAULT_PREFIX_RULES: CommandPrefixRule[] = [

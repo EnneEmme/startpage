@@ -3,7 +3,7 @@
  * Handles opening standard URLs, dynamic Unimib course/exam links, and executing custom JavaScript bookmarklets.
  */
 
-import { LinkItem } from '../types/startpage';
+import type { LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from './dynamicEvaluator';
 import { rankStorage } from './rankStorage';
 

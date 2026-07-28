@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { LinkItem, CategoryGroup } from '../types/startpage';
+import type { LinkItem, CategoryGroup } from '../types/startpage';
 
 export function useDragAndDrop() {
   const [draggingCategory, setDraggingCategory] = useState<CategoryGroup | null>(null);

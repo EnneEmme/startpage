@@ -1,6 +1,6 @@
 import { signal, computed } from '@preact/signals';
 import {  dataStore  } from '../engine';
-import { LinkItem, CategoryGroup } from '../types/startpage';
+import type { LinkItem, CategoryGroup } from '../types/startpage';
 
 export const linksSignal = signal<LinkItem[]>(dataStore.getLinks());
 export const categoriesSignal = signal<CategoryGroup[]>(dataStore.getCategories());
