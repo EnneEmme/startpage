@@ -4,7 +4,7 @@
 > Ogni voce è una checkbox: spuntala quando il fix è completato e verificato.
 > **Regole (da gemini.md):** dopo ogni fix → `bun run test` verde, aggiorna `structure.md`/`TODO.md` se cambiano file, commit Conventional Commits.
 >
-> **Stato attuale misurato (post-P0/P1/P2 + batch P3-CSS):** 23 file test / 123 test PASS · `tsc --noEmit` = **0 errori** · `dist/index.html` = **254 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati + 5 item P3 CSS/a11y + 2 P4: 41/99 spuntati.
+> **Stato attuale misurato (post-P0/P1/P2 + batch P3-CSS):** 23 file test / 123 test PASS · `tsc --noEmit` = **0 errori** · `dist/index.html` = **254 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati + 5 item P3 CSS/a11y + 2 P4 + 3 checkbox stantie spuntate (tsc 0, LazyWidget purged, app.tsx guard): 49/99 spuntati.
 
 **Legenda severità:** 🔴 critica · 🟠 alta · 🟡 media · ⚪ bassa
 
@@ -212,7 +212,7 @@
 
 ## P5 — BUILD, TOOLING & TEST
 
-- [ ] 🔴 **100 errori `tsc --noEmit`, nessuno script li esegue** — tsconfig strict (verbatimModuleSyntax, exactOptionalPropertyTypes, noUncheckedIndexedAccess, noUnusedLocals) non enforced. Include: TS6133 `h`/import morti ovunque, TS2307 tutti i `*.module.css` (manca `vite-env.d.ts` con `/// <reference types="vite/client" />`), `spellCheck` inesistente su input (SearchModal:171), void-truthiness ColumnGrid:164, possibly-undefined in dataStore:290/themeEngine:147-150/fuzzySearch:189, test non tipizzati (signalsStore.test.ts:16).
+- [x] 🔴 **100 errori `tsc --noEmit`, nessuno script li esegue** — tsconfig strict (verbatimModuleSyntax, exactOptionalPropertyTypes, noUncheckedIndexedAccess, noUnusedLocals) non enforced. Include: TS6133 `h`/import morti ovunque, TS2307 tutti i `*.module.css` (manca `vite-env.d.ts` con `/// <reference types="vite/client" />`), `spellCheck` inesistente su input (SearchModal:171), void-truthiness ColumnGrid:164, possibly-undefined in dataStore:290/themeEngine:147-150/fuzzySearch:189, test non tipizzati (signalsStore.test.ts:16).
   **Fix:** aggiungere `"typecheck": "tsc --noEmit"` + `src/vite-env.d.ts`; azzerare errori o rilassare mirati `noUncheckedIndexedAccess`/`exactOptionalPropertyTypes`.
 
 - [x] 🟠 **Script `test` fragile** — `package.json:10`: path hardcoded `./node_modules/vitest/vitest.mjs`. Mancano script `typecheck`, `coverage`, `lint`.
@@ -317,12 +317,12 @@
 - [ ] ⚪ **`.linkRow:hover translateX(2px)` jitter + `transition` su `display`** — ColumnGrid.module.css:328-331: traslazione hover può jitterare su colonne strette; :373-375 transition su proprietà non animabile.
   **Fix:** hover solo su background/shadow; rimuovere transition inutile.
 
-- [ ] ⚪ **LazyWidget: `requestIdleCallback`/timeout non cancellati nel cleanup** — LazyWidget.tsx:16-35: setState possibile su componente smontato. (Nota: componente attualmente dead code — se eliminato, item chiuso; se integrato, fixare.)
+- [x] ⚪ **LazyWidget: `requestIdleCallback`/timeout non cancellati nel cleanup** — LazyWidget.tsx:16-35: setState possibile su componente smontato. (Nota: componente attualmente dead code — se eliminato, item chiuso; se integrato, fixare.)
 
 - [ ] 🟡 **Tipi `any`/cast su tutto il perimetro icone Lucide** — `useDragAndDrop.ts:9` (`item: any`), `useKeyboardShortcuts.ts:14` (`any[]`), `VisualEditModal/index.tsx:16-22` (`icon: any`, `Record<string, any>`), `FormFields.tsx:21` (`filteredIcons: any[]`), `LinkIcon.tsx:27` (`Record<string, any>`), `LazyWidget.tsx:7-8`. Lo strict mode è vanificato in questi punti.
   **Fix:** tipare con `LucideIcon` / `ComponentType<{size?: number; class?: string}>` (si risolve naturalmente col registry statico del P0 lucide).
 
-- [ ] ⚪ **`app.tsx:79` `currentCats[index]` possibly undefined** — incluso nei 100 errori tsc, da risolvere col fix typecheck (guard indice su jump categoria).
+- [x] ⚪ **`app.tsx:79` `currentCats[index]` possibly undefined** — incluso nei 100 errori tsc, da risolvere col fix typecheck (guard indice su jump categoria). ✅ Risolto col typecheck 0 (P2).
 
 ---
 
