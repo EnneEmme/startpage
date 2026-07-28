@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import { ChevronDown } from 'lucide-preact';
 import type { LinkItem, CategoryGroup } from '../types/startpage';
-import { executeLink } from '../engine';
+import { executeLink, scrollBehavior } from '../engine';
 import { appActions, linksSignal, showToast } from '../stores';
 import { useDragAndDrop, useContextMenu, useColumnScrollMasks } from '../hooks';
 import { CategoryColumn } from './CategoryColumn';
@@ -59,7 +59,7 @@ export const ColumnGrid = ({
   const scrollToNextPageRow = () => {
     window.scrollTo({
       top: window.innerHeight - 100,
-      behavior: 'smooth'
+      behavior: scrollBehavior()
     });
   };
 

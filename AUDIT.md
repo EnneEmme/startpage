@@ -153,8 +153,8 @@
 - [x] 🟡 **`lang="en"` (index.html:2) con UI in gran parte italiana** — screen reader legge IT con fonetica EN; copy misto IT/EN ovunque (Settings IT, Search EN, Modal close "Close"/"Chiudi (Esc)").
   **Fix:** scegliere una lingua o dizionario stringhe centralizzato; `lang` coerente.
 
-- [ ] 🟡 **Reduced motion solo CSS** — scroll JS `behavior:'smooth'` (app.tsx:48,52, JumpBar, ColumnGrid:147) ignora `prefers-reduced-motion`.
-  **Fix:** gate JS con `matchMedia`.
+- [x] 🟡 **Reduced motion solo CSS** — scroll JS `behavior:'smooth'` (app.tsx:48,52, JumpBar, ColumnGrid:147) ignora `prefers-reduced-motion`.
+  **Fix:** gate JS con `matchMedia`. ✅ Fatto: `scrollBehavior()`/`prefersReducedMotion()` in categoryScroll (window.scrollTo gateato; scrollIntoView resta istantaneo).
 
 - [ ] 🟡 **AutoFocus sparsi e orchestrazione focus assente** — 5 autoFocus (SearchInput, Cheatsheet, rename, icon picker, new-category) + focus manuali duplicati (SearchModal:39-51).
   **Fix:** strategia unica gestita da Modal.

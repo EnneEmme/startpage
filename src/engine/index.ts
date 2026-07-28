@@ -1,7 +1,7 @@
 // Explicit public API of the engine layer (no `export *` — collisions and
 // accidental surface area are compile-time visible instead of silent).
 
-export { categorySlug, categoryColumnId, scrollToCategory, scrollToTop } from './categoryScroll';
+export { categorySlug, categoryColumnId, scrollToCategory, scrollToTop, prefersReducedMotion, scrollBehavior } from './categoryScroll';
 export { BASE_CHEATSHEET_SHORTCUTS, CHEATSHEET_SHORTCUTS, getDynamicCheatsheetShortcuts } from './cheatsheetData';
 export type { ShortcutGroup } from './cheatsheetData';
 export { copyTextToClipboard } from './clipboard';
