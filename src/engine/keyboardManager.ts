@@ -7,7 +7,6 @@
 
 export interface KeyboardActionHandlers {
   onOpenSearch?: (initialChar?: string) => void;
-  onCloseModals?: () => void;
   onOpenCheatsheet?: () => void;
   onOpenVisualEdit?: () => void;
   onOpenSettings?: () => void;
@@ -48,12 +47,8 @@ export class KeyboardManager {
   public handleKeyDown(e: KeyboardEvent): void {
     const isInput = this.isTypingInInput(e.target);
 
-    // Escape always closes search & modals
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      this.handlers.onCloseModals?.();
-      return;
-    }
+    // Escape is intentionally NOT handled here: each UI layer owns it
+    // (Modal closes itself, ContextMenu closes itself, inputs unwind locally).
 
     // With any modal open, page-level shortcuts are suspended: only keys that
     // toggle a modal ('?', F1, ',', Shift+N) reach the handlers — app-level

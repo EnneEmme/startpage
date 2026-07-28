@@ -60,7 +60,6 @@ export const App = () => {
 
   const { showShortcuts } = useKeyboardShortcuts({
     onOpenSearch: (char?: string) => handleOpenSearch(char || ''),
-    onCloseModals: closeModal,
     onOpenCheatsheet: () => toggleModalExclusive('cheatsheet'),
     onOpenVisualEdit: () => openVisualEdit(null),
     onOpenSettings: () => toggleModalExclusive('settings'),

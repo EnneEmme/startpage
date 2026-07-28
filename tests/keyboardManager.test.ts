@@ -5,7 +5,6 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
   let keyboardManager: KeyboardManager;
   const mockHandlers = {
     onOpenSearch: vi.fn(),
-    onCloseModals: vi.fn(),
     onOpenCheatsheet: vi.fn(),
     onOpenVisualEdit: vi.fn(),
     onOpenSettings: vi.fn(),
@@ -27,10 +26,10 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     expect(keyboardManager.isTypingInInput(divEl)).toBe(false);
   });
 
-  it('triggers onCloseModals when Escape key is pressed', () => {
-    const event = new KeyboardEvent('keydown', { key: 'Escape' });
+  it('does not handle Escape (each UI layer owns its own Escape)', () => {
+    const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
     keyboardManager.handleKeyDown(event);
-    expect(mockHandlers.onCloseModals).toHaveBeenCalledTimes(1);
+    expect(event.defaultPrevented).toBe(false);
   });
 
   it('triggers onOpenCheatsheet when ?, F1, or Ctrl+/ is pressed', () => {
@@ -169,11 +168,6 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     // comma is a toggle key: it passes the gate and reaches its handler
     expect(mockHandlers.onOpenSettings).toHaveBeenCalledTimes(1);
     expect(commaEvent.defaultPrevented).toBe(true);
-
-    // Escape still closes everything
-    const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
-    keyboardManager.handleKeyDown(escEvent);
-    expect(mockHandlers.onCloseModals).toHaveBeenCalledTimes(1);
   });
 
   it('typing in an input inside a modal is never treated as a page shortcut', () => {

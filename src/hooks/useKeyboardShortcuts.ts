@@ -3,7 +3,6 @@ import { keyboardManager } from '../engine';
 
 interface KeyboardHandlers {
   onOpenSearch?: (char?: string) => void;
-  onCloseModals?: () => void;
   onOpenCheatsheet?: () => void;
   onOpenVisualEdit?: () => void;
   onOpenSettings?: () => void;
