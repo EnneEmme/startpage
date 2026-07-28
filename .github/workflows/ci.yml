@@ -23,14 +23,13 @@ jobs:
       - name: Build
         run: bun run build
 
-      # TODO(audit P0): tighten to 350KB once the lucide tree-shaking fix lands
-      # (current bundle is ~775KB due to import * from lucide-preact)
-      - name: Bundle size budget (< 850 KB)
+      # Budget post-P0 lucide fix: dist is ~235KB (from 775KB).
+      - name: Bundle size budget (< 350 KB)
         run: |
           SIZE=$(wc -c < dist/index.html)
           echo "dist/index.html = $SIZE bytes"
-          if [ "$SIZE" -gt 870400 ]; then
-            echo "::error::dist/index.html exceeds 850KB budget ($SIZE bytes)"
+          if [ "$SIZE" -gt 358400 ]; then
+            echo "::error::dist/index.html exceeds 350KB budget ($SIZE bytes)"
             exit 1
           fi
 

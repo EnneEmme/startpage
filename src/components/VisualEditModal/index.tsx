@@ -5,21 +5,13 @@ import { LinkItem } from '../../types/startpage';
 import { dataStore } from "../../engine/dataStore";
 import { resolveDynamicUrl } from "../../engine/dynamicEvaluator";
 import styles from '../VisualEditModal.module.css';
-import * as Icons from 'lucide-preact';
+import { searchLucideIcons } from '../iconRegistry';
 
 import { PreviewPanel } from './PreviewPanel';
 import { CategoryPicker } from './CategoryPicker';
 import { ScriptEditor } from './ScriptEditor';
 import { FormFields } from './FormFields';
 import { Modal } from '../modals/Modal';
-
-const ALL_LUCIDE_ICONS: { name: string; spec: string; icon: any }[] = Object.keys(Icons)
-  .filter(key => /^[A-Z]/.test(key) && key !== 'createLucideIcon')
-  .map(key => ({
-    name: key,
-    spec: key,
-    icon: (Icons as Record<string, any>)[key]
-  }));
 
 interface VisualEditModalProps {
   isOpen?: boolean;
@@ -160,10 +152,7 @@ export const VisualEditModal = ({
     onClose();
   };
 
-  const iconQueryTrimmed = iconSearchQuery.trim().toLowerCase();
-  const filteredIcons = iconQueryTrimmed
-    ? ALL_LUCIDE_ICONS.filter(i => i.name.toLowerCase().includes(iconQueryTrimmed)).slice(0, 120)
-    : [];
+  const filteredIcons = searchLucideIcons(iconSearchQuery, 120);
   const firstAlias = aliases.split(',')[0]?.trim();
 
   return (

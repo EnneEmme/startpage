@@ -1,5 +1,7 @@
 import { h, Fragment } from 'preact';
 import { LinkIcon } from '../LinkIcon';
+import type { IconEntry } from '../iconRegistry';
+import { ICON_LIST } from '../iconRegistry';
 import styles from '../VisualEditModal.module.css';
 
 interface FormFieldsProps {
@@ -18,7 +20,7 @@ interface FormFieldsProps {
   setIsIconDropdownOpen: (val: boolean) => void;
   iconSearchQuery: string;
   setIconSearchQuery: (val: string) => void;
-  filteredIcons: any[];
+  filteredIcons: IconEntry[];
 }
 
 export const FormFields = ({
@@ -126,7 +128,7 @@ export const FormFields = ({
               class={styles.iconPickerToggleBtn}
               onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}
             >
-              Scegli (1400+ Lucide) ▼
+              Scegli ({ICON_LIST.length} Lucide) ▼
             </button>
           </div>
 
@@ -136,7 +138,7 @@ export const FormFields = ({
                 <input
                   type="text"
                   class={styles.iconSearchInput}
-                  placeholder="Cerca tra oltre 1400+ icone Lucide (es. Coffee, Github, Shield)..."
+                  placeholder={`Cerca tra ${ICON_LIST.length} icone Lucide (es. Coffee, Rocket, Shield)...`}
                   value={iconSearchQuery}
                   onInput={e => setIconSearchQuery((e.target as HTMLInputElement).value)}
                   autoFocus
@@ -172,7 +174,7 @@ export const FormFields = ({
                   )
                 ) : (
                   <div style={{ gridColumn: '1 / -1', padding: '1.25rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.6' }}>
-                    🔍 Digita nel campo in alto per cercare tra oltre <strong>1400+ icone Lucide</strong> (es. <em>coffee, github, mail, shield, code, music</em>)...
+                    🔍 Digita nel campo in alto per cercare tra <strong>{ICON_LIST.length} icone Lucide</strong> (es. <em>coffee, rocket, mail, shield, code, music</em>). Le icone dei siti vengono risolte automaticamente via favicon.
                   </div>
                 )}
               </div>
