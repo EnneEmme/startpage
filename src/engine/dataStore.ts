@@ -39,7 +39,6 @@ export const ESAMI_SCRIPT = `(function() {
 })();`;
 
 export const DEFAULT_CONFIG: StartpageConfig = {
-  defaultSearchEngine: 'g',
   commands: [
     // Social
     { id: 'mail', title: 'Mail', url: 'https://mail.google.com/mail/u/0/#inbox', aliases: ['m', 'mail', 'gmail'], category: 'Social', searchPath: '/#search/text={}' },

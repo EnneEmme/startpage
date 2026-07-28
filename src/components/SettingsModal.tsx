@@ -235,6 +235,13 @@ export const SettingsModal = ({
               </button>
               <button
                 type="button"
+                class={`${styles.segmentBtn} ${config.defaultSearchEngine === 'b' ? styles.activeSegment : ''}`}
+                onClick={() => handleSelectEngine('b')}
+              >
+                Bing (b)
+              </button>
+              <button
+                type="button"
                 class={`${styles.segmentBtn} ${config.defaultSearchEngine === 'yt' ? styles.activeSegment : ''}`}
                 onClick={() => handleSelectEngine('yt')}
               >

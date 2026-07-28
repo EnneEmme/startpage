@@ -26,7 +26,6 @@ export interface CategoryGroup {
 
 export interface StartpageConfig {
   commands: LinkItem[];
-  defaultSearchEngine?: string; // Default key e.g. '*' -> duckduckgo
 }
 
 export interface RankItem {

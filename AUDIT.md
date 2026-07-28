@@ -43,7 +43,7 @@
 - [x] 🟠 **Shortcut globali attive con modale aperta → modali impilati** — `modalActive`/`setModalActive` (keyboardManager.ts:37-43) mai usati: con Settings aperto, `n` apre VisualEdit sopra, `?` apre Cheatsheet sopra → doppio overlay, doppio `id="modal-title"` (HTML invalido), Esc chiude tutto insieme. Tasti 1-9 scrollano dietro il modale.
   **Fix:** filtrare tutti gli handler quando `isAnyModalOpen` (tranne Esc/toggle corrente).
 
-- [ ] 🟠 **Setting "Motore di Ricerca Predefinito" completamente finto** — `SettingsModal.tsx:220-250` permette la scelta, ma il fallback search è Google hardcoded in `SearchModal.tsx:146,270`. Il tipo include `'b'` (Bing) senza regola in `fuzzySearch.ts:11-17` né bottone UI. Doppio campo concorrente mai letto: `StartpageConfig.defaultSearchEngine` (types:29).
+- [x] 🟠 **Setting "Motore di Ricerca Predefinito" completamente finto** — `SettingsModal.tsx:220-250` permette la scelta, ma il fallback search è Google hardcoded in `SearchModal.tsx:146,270`. Il tipo include `'b'` (Bing) senza regola in `fuzzySearch.ts:11-17` né bottone UI. Doppio campo concorrente mai letto: `StartpageConfig.defaultSearchEngine` (types:29).
   **Fix:** leggere `themeConfig.defaultSearchEngine` nel fallback (mappato su DEFAULT_PREFIX_RULES), implementare o rimuovere Bing, eliminare campo duplicato.
 
 - [ ] 🟠 **Edit di un link lo sposta in fondo alla colonna** — `dataStore.ts:338-342` (`addLink` = filter+push) usato per l'edit da `VisualEditModal/index.tsx:156`.
@@ -67,7 +67,7 @@
 - [ ] 🟠 **ContextMenu: posizionamento e chiusura** — `ContextMenu.tsx:80-81`: clamp magic 190/220, submenu apre sempre a destra (fuori schermo al bordo), non si chiude su scroll/resize/right-click altrove, il click di chiusura attiva anche l'elemento sottostante; `onClose()` fuori dall'if del confirm (riga 53-56: chiude anche se annulli).
   **Fix:** misura con ref post-mount, flip submenu, chiusura su contextmenu/scroll/resize in capture phase.
 
-- [ ] 🟠 **SearchModal: ricerca eseguita a ogni render + lista senza cap** — `SearchModal.tsx:57-60,223-261`: `search()` a ogni render (hover incluso), nessun `slice`, nessun `memo` sulle row, `resolveDynamicUrl` ricalcolato per riga → rischio typing lag (viola gemini.md §4).
+- [x] 🟠 **SearchModal: ricerca eseguita a ogni render + lista senza cap** — `SearchModal.tsx:57-60,223-261`: `search()` a ogni render (hover incluso), nessun `slice`, nessun `memo` sulle row, `resolveDynamicUrl` ricalcolato per riga → rischio typing lag (viola gemini.md §4).
   **Fix:** `useMemo` su query/links, `slice(0,10)`, `SearchResultRow` con `memo()`.
 
 - [ ] 🟠 **`handleWheel` custom dannoso in ColumnGrid** — `ColumnGrid.tsx:108-120`: scroll-trap a fine colonna (la pagina non scrolla più), jank su trackpad; `overscroll-behavior: contain` (CSS:158) già sufficiente.

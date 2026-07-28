@@ -1,9 +1,9 @@
 import { h } from 'preact';
-import { useState, useEffect, useRef } from 'preact/hooks';
+import { memo } from 'preact/compat';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'preact/hooks';
 import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles, X } from 'lucide-preact';
-import {  fuzzySearchEngine  } from '../engine';
-import {  resolveDynamicUrl  } from '../engine';
-import {  executeLink  } from '../engine';
+import {  fuzzySearchEngine, resolveDynamicUrl, executeLink, getEngineFallback  } from '../engine';
+import { themeConfigSignal } from '../stores';
 import { LinkItem, SearchResult } from '../types/startpage';
 import { LinkIcon } from './LinkIcon';
 import { Modal } from './modals/Modal';
@@ -15,6 +15,54 @@ interface SearchModalProps {
   links: LinkItem[];
   onClose: () => void;
 }
+
+const MAX_SEARCH_RESULTS = 10;
+
+interface SearchResultRowProps {
+  result: SearchResult;
+  index: number;
+  selected: boolean;
+  onSelect: (link: LinkItem) => void;
+  onHover: (index: number) => void;
+}
+
+/** Memoized row: only re-renders when its own selection state/result changes */
+const SearchResultRow = memo(({ result, index, selected, onSelect, onHover }: SearchResultRowProps) => {
+  const item = result.item;
+  const targetUrl = resolveDynamicUrl(item.url, item.dynamicUrlRule);
+
+  return (
+    <div
+      class={`${styles.resultRow} ${selected ? styles.selected : ''}`}
+      onClick={() => onSelect(item)}
+      onMouseEnter={() => onHover(index)}
+    >
+      <div class={styles.iconBox}>
+        <LinkIcon
+          url={targetUrl || 'https://example.com'}
+          iconSpec={item.icon}
+          title={item.title}
+          size={20}
+        />
+      </div>
+
+      <div class={styles.resultInfo}>
+        <div class={styles.titleLine}>
+          <span class={styles.resultTitle}>{item.title}</span>
+          {item.category && (
+            <span class={styles.categoryBadge}>{item.category}</span>
+          )}
+          {result.matchedAlias && (
+            <span class={styles.aliasMatched}>alias: {result.matchedAlias}</span>
+          )}
+        </div>
+        <span class={styles.resultUrl}>{targetUrl || 'Dynamic Link'}</span>
+      </div>
+
+      {selected && <CornerDownLeft size={16} class={styles.enterHint} />}
+    </div>
+  );
+});
 
 export const SearchModal = ({
   isOpen,
@@ -52,17 +100,31 @@ export const SearchModal = ({
     }
   }, [isOpen, initialQuery]);
 
-  if (!isOpen) return null;
+  // Compute search only when query/links actually change (not on hover re-renders)
+  const parsedPrefix = useMemo(
+    () => fuzzySearchEngine.parseCommandPrefix(query),
+    [query]
+  );
+  const searchResults: SearchResult[] = useMemo(
+    () => (parsedPrefix.isPrefixCommand ? [] : fuzzySearchEngine.search(query).slice(0, MAX_SEARCH_RESULTS)),
+    // links is the engine's data source (synced via effect above)
+    [query, links, parsedPrefix.isPrefixCommand]
+  );
 
-  const parsedPrefix = fuzzySearchEngine.parseCommandPrefix(query);
-  const searchResults: SearchResult[] = parsedPrefix.isPrefixCommand
-    ? []
-    : fuzzySearchEngine.search(query);
-
-  const handleSelectLink = (link: LinkItem) => {
+  const handleSelectLink = useCallback((link: LinkItem) => {
     onClose();
     executeLink(link);
-  };
+  }, [onClose]);
+
+  const handleHoverRow = useCallback((index: number) => {
+    setSelectedIndex(index);
+  }, []);
+
+  /** Fallback web search honoring the user's configured default engine */
+  const getFallback = (rawQuery: string) =>
+    getEngineFallback(themeConfigSignal.value.defaultSearchEngine || 'g', rawQuery.trim());
+
+  if (!isOpen) return null;
 
   const handleExecuteCommandPrefix = () => {
     if (parsedPrefix.redirectUrl) {
@@ -141,9 +203,9 @@ export const SearchModal = ({
       } else if (searchResults.length > 0 && searchResults[selectedIndex]) {
         handleSelectLink(searchResults[selectedIndex].item);
       } else if (query.trim()) {
-        // Fallback Google search if no fuzzy match
+        // Fallback web search on the configured default engine
         onClose();
-        window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query.trim())}`;
+        window.location.href = getFallback(query).url;
       }
     }
   };
@@ -217,47 +279,19 @@ export const SearchModal = ({
           </div>
         )}
 
-        {/* Fuzzy Search Results List */}
+        {/* Fuzzy Search Results List (capped at MAX_SEARCH_RESULTS) */}
         {!parsedPrefix.isPrefixCommand && searchResults.length > 0 && (
           <div class={styles.resultsList}>
-            {searchResults.map((res, index) => {
-              const item = res.item;
-              const targetUrl = resolveDynamicUrl(item.url, item.dynamicUrlRule);
-              const isSelected = index === selectedIndex;
-
-              return (
-                <div
-                  key={item.id}
-                  class={`${styles.resultRow} ${isSelected ? styles.selected : ''}`}
-                  onClick={() => handleSelectLink(item)}
-                  onMouseEnter={() => setSelectedIndex(index)}
-                >
-                  <div class={styles.iconBox}>
-                    <LinkIcon
-                      url={targetUrl || 'https://example.com'}
-                      iconSpec={item.icon}
-                      title={item.title}
-                      size={20}
-                    />
-                  </div>
-
-                  <div class={styles.resultInfo}>
-                    <div class={styles.titleLine}>
-                      <span class={styles.resultTitle}>{item.title}</span>
-                      {item.category && (
-                        <span class={styles.categoryBadge}>{item.category}</span>
-                      )}
-                      {res.matchedAlias && (
-                        <span class={styles.aliasMatched}>alias: {res.matchedAlias}</span>
-                      )}
-                    </div>
-                    <span class={styles.resultUrl}>{targetUrl || 'Dynamic Link'}</span>
-                  </div>
-
-                  {isSelected && <CornerDownLeft size={16} class={styles.enterHint} />}
-                </div>
-              );
-            })}
+            {searchResults.map((res, index) => (
+              <SearchResultRow
+                key={res.item.id}
+                result={res}
+                index={index}
+                selected={index === selectedIndex}
+                onSelect={handleSelectLink}
+                onHover={handleHoverRow}
+              />
+            ))}
           </div>
         )}
 
@@ -267,13 +301,13 @@ export const SearchModal = ({
             class={`${styles.resultRow} ${styles.fallbackRow}`}
             onClick={() => {
               onClose();
-              window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query.trim())}`;
+              window.location.href = getFallback(query).url;
             }}
           >
             <Globe size={20} />
             <div class={styles.resultInfo}>
               <span class={styles.resultTitle}>
-                Search Google for "<strong>{query.trim()}</strong>"
+                Search {getFallback(query).name} for "<strong>{query.trim()}</strong>"
               </span>
             </div>
             <ArrowRight size={16} />
