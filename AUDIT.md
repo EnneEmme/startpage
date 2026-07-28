@@ -4,7 +4,7 @@
 > Ogni voce è una checkbox: spuntala quando il fix è completato e verificato.
 > **Regole (da gemini.md):** dopo ogni fix → `bun run test` verde, aggiorna `structure.md`/`TODO.md` se cambiano file, commit Conventional Commits.
 >
-> **Stato attuale misurato (post-P0/P1/P2 + batch P3-CSS):** 23 file test / 121 test PASS · `tsc --noEmit` = **0 errori** · `dist/index.html` = **254 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati + 5 item P3 CSS/a11y: 39/99 spuntati.
+> **Stato attuale misurato (post-P0/P1/P2 + batch P3-CSS):** 23 file test / 121 test PASS · `tsc --noEmit` = **0 errori** · `dist/index.html` = **254 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati + 5 item P3 CSS/a11y + 1 P4: 40/99 spuntati.
 
 **Legenda severità:** 🔴 critica · 🟠 alta · 🟡 media · ⚪ bassa
 
@@ -198,12 +198,12 @@
 - [ ] 🟡 **FuzzySearch: doppio matching per keystroke + lowercase non precomputati** — `fuzzySearch.ts:114-207`: fuse.search + sweep lineare con `toLowerCase()` allocati per item.
   **Fix:** cache lowercase in `setLinks`. (Re-indexing per keystroke assente ✓)
 
-- [ ] 🟡 **Icona bookmarklet = favicon Unimib hardcoded** — LinkIcon.tsx:56-59: qualunque URL `javascript:` → favicon Unimib. Reset a icona neutra (Globe).
+- [x] 🟡 **Icona bookmarklet = favicon Unimib hardcoded** — LinkIcon.tsx:56-59: qualunque URL `javascript:` → favicon Unimib. Reset a icona neutra (Globe). ✅ Fatto.
 
 - [ ] 🟡 **localStorage serialize-complete a ogni mutazione** — dataStore.ts:244-252, rankStorage.ts:54-60, themeEngine saveAndApply: JSON.stringify completo a ogni drop/click. Priorità bassa, ma valutare batching.
 
 - [ ] ⚪ **`resolveDynamicUrl` ricalcolato ad ogni render per ogni link** (+placeholder `'https://example.com'` ripetuto 4 volte: ColumnGrid:411, SearchModal:237, FormFields:111, PreviewPanel:23).
-  **Fix:** costante `ICON_FALLBACK_URL`; memo per-link.
+  **Fix:** costante `ICON_FALLBACK_URL`; memo per-link. ⏳ Costante fatta; memo per-link ancora aperto.
 
 - [ ] ⚪ **Font Google via `@import` render-blocking** — variables.css:5: fallisce offline (viola spirito standalone §1.2), FOIT, privacy.
   **Fix:** self-host woff2 inline o system stack dichiarato.
