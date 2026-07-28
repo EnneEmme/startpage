@@ -1,41 +1,70 @@
-import { useState } from 'preact/hooks';
-import type { LinkItem, CategoryGroup } from '../types/startpage';
+import { useState, useRef, useEffect } from 'preact/hooks';
+import type { LinkItem } from '../types/startpage';
 
-interface ContextMenuPos {
+export interface ContextMenuState {
   x: number;
   y: number;
+  link: LinkItem;
 }
 
-export function useContextMenu() {
-  const [contextMenuVisible, setContextMenuVisible] = useState(false);
-  const [contextMenuPos, setContextMenuPos] = useState<ContextMenuPos>({ x: 0, y: 0 });
-  const [targetLink, setTargetLink] = useState<LinkItem | null>(null);
-  const [targetCategory, setTargetCategory] = useState<CategoryGroup | null>(null);
+/**
+ * Context menu state for link cards: right-click opens immediately, touch
+ * long-press (~500ms) is the mobile path to edit/remove/move. The synthetic
+ * click that follows a long-press must be swallowed so it doesn't navigate.
+ */
+export function useContextMenu(longPressMs = 500) {
+  const [menu, setMenu] = useState<ContextMenuState | null>(null);
+  const longPressTimer = useRef<number | null>(null);
+  const longPressTriggered = useRef<boolean>(false);
 
-  const openContextMenu = (
-    x: number,
-    y: number,
-    link: LinkItem | null = null,
-    category: CategoryGroup | null = null
-  ) => {
-    setContextMenuPos({ x, y });
-    setTargetLink(link);
-    setTargetCategory(category);
-    setContextMenuVisible(true);
+  const openMenu = (x: number, y: number, link: LinkItem) => setMenu({ x, y, link });
+  const closeMenu = () => setMenu(null);
+
+  const handleLinkContextMenu = (e: MouseEvent, link: LinkItem) => {
+    e.preventDefault();
+    openMenu(e.clientX, e.clientY, link);
   };
 
-  const closeContextMenu = () => {
-    setContextMenuVisible(false);
-    setTargetLink(null);
-    setTargetCategory(null);
+  const handleLinkTouchStart = (e: TouchEvent, link: LinkItem) => {
+    longPressTriggered.current = false;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const { clientX, clientY } = touch;
+    longPressTimer.current = window.setTimeout(() => {
+      longPressTriggered.current = true;
+      openMenu(clientX, clientY, link);
+    }, longPressMs);
   };
+
+  const cancelLongPress = () => {
+    if (longPressTimer.current !== null) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  /**
+   * Returns true once when the click is the synthetic one right after a
+   * long-press (flag is consumed on read).
+   */
+  const shouldSwallowClick = (): boolean => {
+    if (longPressTriggered.current) {
+      longPressTriggered.current = false;
+      return true;
+    }
+    return false;
+  };
+
+  // Cleanup any pending long-press timer on unmount
+  useEffect(() => cancelLongPress, []);
 
   return {
-    contextMenuVisible,
-    contextMenuPos,
-    targetLink,
-    targetCategory,
-    openContextMenu,
-    closeContextMenu,
+    menu,
+    openMenu,
+    closeMenu,
+    shouldSwallowClick,
+    handleLinkContextMenu,
+    handleLinkTouchStart,
+    cancelLongPress,
   };
 }

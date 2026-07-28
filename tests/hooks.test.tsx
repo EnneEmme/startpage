@@ -1,11 +1,19 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/preact';
+import { render, act } from '@testing-library/preact';
 import { useModals } from '../src/hooks/useModals';
 import { useContextMenu } from '../src/hooks/useContextMenu';
 import { useDragAndDrop } from '../src/hooks/useDragAndDrop';
 import { useKeyboardShortcuts } from '../src/hooks/useKeyboardShortcuts';
-import { h } from 'preact';
-import { useEffect } from 'preact/hooks';
+import { useColumnScrollMasks } from '../src/hooks/useColumnScrollMasks';
+import type { LinkItem } from '../src/types/startpage';
+
+const sampleLink: LinkItem = {
+  id: 'lnk',
+  title: 'Sample',
+  url: 'https://example.com',
+  aliases: [],
+  category: 'Dev'
+};
 
 describe('Custom Hooks', () => {
   it('useModals works', () => {
@@ -19,26 +27,42 @@ describe('Custom Hooks', () => {
     expect(result.isAnyModalOpen).toBe(false);
   });
 
-  it('useContextMenu works', () => {
+  it('useContextMenu opens/closes with x/y/link payload', () => {
     let result: any;
     const TestComponent = () => {
       result = useContextMenu();
       return null;
     };
     render(<TestComponent />);
-    expect(result.contextMenuVisible).toBe(false);
-    expect(result.contextMenuPos.x).toBe(0);
+    expect(result.menu).toBe(null);
+
+    act(() => result.openMenu(10, 20, sampleLink));
+    expect(result.menu).toEqual({ x: 10, y: 20, link: sampleLink });
+
+    act(() => result.closeMenu());
+    expect(result.menu).toBe(null);
   });
 
-  it('useDragAndDrop works', () => {
+  it('useDragAndDrop tracks dragged link state', () => {
     let result: any;
     const TestComponent = () => {
-      result = useDragAndDrop();
+      result = useDragAndDrop([], '.linksList');
       return null;
     };
     render(<TestComponent />);
-    expect(result.draggingCategory).toBe(null);
-    expect(result.draggingLink).toBe(null);
+    expect(result.draggedLinkId).toBe(null);
+    expect(result.draggedCategoryName).toBe(null);
+    expect(result.dropPosition).toBe('below');
+  });
+
+  it('useColumnScrollMasks starts with empty masks', () => {
+    let result: any;
+    const TestComponent = () => {
+      result = useColumnScrollMasks(0);
+      return null;
+    };
+    render(<TestComponent />);
+    expect(result.masks).toEqual({});
   });
 
   it('useKeyboardShortcuts works', () => {
