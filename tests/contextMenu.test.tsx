@@ -78,4 +78,48 @@ describe('ContextMenu Component', () => {
 
     vi.restoreAllMocks();
   });
+
+  it('keeps the menu open when removal confirm is cancelled', () => {
+    const onRemoveSpy = vi.fn();
+    const onCloseSpy = vi.fn();
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+    const { getByText } = render(
+      <ContextMenu
+        x={100}
+        y={200}
+        link={sampleLink}
+        onClose={onCloseSpy}
+        onEdit={() => {}}
+        onRemove={onRemoveSpy}
+        onConfigChanged={() => {}}
+      />
+    );
+
+    fireEvent.click(getByText('Remove Link'));
+    expect(onRemoveSpy).not.toHaveBeenCalled();
+    expect(onCloseSpy).not.toHaveBeenCalled();
+
+    vi.restoreAllMocks();
+  });
+
+  it('closes when the backdrop swallowing layer is clicked', () => {
+    const onCloseSpy = vi.fn();
+    const { container } = render(
+      <ContextMenu
+        x={100}
+        y={200}
+        link={sampleLink}
+        onClose={onCloseSpy}
+        onEdit={() => {}}
+        onRemove={() => {}}
+        onConfigChanged={() => {}}
+      />
+    );
+
+    const backdrop = container.querySelector('[class*="menuBackdrop"]');
+    expect(backdrop).not.toBeNull();
+    fireEvent.click(backdrop!);
+    expect(onCloseSpy).toHaveBeenCalledTimes(1);
+  });
 });

@@ -64,7 +64,7 @@
 - [ ] 🟠 **`navigator.clipboard` non protetto** — `ImportExportModal.tsx:31-35`: su `file://` o http LAN (scenario tipico single-file) è `undefined` → TypeError al click "Copy". `confirm()` nativi (ImportExportModal.tsx:64, ContextMenu.tsx:53) bloccanti e non temabili.
   **Fix:** feature-detect + fallback `execCommand`; dialog custom di conferma.
 
-- [ ] 🟠 **ContextMenu: posizionamento e chiusura** — `ContextMenu.tsx:80-81`: clamp magic 190/220, submenu apre sempre a destra (fuori schermo al bordo), non si chiude su scroll/resize/right-click altrove, il click di chiusura attiva anche l'elemento sottostante; `onClose()` fuori dall'if del confirm (riga 53-56: chiude anche se annulli).
+- [x] 🟠 **ContextMenu: posizionamento e chiusura** — `ContextMenu.tsx:80-81`: clamp magic 190/220, submenu apre sempre a destra (fuori schermo al bordo), non si chiude su scroll/resize/right-click altrove, il click di chiusura attiva anche l'elemento sottostante; `onClose()` fuori dall'if del confirm (riga 53-56: chiude anche se annulli).
   **Fix:** misura con ref post-mount, flip submenu, chiusura su contextmenu/scroll/resize in capture phase.
 
 - [x] 🟠 **SearchModal: ricerca eseguita a ogni render + lista senza cap** — `SearchModal.tsx:57-60,223-261`: `search()` a ogni render (hover incluso), nessun `slice`, nessun `memo` sulle row, `resolveDynamicUrl` ricalcolato per riga → rischio typing lag (viola gemini.md §4).
