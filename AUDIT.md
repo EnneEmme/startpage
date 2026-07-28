@@ -162,8 +162,8 @@
 - [ ] 🟡 **VisualEditModal: draft sporco persiste tra aperture; tab senza ARIA; nuova categoria non ordinata** — state sopravvive al Cancel (effetto del bug hooks + `useEffect` deps `[targetLink]`); CategoryPicker non aggiunge a `categoryOrder`; segmented senza `role="tablist"`; overlay-click perde il form senza conferma.
   **Fix:** reset state su close (o `key`), `dataStore.addCategory` completa, ARIA tabs, conferma dirty-form.
 
-- [ ] 🟡 **SettingsModal: bottone "Salva e Chiudi" ingannevole + state stale** — applica live, "Salva" è no-op; state locale copia di `getConfig()` non risincronizzata (esiste già `themeConfigSignal`); `currentAccent` mai usato.
-  **Fix:** label "Chiudi"; leggere direttamente `themeConfigSignal.value`; cancellare state locale.
+- [x] 🟡 **SettingsModal: bottone "Salva e Chiudi" ingannevole + state stale** — applica live, "Salva" è no-op; state locale copia di `getConfig()` non risincronizzata (esiste già `themeConfigSignal`); `currentAccent` mai usato.
+  **Fix:** label "Chiudi"; leggere direttamente `themeConfigSignal.value`; cancellare state locale. ✅ Fatto (signal diretto già da P2; label → "Close"; `currentAccent` già purged).
 
 - [ ] 🟡 **Empty/error states assenti** — categoria vuota, griglia vuota post-import/reset senza CTA; LazyWidget errore → `null` silenzioso; nessun skeleton favicon.
   **Fix:** empty states con CTA "Aggiungi il primo link".
