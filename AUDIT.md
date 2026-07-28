@@ -70,7 +70,7 @@
 - [x] 🟠 **SearchModal: ricerca eseguita a ogni render + lista senza cap** — `SearchModal.tsx:57-60,223-261`: `search()` a ogni render (hover incluso), nessun `slice`, nessun `memo` sulle row, `resolveDynamicUrl` ricalcolato per riga → rischio typing lag (viola gemini.md §4).
   **Fix:** `useMemo` su query/links, `slice(0,10)`, `SearchResultRow` con `memo()`.
 
-- [ ] 🟠 **`handleWheel` custom dannoso in ColumnGrid** — `ColumnGrid.tsx:108-120`: scroll-trap a fine colonna (la pagina non scrolla più), jank su trackpad; `overscroll-behavior: contain` (CSS:158) già sufficiente.
+- [x] 🟠 **`handleWheel` custom dannoso in ColumnGrid** — `ColumnGrid.tsx:108-120`: scroll-trap a fine colonna (la pagina non scrolla più), jank su trackpad; `overscroll-behavior: contain` (CSS:158) già sufficiente.
   **Fix:** rimuovere l'handler JS.
 
 - [ ] 🟠 **Nessun feedback sulle azioni (no toast/undo)** — Remove link istantaneo e irreversibile; rename/move/import/reset senza conferma visiva.
@@ -79,7 +79,7 @@
 - [x] 🟠 **Backup/restore asimmetrico** — `dataStore.exportJson` (349-354) non include i rank, ma `ImportExportModal.handleResetDefaults` (63-70) li cancella.
   **Fix:** includere `rankStorage.getRankData()` in export/import.
 
-- [ ] 🟠 **LinkIcon: retry propaga il click al link padre** — `LinkIcon.tsx:70-77`: span-retry dentro `<a>` senza `preventDefault`/`stopPropagation` → cliccando "ricarica icona" si naviga.
+- [x] 🟠 **LinkIcon: retry propaga il click al link padre** — `LinkIcon.tsx:70-77`: span-retry dentro `<a>` senza `preventDefault`/`stopPropagation` → cliccando "ricarica icona" si naviga.
   **Fix:** bloccare propagazione; rendere lo span un `<button>` (a11y).
 
 ---

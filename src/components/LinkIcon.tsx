@@ -62,7 +62,11 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
   const domain = extractDomain(resolvedUrl);
   const candidates = getFaviconCandidates(resolvedUrl, cacheBustTime);
 
-  const handleRetry = () => {
+  // Retry is a nested interactive element inside link cards: it must never
+  // trigger the parent anchor navigation.
+  const handleRetry = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setImgError(false);
     setCandidateIndex(0);
     setCacheBustTime(Date.now());
@@ -70,9 +74,16 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
 
   if (!domain || imgError || candidateIndex >= candidates.length) {
     return (
-      <span onClick={handleRetry} title="Clicca per ricaricare icona" style={{ display: 'inline-flex', cursor: 'pointer' }}>
+      <button
+        type="button"
+        onClick={handleRetry}
+        onKeyDown={e => e.stopPropagation()}
+        title="Clicca per ricaricare icona"
+        aria-label="Ricarica icona"
+        style={{ display: 'inline-flex', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+      >
         <Globe size={size} class={styles.lucideIcon} />
-      </span>
+      </button>
     );
   }
 

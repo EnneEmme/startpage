@@ -104,21 +104,6 @@ export const ColumnGrid = ({
     };
   }, [categories]);
 
-  // Isolate mousewheel scrolling to inner column list only
-  const handleWheel = (e: WheelEvent) => {
-    const container = e.currentTarget as HTMLDivElement;
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    const delta = e.deltaY;
-
-    if (delta > 0 && scrollTop + clientHeight >= scrollHeight - 1) {
-      container.scrollTop = scrollHeight;
-      e.preventDefault();
-    } else if (delta < 0 && scrollTop <= 0) {
-      container.scrollTop = 0;
-      e.preventDefault();
-    }
-  };
-
   const updateScrollMasksForColumn = (columnName: string, container: HTMLDivElement) => {
     const { scrollTop, scrollHeight, clientHeight } = container;
     const canScrollUp = scrollTop > 4;
@@ -372,7 +357,6 @@ export const ColumnGrid = ({
             <div
               class={`${styles.linksList} ${fadeClass}`}
               onScroll={e => handleScroll(e, cat.name)}
-              onWheel={handleWheel}
             >
               {cat.links.map((link, linkIdx) => {
                 const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
