@@ -10,6 +10,7 @@ import {
   VisualEditModal, 
   SettingsModal, 
   MobileBottomNav,
+  ReorderModal,
   Toast,
   ConfirmDialog
 } from './components';
@@ -31,6 +32,7 @@ export const App = () => {
     importExportOpen, setImportExportOpen,
     visualEditOpen, setVisualEditOpen,
     settingsOpen, setSettingsOpen,
+    reorderOpen, setReorderOpen,
     editTargetLink, setEditTargetLink,
     isAnyModalOpen,
     closeAllModals
@@ -125,6 +127,7 @@ export const App = () => {
           showShortcuts={showShortcuts}
           onEditLink={handleEditLinkFromContext}
           onConfigChanged={refreshData}
+          onOpenReorder={() => setReorderOpen(true)}
         />
       </main>
 
@@ -176,6 +179,13 @@ export const App = () => {
         onClose={() => setSettingsOpen(false)}
         onConfigChanged={refreshData}
         onOpenImportExport={() => setImportExportOpen(true)}
+      />
+
+      <ReorderModal
+        isOpen={reorderOpen}
+        categories={categoryNames}
+        onClose={() => setReorderOpen(false)}
+        onConfigChanged={refreshData}
       />
 
       {/* Global feedback overlays */}

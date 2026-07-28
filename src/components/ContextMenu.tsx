@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
-import { Edit3, Trash2, ArrowUp, ArrowDown, Folder } from 'lucide-preact';
+import { Edit3, Trash2, ArrowUp, ArrowDown, Folder, Move } from 'lucide-preact';
 import { LinkItem } from '../types/startpage';
 import {  dataStore  } from '../engine';
 import { confirmDialog } from '../stores/confirmStore';
@@ -19,6 +19,7 @@ interface ContextMenuProps {
   onEdit: (link: LinkItem) => void;
   onRemove: (linkId: string) => void;
   onConfigChanged: () => void;
+  onReorderColumns?: () => void;
 }
 
 export const ContextMenu = ({
@@ -28,7 +29,8 @@ export const ContextMenu = ({
   onClose,
   onEdit,
   onRemove,
-  onConfigChanged
+  onConfigChanged,
+  onReorderColumns
 }: ContextMenuProps) => {
   const [showCategorySubmenu, setShowCategorySubmenu] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -169,6 +171,22 @@ export const ContextMenu = ({
           </div>
         )}
       </div>
+
+      {onReorderColumns && (
+        <>
+          <div class={styles.divider} />
+          <button
+            class={styles.menuItem}
+            onClick={e => {
+              e.stopPropagation();
+              onClose();
+              onReorderColumns();
+            }}
+          >
+            <Move size={15} /> Reorder Columns...
+          </button>
+        </>
+      )}
 
       <div class={styles.divider} />
 

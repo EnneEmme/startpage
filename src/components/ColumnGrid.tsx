@@ -16,6 +16,7 @@ interface ColumnGridProps {
   highlightedCategory?: string | null;
   onConfigChanged?: () => void;
   onEditLink?: (link: LinkItem) => void;
+  onOpenReorder?: () => void;
 }
 
 export const ColumnGrid = ({
@@ -23,13 +24,19 @@ export const ColumnGrid = ({
   showShortcuts,
   highlightedCategory,
   onConfigChanged,
-  onEditLink
+  onEditLink,
+  onOpenReorder
 }: ColumnGridProps) => {
   const [contextMenuState, setContextMenuState] = useState<{
     x: number;
     y: number;
     link: LinkItem;
   } | null>(null);
+
+  // Long-press (touch) gestures open the context menu; the synthetic click
+  // that follows must be swallowed so it does not navigate the link.
+  const longPressTimer = useRef<number | null>(null);
+  const longPressTriggered = useRef<boolean>(false);
 
   // Inline Category Header Rename State
   const [editingCategoryName, setEditingCategoryName] = useState<string | null>(null);
@@ -144,13 +151,41 @@ export const ColumnGrid = ({
     });
   };
 
+  /** Touch long-press (~500ms) opens the context menu: the mobile path to edit/remove/move */
+  const handleTouchStart = (e: TouchEvent, link: LinkItem) => {
+    longPressTriggered.current = false;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const { clientX, clientY } = touch;
+    longPressTimer.current = window.setTimeout(() => {
+      longPressTriggered.current = true;
+      setContextMenuState({ x: clientX, y: clientY, link });
+    }, 500);
+  };
+
+  const cancelLongPress = () => {
+    if (longPressTimer.current !== null) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   const handleLinkClick = (e: MouseEvent, link: LinkItem) => {
+    // Swallow the synthetic click fired right after a long-press gesture
+    if (longPressTriggered.current) {
+      longPressTriggered.current = false;
+      e.preventDefault();
+      return;
+    }
     // executeLink owns all navigation (scripts included): always prevent the
     // native anchor navigation to avoid double navigation. Cmd/Ctrl+click
     // opens in a new tab via window.open (native new-tab default is prevented).
     e.preventDefault();
     executeLink(link, e.metaKey || e.ctrlKey ? '_blank' : '_self');
   };
+
+  // Cleanup any pending long-press timer on unmount
+  useEffect(() => cancelLongPress, []);
 
   const handleHeaderDoubleClick = (e: MouseEvent, categoryName: string) => {
     e.stopPropagation();
@@ -390,6 +425,9 @@ export const ColumnGrid = ({
                       draggable={false}
                       onClick={e => handleLinkClick(e, link)}
                       onContextMenu={e => handleContextMenu(e, link)}
+                      onTouchStart={e => handleTouchStart(e, link)}
+                      onTouchEnd={cancelLongPress}
+                      onTouchMove={cancelLongPress}
                     >
                       <div class={styles.iconContainer}>
                         <LinkIcon
@@ -466,6 +504,7 @@ export const ColumnGrid = ({
           onConfigChanged={() => {
             if (onConfigChanged) onConfigChanged();
           }}
+          onReorderColumns={onOpenReorder}
         />
       )}
     </div>

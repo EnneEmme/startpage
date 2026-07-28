@@ -58,7 +58,7 @@
 - [x] 🟠 **Duplicato `id="app"` → doppio padding, HTML invalido** — `index.html:11` + `app.tsx:96`. La regola `#app` (global.css:70-79) si applica due volte: doppio padding laterale e bottom.
   **Fix:** rimuovere l'id/div interno.
 
-- [ ] 🟠 **Mobile: nessun percorso per edit/remove/reorder/rename** — D&D HTML5 non funziona su touch (ColumnGrid.tsx:192-316), context menu solo right-click, rename solo dblclick, ReorderModal esiste ma **mai renderizzato**. Su mobile si può solo aggiungere.
+- [x] 🟠 **Mobile: nessun percorso per edit/remove/reorder/rename** — D&D HTML5 non funziona su touch (ColumnGrid.tsx:192-316), context menu solo right-click, rename solo dblclick, ReorderModal esiste ma **mai renderizzato**. Su mobile si può solo aggiungere.
   **Fix:** bottom-sheet azioni su long-press (`@media (hover:none)`), montare ReorderModal, edit via tap.
 
 - [x] 🟠 **`navigator.clipboard` non protetto** — `ImportExportModal.tsx:31-35`: su `file://` o http LAN (scenario tipico single-file) è `undefined` → TypeError al click "Copy". `confirm()` nativi (ImportExportModal.tsx:64, ContextMenu.tsx:53) bloccanti e non temabili.

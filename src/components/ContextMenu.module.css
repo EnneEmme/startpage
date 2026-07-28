@@ -94,6 +94,46 @@
   right: 100%;
 }
 
+/* Touch devices: render the menu as a bottom sheet (no hover, coarse pointer) */
+@media (hover: none), (pointer: coarse) {
+  .menuContainer {
+    left: 0.75rem !important;
+    right: 0.75rem;
+    bottom: 1rem;
+    top: auto !important;
+    width: auto;
+    padding: 0.6rem;
+  }
+
+  .menuItem {
+    padding: 0.8rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .menuHeader {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.9rem;
+  }
+
+  .categorySubmenu {
+    left: 5%;
+    right: 5%;
+    top: auto;
+    bottom: 100%;
+    width: auto;
+  }
+
+  .categorySubmenu.flipLeft {
+    left: 5%;
+    right: 5%;
+  }
+
+  .submenuItem {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.92rem;
+  }
+}
+
 .submenuItem {
   padding: 0.35rem 0.6rem;
   font-size: 0.8rem;
