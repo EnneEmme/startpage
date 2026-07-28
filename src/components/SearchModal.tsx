@@ -1,7 +1,7 @@
 import { memo } from 'preact/compat';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'preact/hooks';
 import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles, X } from 'lucide-preact';
-import { fuzzySearchEngine, resolveDynamicUrl, executeLink, getEngineFallback } from '../engine';
+import { fuzzySearchEngine, resolveDynamicUrl, executeLink, getEngineFallback, ICON_FALLBACK_URL } from '../engine';
 import { themeConfigSignal } from '../stores';
 import type { LinkItem, SearchResult } from '../types/startpage';
 import { LinkIcon } from './LinkIcon';
@@ -38,7 +38,7 @@ const SearchResultRow = memo(({ result, index, selected, onSelect, onHover }: Se
     >
       <div class={styles.iconBox}>
         <LinkIcon
-          url={targetUrl || 'https://example.com'}
+          url={targetUrl || ICON_FALLBACK_URL}
           iconSpec={item.icon}
           title={item.title}
           size={20}

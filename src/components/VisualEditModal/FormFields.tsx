@@ -1,3 +1,4 @@
+import { ICON_FALLBACK_URL } from '../../engine';
 import { LinkIcon } from '../LinkIcon';
 import type { IconEntry } from '../iconRegistry';
 import { ICON_LIST } from '../iconRegistry';
@@ -109,7 +110,7 @@ export const FormFields = ({
           <div class={styles.iconInputTriggerRow}>
             <div class={styles.iconLiveBadge}>
               <LinkIcon
-                url={url || 'https://example.com'}
+                url={url || ICON_FALLBACK_URL}
                 iconSpec={icon || undefined}
                 title={title || 'Preview'}
                 size={20}

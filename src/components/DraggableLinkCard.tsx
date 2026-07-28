@@ -1,6 +1,7 @@
 import { memo } from 'preact/compat';
 import { Zap } from 'lucide-preact';
 import type { LinkItem } from '../types/startpage';
+import { ICON_FALLBACK_URL } from '../engine';
 import { LinkIcon } from './LinkIcon';
 import styles from './ColumnGrid.module.css';
 
@@ -72,7 +73,7 @@ export const DraggableLinkCard = memo(({
       >
         <div class={styles.iconContainer}>
           <LinkIcon
-            url={displayUrl || 'https://example.com'}
+            url={displayUrl || ICON_FALLBACK_URL}
             iconSpec={link.icon}
             title={link.title}
             size={18}

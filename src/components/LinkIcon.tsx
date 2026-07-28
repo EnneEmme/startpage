@@ -53,13 +53,14 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
     }
   }
 
-  // Default Favicon Resolver: Multi-tier Candidates (Google HD -> icon.horse -> DuckDuckGo -> Direct)
-  const resolvedUrl = url.toLowerCase().startsWith('javascript:')
-    ? 'https://gestioneorari.didattica.unimib.it'
-    : url;
+  // Bookmarklet/script: icona neutra, mai favicon di un dominio arbitrario
+  if (url.toLowerCase().startsWith('javascript:')) {
+    return <Globe size={size} class={styles.lucideIcon} />;
+  }
 
-  const domain = extractDomain(resolvedUrl);
-  const candidates = getFaviconCandidates(resolvedUrl, cacheBustTime);
+  // Default Favicon Resolver: Multi-tier Candidates (Google HD -> icon.horse -> DuckDuckGo -> Direct)
+  const domain = extractDomain(url);
+  const candidates = getFaviconCandidates(url, cacheBustTime);
 
   // Retry is a nested interactive element inside link cards: it must never
   // trigger the parent anchor navigation.

@@ -1,4 +1,5 @@
 import { Eye, Zap } from 'lucide-preact';
+import { ICON_FALLBACK_URL } from '../../engine';
 import { LinkIcon } from '../LinkIcon';
 import styles from '../VisualEditModal.module.css';
 
@@ -20,7 +21,7 @@ export const PreviewPanel = ({ title, url, icon, firstAlias, activeTab }: Previe
     <div class={styles.previewCardRow}>
       <div class={styles.previewIconContainer}>
         <LinkIcon
-          url={url || 'https://example.com'}
+          url={url || ICON_FALLBACK_URL}
           iconSpec={icon || undefined}
           title={title || 'Link Preview'}
           size={18}

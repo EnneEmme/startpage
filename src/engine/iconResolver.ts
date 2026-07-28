@@ -8,6 +8,9 @@ export interface ResolvedIcon {
   src: string;
 }
 
+/** Placeholder URL quando il campo url è vuoto (preview/edit). */
+export const ICON_FALLBACK_URL = 'https://example.com';
+
 export const extractDomain = (url: string): string => {
   try {
     const parsed = new URL(url);
