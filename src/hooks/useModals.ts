@@ -1,67 +1,59 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import type { LinkItem } from '../types/startpage';
 
+export type ModalId = 'search' | 'cheatsheet' | 'importExport' | 'visualEdit' | 'settings' | 'reorder';
+
+/**
+ * Discriminated modal state: at most one modal can be open at any time.
+ * Impossible states (search over settings over cheatsheet...) are impossible
+ * by construction — isAnyModalOpen is derived, never hand-maintained.
+ */
 export function useModals() {
-  const [searchOpen, setSearchOpen] = useState<boolean>(false);
+  const [activeModal, setActiveModal] = useState<ModalId | null>(null);
   const [initialSearchChar, setInitialSearchChar] = useState<string>('');
-  const [cheatsheetOpen, setCheatsheetOpen] = useState<boolean>(false);
-  const [importExportOpen, setImportExportOpen] = useState<boolean>(false);
-  const [visualEditOpen, setVisualEditOpen] = useState<boolean>(false);
-  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-  const [reorderOpen, setReorderOpen] = useState<boolean>(false);
   const [editTargetLink, setEditTargetLink] = useState<LinkItem | null>(null);
 
-  const isAnyModalOpen =
-    searchOpen ||
-    cheatsheetOpen ||
-    importExportOpen ||
-    visualEditOpen ||
-    settingsOpen ||
-    reorderOpen;
+  const isAnyModalOpen = activeModal !== null;
 
-  useEffect(() => {
-    if (isAnyModalOpen) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
-    }
+  const isModalOpen = (id: ModalId): boolean => activeModal === id;
 
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
-    };
-  }, [isAnyModalOpen]);
+  const openModal = (id: ModalId): void => {
+    if (id !== 'visualEdit') setEditTargetLink(null);
+    setActiveModal(id);
+  };
 
-  const closeAllModals = () => {
-    setSearchOpen(false);
-    setCheatsheetOpen(false);
-    setImportExportOpen(false);
-    setVisualEditOpen(false);
-    setSettingsOpen(false);
-    setReorderOpen(false);
+  const closeModal = (): void => {
+    setActiveModal(null);
     setEditTargetLink(null);
   };
 
+  const openVisualEdit = (link: LinkItem | null = null): void => {
+    setEditTargetLink(link);
+    setActiveModal('visualEdit');
+  };
+
+  /**
+   * Toggle semantics for shortcut keys: only fires when nothing else is open,
+   * or when the same modal is already open (closes it). Never switches modal.
+   */
+  const toggleModalExclusive = (id: ModalId): void => {
+    setActiveModal(prev => {
+      if (prev === null) return id;
+      if (prev === id) return null;
+      return prev;
+    });
+  };
+
   return {
-    searchOpen,
-    setSearchOpen,
+    activeModal,
+    isAnyModalOpen,
+    isModalOpen,
+    openModal,
+    closeModal,
+    openVisualEdit,
+    toggleModalExclusive,
     initialSearchChar,
     setInitialSearchChar,
-    cheatsheetOpen,
-    setCheatsheetOpen,
-    importExportOpen,
-    setImportExportOpen,
-    visualEditOpen,
-    setVisualEditOpen,
-    settingsOpen,
-    setSettingsOpen,
-    reorderOpen,
-    setReorderOpen,
     editTargetLink,
-    setEditTargetLink,
-    isAnyModalOpen,
-    closeAllModals,
   };
 }

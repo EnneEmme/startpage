@@ -30,16 +30,15 @@ export const App = () => {
   const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null);
 
   const {
-    searchOpen, setSearchOpen,
-    initialSearchChar, setInitialSearchChar,
-    cheatsheetOpen, setCheatsheetOpen,
-    importExportOpen, setImportExportOpen,
-    visualEditOpen, setVisualEditOpen,
-    settingsOpen, setSettingsOpen,
-    reorderOpen, setReorderOpen,
-    editTargetLink, setEditTargetLink,
     isAnyModalOpen,
-    closeAllModals
+    isModalOpen,
+    openModal,
+    closeModal,
+    openVisualEdit,
+    toggleModalExclusive,
+    initialSearchChar,
+    setInitialSearchChar,
+    editTargetLink
   } = useModals();
 
   const handleSelectCategory = (catName: string | null) => {
@@ -54,53 +53,29 @@ export const App = () => {
     }
   };
 
+  const handleOpenSearch = (char: string = '') => {
+    setInitialSearchChar(char);
+    openModal('search');
+  };
+
   const { showShortcuts } = useKeyboardShortcuts({
-    onOpenSearch: (char?: string) => {
-      if (!cheatsheetOpen && !importExportOpen && !visualEditOpen && !settingsOpen) {
-        setInitialSearchChar(char || '');
-        setSearchOpen(true);
-      }
-    },
-    onCloseModals: closeAllModals,
-    onOpenCheatsheet: () => {
-      // Never stack a modal over another one: toggle only when nothing else is open
-      if (searchOpen || importExportOpen || visualEditOpen || settingsOpen) return;
-      setCheatsheetOpen((prev) => !prev);
-    },
-    onOpenVisualEdit: () => {
-      if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen || settingsOpen) return;
-      setEditTargetLink(null);
-      setVisualEditOpen(true);
-    },
-    onOpenSettings: () => {
-      if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen) return;
-      setSettingsOpen((prev) => !prev);
-    },
+    onOpenSearch: (char?: string) => handleOpenSearch(char || ''),
+    onCloseModals: closeModal,
+    onOpenCheatsheet: () => toggleModalExclusive('cheatsheet'),
+    onOpenVisualEdit: () => openVisualEdit(null),
+    onOpenSettings: () => toggleModalExclusive('settings'),
     onSelectCategoryIndex: (index: number) => {
-      if (searchOpen || cheatsheetOpen || importExportOpen || visualEditOpen || settingsOpen) return;
-      const currentCats = categoriesSignal.value;
-      const target = currentCats[index];
+      const target = categoriesSignal.value[index];
       if (target) {
         handleSelectCategory(target.name);
       }
     }
   }, {
     modalActive: isAnyModalOpen
-  }, [searchOpen, cheatsheetOpen, importExportOpen, visualEditOpen, settingsOpen]);
+  }, [isAnyModalOpen]);
 
   const handleEditLinkFromContext = (link: LinkItem) => {
-    setEditTargetLink(link);
-    setVisualEditOpen(true);
-  };
-
-  const handleOpenAddLink = () => {
-    setEditTargetLink(null);
-    setVisualEditOpen(true);
-  };
-
-  const handleOpenSearch = () => {
-    setInitialSearchChar('');
-    setSearchOpen(true);
+    openVisualEdit(link);
   };
 
   const categoryNames = categories.map(c => c.name);
@@ -117,10 +92,10 @@ export const App = () => {
         />
 
         <HeaderClock
-          onOpenSearch={handleOpenSearch}
-          onOpenCheatsheet={() => setCheatsheetOpen(true)}
-          onOpenVisualEdit={handleOpenAddLink}
-          onOpenSettings={() => setSettingsOpen(true)}
+          onOpenSearch={() => handleOpenSearch()}
+          onOpenCheatsheet={() => openModal('cheatsheet')}
+          onOpenVisualEdit={() => openVisualEdit(null)}
+          onOpenSettings={() => openModal('settings')}
         />
       </header>
 
@@ -130,55 +105,52 @@ export const App = () => {
           highlightedCategory={highlightedCategory}
           showShortcuts={showShortcuts}
           onEditLink={handleEditLinkFromContext}
-          onOpenReorder={() => setReorderOpen(true)}
+          onOpenReorder={() => openModal('reorder')}
         />
       </main>
 
       {/* Standalone Bottom Navigation Bar for Mobile & Tablet (< 1024px) */}
       <MobileBottomNav
-        onOpenSearch={handleOpenSearch}
-        onOpenCheatsheet={() => setCheatsheetOpen(true)}
-        onOpenVisualEdit={handleOpenAddLink}
-        onOpenSettings={() => setSettingsOpen(true)}
+        onOpenSearch={() => handleOpenSearch()}
+        onOpenCheatsheet={() => openModal('cheatsheet')}
+        onOpenVisualEdit={() => openVisualEdit(null)}
+        onOpenSettings={() => openModal('settings')}
       />
 
       {/* Modals */}
       <SearchModal
-        isOpen={searchOpen}
+        isOpen={isModalOpen('search')}
         initialQuery={initialSearchChar}
         links={links}
-        onClose={() => setSearchOpen(false)}
+        onClose={closeModal}
       />
 
       <CheatsheetModal
-        isOpen={cheatsheetOpen}
-        onClose={() => setCheatsheetOpen(false)}
+        isOpen={isModalOpen('cheatsheet')}
+        onClose={closeModal}
       />
 
       <ImportExportModal
-        isOpen={importExportOpen}
-        onClose={() => setImportExportOpen(false)}
+        isOpen={isModalOpen('importExport')}
+        onClose={closeModal}
       />
 
       <VisualEditModal
-        isOpen={visualEditOpen}
+        isOpen={isModalOpen('visualEdit')}
         initialEditLink={editTargetLink}
-        onClose={() => {
-          setVisualEditOpen(false);
-          setEditTargetLink(null);
-        }}
+        onClose={closeModal}
       />
 
       <SettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        onOpenImportExport={() => setImportExportOpen(true)}
+        isOpen={isModalOpen('settings')}
+        onClose={closeModal}
+        onOpenImportExport={() => openModal('importExport')}
       />
 
       <ReorderModal
-        isOpen={reorderOpen}
+        isOpen={isModalOpen('reorder')}
         categories={categoryNames}
-        onClose={() => setReorderOpen(false)}
+        onClose={closeModal}
       />
 
       {/* Global feedback overlays */}

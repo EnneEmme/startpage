@@ -15,7 +15,7 @@ describe('Custom Hooks', () => {
       return null;
     };
     render(<TestComponent />);
-    expect(result.searchOpen).toBe(false);
+    expect(result.activeModal).toBe(null);
     expect(result.isAnyModalOpen).toBe(false);
   });
 
