@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies (frozen lockfile)
+        run: bun install --frozen-lockfile
+
+      - name: Test
+        run: bun run test
+
+      - name: Build
+        run: bun run build
+
+      # TODO(audit P0): tighten to 350KB once the lucide tree-shaking fix lands
+      # (current bundle is ~775KB due to import * from lucide-preact)
+      - name: Bundle size budget (< 850 KB)
+        run: |
+          SIZE=$(wc -c < dist/index.html)
+          echo "dist/index.html = $SIZE bytes"
+          if [ "$SIZE" -gt 870400 ]; then
+            echo "::error::dist/index.html exceeds 850KB budget ($SIZE bytes)"
+            exit 1
+          fi
+
+      # TODO(audit P5): enable once tsc reaches 0 errors
+      # - name: Typecheck
+      #   run: bun run typecheck

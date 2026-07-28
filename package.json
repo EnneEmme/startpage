@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "bun ./node_modules/vitest/vitest.mjs run"
+    "test": "bun run --bun vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@preact/signals": "^2.10.0",
     "fuse.js": "^7.1.0",
     "lucide-preact": "^1.16.0",
     "preact": "^10.26.4"
