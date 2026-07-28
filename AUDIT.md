@@ -168,8 +168,8 @@
 - [ ] 🟡 **Empty/error states assenti** — categoria vuota, griglia vuota post-import/reset senza CTA; LazyWidget errore → `null` silenzioso; nessun skeleton favicon.
   **Fix:** empty states con CTA "Aggiungi il primo link".
 
-- [ ] 🟡 **JumpBar: no `aria-current`, tab attiva non portata in vista, re-render a ogni frame di scroll** — `JumpBar.tsx:21-37`: `setScrollState` con oggetto nuovo a ogni evento scroll.
-  **Fix:** bail-out su valori identici + `aria-current` + scrollIntoView della pill attiva.
+- [x] 🟡 **JumpBar: no `aria-current`, tab attiva non portata in vista, re-render a ogni frame di scroll** — `JumpBar.tsx:21-37`: `setScrollState` con oggetto nuovo a ogni evento scroll.
+  **Fix:** bail-out su valori identici + `aria-current` + scrollIntoView della pill attiva (feature-detect per jsdom). ✅ Fatto.
 
 - [x] 🟡 **Touch target sotto soglia** — LinkRow ~31px, context item ~32px, top tools 34px, clear 24px (consigliati ≥44px touch / WCAG min 24px).
   **Fix:** padding minimo su `@media (pointer: coarse)`. ✅ Fatto: ≥24px su linkRow/clearBtn/clearSearchBtn (44px ideali ancora no).
