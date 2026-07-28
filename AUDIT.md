@@ -9,13 +9,13 @@
 **Legenda severità:** 🔴 critica · 🟠 alta · 🟡 media · ⚪ bassa
 
 **Prerequisito prima di partire:**
-- [ ] 🟠 Committare o stasheare i 10 file modificati nel working tree (refactor a metà: Modal.tsx, dataStore.ts, fuzzySearch.ts, linkExecutor.ts, rankStorage.ts, hooks, stores) prima di qualsiasi altra modifica.
+- [x] 🟠 Committare o stasheare i 10 file modificati nel working tree (refactor a metà: Modal.tsx, dataStore.ts, fuzzySearch.ts, linkExecutor.ts, rankStorage.ts, hooks, stores) prima di qualsiasi altra modifica.
 
 ---
 
 ## P0 — CRITICI (build rotto / perdita dati / bundle)
 
-- [ ] 🔴 **Dipendenza fantasma `@preact/signals`** — importata in `src/stores/appStore.ts:1` e `src/stores/settingsStore.ts:1`, ma assente da `package.json` e `bun.lock` (presente solo in node_modules come residuo). `bun install --frozen-lockfile` su macchina pulita → build/test rotti.
+- [x] 🔴 **Dipendenza fantasma `@preact/signals`** — importata in `src/stores/appStore.ts:1` e `src/stores/settingsStore.ts:1`, ma assente da `package.json` e `bun.lock` (presente solo in node_modules come residuo). `bun install --frozen-lockfile` su macchina pulita → build/test rotti.
   **Fix:** `bun add @preact/signals` + commit package.json e bun.lock.
 
 - [ ] 🔴 **`executeLink` ritorna `void` ma ColumnGrid lo testa come boolean** — `src/engine/linkExecutor.ts:43` vs `src/components/ColumnGrid.tsx:163-167`. `e.preventDefault()` non viene **mai** chiamato → per link normali doppia navigazione (location.href + href nativo); per bookmarklet l'href `javascript:updateOrari()` esegue una globale inesistente; cmd+click apre nuova tab **e** naviga la corrente (tsc: TS1345).
@@ -215,7 +215,7 @@
 - [ ] 🔴 **100 errori `tsc --noEmit`, nessuno script li esegue** — tsconfig strict (verbatimModuleSyntax, exactOptionalPropertyTypes, noUncheckedIndexedAccess, noUnusedLocals) non enforced. Include: TS6133 `h`/import morti ovunque, TS2307 tutti i `*.module.css` (manca `vite-env.d.ts` con `/// <reference types="vite/client" />`), `spellCheck` inesistente su input (SearchModal:171), void-truthiness ColumnGrid:164, possibly-undefined in dataStore:290/themeEngine:147-150/fuzzySearch:189, test non tipizzati (signalsStore.test.ts:16).
   **Fix:** aggiungere `"typecheck": "tsc --noEmit"` + `src/vite-env.d.ts`; azzerare errori o rilassare mirati `noUncheckedIndexedAccess`/`exactOptionalPropertyTypes`.
 
-- [ ] 🟠 **Script `test` fragile** — `package.json:10`: path hardcoded `./node_modules/vitest/vitest.mjs`. Mancano script `typecheck`, `coverage`, `lint`.
+- [x] 🟠 **Script `test` fragile** — `package.json:10`: path hardcoded `./node_modules/vitest/vitest.mjs`. Mancano script `typecheck`, `coverage`, `lint`.
   **Fix:** `"test": "bun run vitest run"` + script mancanti.
 
 - [ ] 🟠 **Nessun ESLint/Prettier/Husky** — TODO.md lo dichiara "✅ Completato": falso.
@@ -239,7 +239,7 @@
 - [ ] 🟡 **Test fragili/illusionistici** — `accessibility.test.tsx` legge stringhe CSS da disco (nessun comportamento); `reorderModal.test.tsx:39-44` con `if(length>1)` = falso positivo garantito; assert sul copy EN (`getByTitle(...)`) in uiComponents/integrationFlow; `confirm` mock con restore manuale (contextMenu.test.tsx:60); singleton engine non resettati uniformemente.
   **Fix:** test su ruoli/ARIA reali (ruolo dialog di Modal esiste), asserzioni incondizionate, `within()`, setupFiles con reset globale.
 
-- [ ] 🟡 **Nessuna CI** — `.github/workflows/` assente: nessun gate su install/test/typecheck/build (viola spirito zero-regression §3).
+- [x] 🟡 **Nessuna CI** — `.github/workflows/` assente: nessun gate su install/test/typecheck/build (viola spirito zero-regression §3).
   **Fix:** workflow minimo: `bun install --frozen-lockfile` → typecheck → test → build su PR/push dev.
 
 - [ ] ⚪ **`package.json` version `1.0.0` vs policy SemVer pre-release 0.x (gemini.md §2.7) e ultima release v0.3.0.** — Riallineare.
