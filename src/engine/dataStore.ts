@@ -131,6 +131,8 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'tinker', title: 'Tinker', url: 'https://tinker.thinkingmachines.ai/playground', aliases: ['tinker'], category: 'AI & LLMs', searchPath: '?q={}' },
     { id: 'motiftech', title: 'Motif Tech', url: 'https://chat.motiftech.io/chat', aliases: ['motiftech'], category: 'AI & LLMs', searchPath: '?q={}' },
     { id: 'llmstats', title: 'LLM Stats', url: 'https://llm-stats.com/leaderboards/llm-leaderboard', aliases: ['llmstats'], category: 'AI & LLMs', searchPath: '?q={}' },
+    { id: 'proton_lumo', title: 'Proton Lumo', url: 'https://lumo.proton.me/', aliases: ['lumo', 'protonlumo'], category: 'AI & LLMs', searchPath: '?q={}' },
+    { id: 'huggingface_chat', title: 'Chat HG', url: 'https://huggingface.co/chat/', aliases: ['chathg', 'chathf', 'hfchat'], category: 'AI & LLMs', searchPath: '?q={}' },
     // ImGen (Kept separate)
     { id: 'recraft', title: 'Recraft', url: 'https://www.recraft.ai/projects', aliases: ['recraft'], category: 'ImGen', searchPath: '?q={}' },
     { id: 'ideogram', title: 'Ideogram', url: 'https://ideogram.ai/t/explore', aliases: ['ideogram'], category: 'ImGen', searchPath: '?q={}' },
