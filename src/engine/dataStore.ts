@@ -146,6 +146,7 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     // Media / AudioGen (Kept separate)
     { id: 'suno', title: 'Suno', url: 'https://suno.com', aliases: ['suno'], category: 'Media' },
     { id: 'elevenlabs', title: 'ElevenLabs', url: 'https://elevenlabs.io/app/home', aliases: ['audiogen', 'elevenlabs'], category: 'Media' },
+    { id: 'fishaudio', title: 'Fish Audio', url: 'https://fish.audio/app/', aliases: ['fish', 'fishaudio'], category: 'Media' },
 
     // Programming
     { id: 'github', title: 'GitHub', url: 'https://github.com', aliases: ['g', 'gh', 'github'], category: 'Programming', searchPath: '/search?q={}' },
