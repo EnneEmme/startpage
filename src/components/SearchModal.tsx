@@ -5,7 +5,7 @@ import { fuzzySearchEngine, resolveDynamicUrl, executeLink, getEngineFallback, I
 import { themeConfigSignal } from '../stores';
 import type { LinkItem, SearchResult } from '../types/startpage';
 import { LinkIcon } from './LinkIcon';
-import { Modal } from './modals/Modal';
+import { Modal } from './Modals/Modal';
 import styles from './SearchModal.module.css';
 
 interface SearchModalProps {

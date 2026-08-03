@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/preact';
 import { expect, test, vi } from 'vitest';
-import { Modal } from '../src/components/modals/Modal';
+import { Modal } from '../src/components/Modals/Modal';
 
 test('renders Modal component correctly when open', () => {
   render(

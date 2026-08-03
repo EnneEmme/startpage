@@ -67,13 +67,13 @@ startpage/
 │   │   ├── SettingsModal.module.css
 │   │   ├── ImportExportModal.tsx # JSON backup/sync import & export modal
 │   │   ├── ImportExportModal.module.css
-│   │   ├── VisualEditModal/   # Link creator/editor modal folder (all use ../VisualEditModal.module.css)
+│   │   ├── VisualEditModal/   # Link creator/editor modal folder
 │   │   │   ├── index.tsx      #   Modal shell: tabs, submit, dirty-form confirm
 │   │   │   ├── FormFields.tsx #   Title/URL/alias/icon fields + icon picker
 │   │   │   ├── CategoryPicker.tsx # Category select + new-category input
 │   │   │   ├── PreviewPanel.tsx   # Live link card preview
-│   │   │   └── ScriptEditor.tsx   # Custom JS / bookmarklet editor
-│   │   ├── VisualEditModal.module.css
+│   │   │   ├── ScriptEditor.tsx   # Custom JS / bookmarklet editor
+│   │   │   └── VisualEditModal.module.css #   Shared styles for the whole folder
 │   │   ├── ReorderModal.tsx   # Category column ordering modal
 │   │   ├── ReorderModal.module.css
 │   │   ├── Toast.tsx          # Global snackbar host (feedback + Undo actions)
@@ -81,7 +81,7 @@ startpage/
 │   │   ├── ConfirmDialog.tsx  # Global themed confirm dialog host (replaces native confirm)
 │   │   ├── ConfirmDialog.module.css
 │   │   ├── iconRegistry.ts    # Curated Lucide icons registry (tree-shaken) + picker search helpers
-│   │   └── modals/
+│   │   └── Modals/
 │   │       ├── Modal.tsx      # Base dialog: body portal, scroll-lock, inert, focus trap, aria-label
 │   │       └── Modal.module.css
 │   │

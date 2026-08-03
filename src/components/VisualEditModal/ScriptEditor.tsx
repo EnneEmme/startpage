@@ -1,4 +1,4 @@
-import styles from '../VisualEditModal.module.css';
+import styles from './VisualEditModal.module.css';
 
 interface ScriptEditorProps {
   scriptSnippet: string;

@@ -2,7 +2,7 @@ import { ICON_FALLBACK_URL } from '../../engine';
 import { LinkIcon } from '../LinkIcon';
 import type { IconEntry } from '../iconRegistry';
 import { ICON_LIST } from '../iconRegistry';
-import styles from '../VisualEditModal.module.css';
+import styles from './VisualEditModal.module.css';
 
 interface FormFieldsProps {
   activeTab: 'web' | 'script' | 'search';

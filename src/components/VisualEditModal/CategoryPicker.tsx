@@ -1,5 +1,5 @@
 import { Tag, Check, Plus } from 'lucide-preact';
-import styles from '../VisualEditModal.module.css';
+import styles from './VisualEditModal.module.css';
 
 interface CategoryPickerProps {
   categories: string[];

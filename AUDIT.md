@@ -277,11 +277,11 @@
 - [x] 🟡 **Chiavi localStorage doc ≠ codice** — gemini.md §1.3 cita `startpage_links/startpage_settings`; codice usa `startpage_custom_links`, `startpage_category_order`, `startpage_theme_settings` (+`startpage_ranks` corretta).
   **Fix:** aggiornare gemini.md (il codice è il contratto reale). ✅ Risolto in P6: gemini.md §1.3 ora elenca le chiavi reali (`startpage_custom_links`, `startpage_category_order`, `startpage_theme_settings`, `startpage_ranks`, `startpage_script_consents`).
 
-- [ ] 🟡 **`refactor.js` orfano in root** — codemod usa-e-getta, regex fragile, ha prodotto artefatti `{  x  }`, non documentato.
-  **Fix:** cancellare (storia in git).
+- [x] 🟡 **`refactor.js` orfano in root** — codemod usa-e-getta, regex fragile, ha prodotto artefatti `{  x  }`, non documentato.
+  **Fix:** cancellare (storia in git). ✅ Fatto (P7): `git rm refactor.js`, nessun riferimento residuo.
 
-- [ ] 🟡 **Naming folder incoerente** — `Widgets/` (Pascal) vs `modals/` (lower) vs `VisualEditModal/`; `VisualEditModal.module.css` fuori dalla cartella del componente.
-  **Fix:** convenzione unica (cartella PascalCase + css co-locato).
+- [x] 🟡 **Naming folder incoerente** — `Widgets/` (Pascal) vs `modals/` (lower) vs `VisualEditModal/`; `VisualEditModal.module.css` fuori dalla cartella del componente.
+  **Fix:** convenzione unica (cartella PascalCase + css co-locato). ✅ Fatto (P7): `Widgets/` già eliminato (dead code P2); `modals/` → `Modals/` (9 import aggiornati + test), `VisualEditModal.module.css` co-locato nella cartella del componente (5 import aggiornati).
 
 - [ ] 🟡 **~600 righe CSS morto duplicato** — SearchModal/Cheatsheet/Settings/VisualEdit/Reorder/ImportExport module.css ridefiniscono `.overlay/.modalContainer/.modalHeader/...` mai applicate (i componenti usano `<Modal>`); classi fantasma: `fade-in-scale` (SearchModal.tsx:156) e `styles.searchContentOverrides` (:157 → stringa `"undefined"` nel DOM); `.preview*` in Settings mai usate.
   **Fix:** cancellare blocchi morti e classi inesistenti.
