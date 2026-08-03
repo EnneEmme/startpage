@@ -312,7 +312,7 @@
 
 - [x] ⚪ **Error boundary assente** — eccezione di render (dati corrotti) = pagina bianca. Aggiungere boundary con bottone "Reset defaults" in main.tsx. ✅ Fatto (P7/R3): `components/ErrorBoundary.tsx` class component (componentDidCatch) con fallback dark inline-styled (rende anche senza CSS), bottoni "Reload" + "Reset defaults" (pulisce le 5 chiavi app: links/order/theme/ranks/script_consents, poi reload); wrappa `<App />` in main.tsx, export nel barrel components; tests/errorBoundary.test.tsx (3 test: passthrough sano, fallback+2 bottoni, reset selettivo chiavi).
 
-- [ ] ⚪ **Inline styles sparsi** — app.tsx:120, ScriptEditor:14, FormFields:169-176, ghost drag (giustificato), ambra ×2. Spostare in CSS/token.
+- [x] ⚪ **Inline styles sparsi** — app.tsx:120, ScriptEditor:14, FormFields:169-176, ghost drag (giustificato), ambra ×2. Spostare in CSS/token. ✅ Fatto (P7/R3): Zap badge ambra → `.scriptBadge` (`color: var(--accent-amber, #f59e0b)`) in VisualEditModal.module.css + ColumnGrid.module.css (regola duplicata per design CSS-modules); ScriptEditor → `.scriptInput` (var(--font-mono)); 2 empty-state picker → `.pickerEmpty` (var(--text-muted)); LinkIcon retry → `.retryButton` (LinkIcon.module.css); `<main id="main-grid">` width → selettore `#main-grid` in global.css. Lasciati apposta (dinamici): chip colore SettingsModal `background: item.primary`, ContextMenu `left/top`, ghost drag, Modal maxWidth.
 
 - [x] ⚪ **i18n misto IT/EN** — centralizzare stringhe se si vuole coerenza.
 

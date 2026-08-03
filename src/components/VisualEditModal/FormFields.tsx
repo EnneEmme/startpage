@@ -177,12 +177,12 @@ export const FormFields = ({
                       );
                     })
                   ) : (
-                    <div style={{ gridColumn: '1 / -1', padding: '1.25rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                    <div class={styles.pickerEmpty}>
                       No Lucide icon found for "{iconSearchQuery}". You can also paste a direct image URL.
                     </div>
                   )
                 ) : (
-                  <div style={{ gridColumn: '1 / -1', padding: '1.25rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.6' }}>
+                  <div class={styles.pickerEmpty}>
                     🔍 Type in the field above to search <strong>{ICON_LIST.length} Lucide icons</strong> (e.g. <em>coffee, rocket, mail, shield, code, music</em>). Site icons are resolved automatically via favicon.
                   </div>
                 )}

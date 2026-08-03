@@ -110,7 +110,7 @@ const DraggableLinkCardView = memo(({
         <div class={styles.linkInfo}>
           <span class={styles.linkTitle}>
             {link.title}
-            {isScript && <Zap size={11} style={{ marginLeft: '4px', color: '#f59e0b', display: 'inline-block', verticalAlign: 'middle' }} title="JS Script Bookmarklet" />}
+            {isScript && <Zap size={11} class={styles.scriptBadge} title="JS Script Bookmarklet" />}
           </span>
         </div>
 

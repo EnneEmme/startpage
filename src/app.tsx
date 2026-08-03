@@ -120,7 +120,7 @@ export const App = () => {
         />
       </header>
 
-      <main id="main-grid" style={{ width: '100%' }}>
+      <main id="main-grid">
         <ColumnGrid
           categories={categories}
           highlightedCategory={highlightedCategory}

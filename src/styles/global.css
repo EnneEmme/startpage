@@ -80,6 +80,11 @@ textarea,
   margin: 0 auto;
 }
 
+/* Main grid wrapper: full width of the #app container (skip-link target) */
+#main-grid {
+  width: 100%;
+}
+
 /* Floating Non-Overlapping Glass Dock Sticky Header */
 .unifiedHeader {
   position: sticky;
