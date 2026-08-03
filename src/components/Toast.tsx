@@ -1,4 +1,4 @@
-import { X } from 'lucide-preact';
+import { Icon } from './Icon';
 import { toastSignal, dismissToast } from '../stores';
 import styles from './Toast.module.css';
 
@@ -28,7 +28,7 @@ export const Toast = () => {
         onClick={dismissToast}
         aria-label="Dismiss notification"
       >
-        <X size={14} />
+        <Icon name="X" size={14} />
       </button>
     </div>
   );

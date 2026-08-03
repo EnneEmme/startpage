@@ -17,7 +17,6 @@
   "dependencies": {
     "@preact/signals": "^2.10.0",
     "fuse.js": "^7.1.0",
-    "lucide-preact": "^1.16.0",
     "preact": "^10.26.4"
   },
   "devDependencies": {
@@ -29,6 +28,7 @@
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.9.0",
     "jsdom": "^26.0.0",
+    "lucide-preact": "^1.16.0",
     "prettier": "^3.9.6",
     "rollup-plugin-visualizer": "^7.0.1",
     "terser": "^5.49.0",

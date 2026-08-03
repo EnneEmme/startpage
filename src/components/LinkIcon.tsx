@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { Globe } from 'lucide-preact';
+import { Icon } from './Icon';
 import {
   extractDomain,
   getFaviconCandidates,
@@ -74,7 +74,7 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
 
   // Bookmarklet/script: icona neutra, mai favicon di un dominio arbitrario
   if (url.toLowerCase().startsWith('javascript:')) {
-    return <Globe size={size} class={styles.lucideIcon} />;
+    return <Icon name="Globe" size={size} class={styles.lucideIcon} />;
   }
 
   // Default Favicon Resolver: Multi-tier Candidates (Google HD -> icon.horse -> DuckDuckGo -> Direct)
@@ -103,7 +103,7 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
         aria-label="Reload icon"
         class={styles.retryButton}
       >
-        <Globe size={size} class={styles.lucideIcon} />
+        <Icon name="Globe" size={size} class={styles.lucideIcon} />
       </button>
     );
   }

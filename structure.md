@@ -25,6 +25,9 @@ startpage/
 ├── AUDIT.md                   # Optimization audit checklist (P0-P7, live checkboxes)
 ├── EXECUTION_PLAN.md          # Audit execution plan (phases, gates, recovery)
 │
+├── scripts/                   # Development tooling (Node/bun, not shipped in bundle)
+│   └── extractIcons.mjs       #   Regenerates src/components/iconPaths.ts from lucide-preact (run: bun scripts/extractIcons.mjs)
+│
 ├── src/                       # Application Source Code
 │   ├── main.tsx               # Application entry point (+ script-consent confirm handler wiring)
 │   ├── app.tsx                # Main App component & state orchestration (signals-driven)
@@ -58,6 +61,8 @@ startpage/
 │   │   ├── DraggableLinkCard.tsx # Memoized draggable link row card (uses ColumnGrid.module.css)
 │   │   ├── ErrorBoundary.tsx  # Render-error boundary (dark fallback UI: reload / reset defaults)
 │   │   ├── LinkIcon.tsx       # Favicon / Lucide icon renderer component
+│   │   ├── Icon.tsx            # Local Lucide-compatible SVG renderer (replaces lucide-preact)
+│   │   ├── iconPaths.ts        # Generated static SVG path-data map (240 icons; regen via scripts/extractIcons.mjs)
 │   │   ├── LinkIcon.module.css
 │   │   ├── ContextMenu.tsx    # Right-click / long-press context menu (Edit, Remove, Move category)
 │   │   ├── ContextMenu.module.css
@@ -82,7 +87,7 @@ startpage/
 │   │   ├── Toast.module.css
 │   │   ├── ConfirmDialog.tsx  # Global themed confirm dialog host (replaces native confirm)
 │   │   ├── ConfirmDialog.module.css
-│   │   ├── iconRegistry.ts    # Curated Lucide icons registry (tree-shaken) + picker search helpers
+│   │   ├── iconRegistry.ts    # Lucide icons registry on ICON_PATHS (getLucideIcon/iconComponentFor) + picker search helpers
 │   │   └── Modals/
 │   │       ├── Modal.tsx      # Base dialog: body portal, scroll-lock, inert, focus trap, aria-label
 │   │       └── Modal.module.css

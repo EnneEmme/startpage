@@ -1,4 +1,4 @@
-import { Check, Sliders, Palette, LayoutGrid, Type, Search, Download, Eye } from 'lucide-preact';
+import { Icon } from './Icon';
 import { ACCENT_COLORS } from '../engine';
 import { themeConfigSignal, settingsActions } from '../stores';
 import { Modal } from './Modals/Modal';
@@ -32,7 +32,7 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
       onClose={onClose}
       title="Settings & Personalization"
       subtitle="Visual theme, grid, fonts and preferences"
-      icon={<Sliders size={18} class={styles.headerIcon} />}
+      icon={<Icon name="Sliders" size={18} class={styles.headerIcon} />}
       footer={
         <button type="button" class={styles.saveBtn} onClick={onClose}>
           Close
@@ -43,7 +43,7 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
       <div class={styles.sectionGroup}>
         <div class={styles.sectionHeaderRow}>
           <label class={styles.sectionLabel} id="settings-accent-label">
-            <Palette size={15} class={styles.sectionIcon} />
+            <Icon name="Palette" size={15} class={styles.sectionIcon} />
             Primary Accent Color
           </label>
           <span class={styles.sectionSubtext}>
@@ -64,7 +64,7 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
                 title={`${item.name} palette`}
                 aria-label={`${item.name} palette`}
               >
-                {isSelected && <Check size={16} class={styles.checkMarkIcon} />}
+                {isSelected && <Icon name="Check" size={16} class={styles.checkMarkIcon} />}
               </button>
             );
           })}
@@ -75,7 +75,7 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
       <div class={styles.sectionGroup}>
         <div class={styles.sectionHeaderRow}>
           <label class={styles.sectionLabel} id="settings-density-label">
-            <LayoutGrid size={15} class={styles.sectionIcon} />
+            <Icon name="LayoutGrid" size={15} class={styles.sectionIcon} />
             Column Grid Density
           </label>
           <span class={styles.sectionSubtext}>
@@ -117,7 +117,7 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
       <div class={styles.sectionGroup}>
         <div class={styles.sectionHeaderRow}>
           <label class={styles.sectionLabel} id="settings-fontsize-label">
-            <Type size={15} class={styles.sectionIcon} />
+            <Icon name="Type" size={15} class={styles.sectionIcon} />
             Font Size
           </label>
           <span class={styles.sectionSubtext}>
@@ -161,7 +161,7 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
       <div class={styles.sectionGroup}>
         <div class={styles.sectionHeaderRow}>
           <label class={styles.sectionLabel} id="settings-alias-label">
-            <Eye size={15} class={styles.sectionIcon} />
+            <Icon name="Eye" size={15} class={styles.sectionIcon} />
             Shortcut Badge Visibility (Aliases)
           </label>
           <span class={styles.sectionSubtext}>
@@ -191,7 +191,7 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
       <div class={styles.sectionGroup}>
         <div class={styles.sectionHeaderRow}>
           <label class={styles.sectionLabel} id="settings-engine-label">
-            <Search size={15} class={styles.sectionIcon} />
+            <Icon name="Search" size={15} class={styles.sectionIcon} />
             Default Search Engine
           </label>
           <span class={styles.sectionSubtext}>
@@ -247,7 +247,7 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
       <div class={styles.sectionGroup}>
         <div class={styles.sectionHeaderRow}>
           <label class={styles.sectionLabel} id="settings-backup-label">
-            <Download size={15} class={styles.sectionIcon} />
+            <Icon name="Download" size={15} class={styles.sectionIcon} />
             Backup & Data Sync
           </label>
           <span class={styles.sectionSubtext}>
@@ -264,7 +264,7 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
               if (onOpenImportExport) onOpenImportExport();
             }}
           >
-            <Download size={15} />
+            <Icon name="Download" size={15} />
             <span>Export / Import JSON Backup</span>
           </button>
         </div>

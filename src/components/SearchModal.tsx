@@ -1,6 +1,6 @@
 import { memo } from 'preact/compat';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'preact/hooks';
-import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles, X } from 'lucide-preact';
+import { Icon } from './Icon';
 import {
   fuzzySearchEngine,
   resolveDynamicUrl,
@@ -70,7 +70,7 @@ const SearchResultRow = memo(({ result, selected, onSelect }: SearchResultRowPro
         <span class={styles.resultUrl}>{targetUrl || 'Dynamic Link'}</span>
       </div>
 
-      {selected && <CornerDownLeft size={16} class={styles.enterHint} />}
+      {selected && <Icon name="CornerDownLeft" size={16} class={styles.enterHint} />}
     </div>
   );
 });
@@ -270,7 +270,7 @@ export const SearchModal = ({ isOpen, initialQuery = '', links, onClose }: Searc
           {liveAnnouncement}
         </div>
         <div class={styles.inputWrapper}>
-          <Search size={20} class={styles.searchIcon} />
+          <Icon name="Search" size={20} class={styles.searchIcon} />
           <input
             ref={inputRef}
             type="text"
@@ -307,12 +307,12 @@ export const SearchModal = ({ isOpen, initialQuery = '', links, onClose }: Searc
               title="Clear search"
               aria-label="Clear search"
             >
-              <X size={16} />
+              <Icon name="X" size={16} />
             </button>
           )}
           {parsedPrefix.isPrefixCommand && (
             <span class={styles.commandBadge}>
-              <Sparkles size={14} />
+              <Icon name="Sparkles" size={14} />
               {parsedPrefix.engineName}
             </span>
           )}
@@ -324,14 +324,14 @@ export const SearchModal = ({ isOpen, initialQuery = '', links, onClose }: Searc
             class={`${styles.resultRow} ${styles.prefixRow}`}
             onClick={handleExecuteCommandPrefix}
           >
-            <Globe size={20} />
+            <Icon name="Globe" size={20} />
             <div class={styles.resultInfo}>
               <span class={styles.resultTitle}>
                 Search {parsedPrefix.engineName}: <strong>{parsedPrefix.query}</strong>
               </span>
               <span class={styles.resultUrl}>{parsedPrefix.redirectUrl}</span>
             </div>
-            <CornerDownLeft size={16} class={styles.enterHint} />
+            <Icon name="CornerDownLeft" size={16} class={styles.enterHint} />
           </div>
         )}
 
@@ -364,13 +364,13 @@ export const SearchModal = ({ isOpen, initialQuery = '', links, onClose }: Searc
               window.location.href = getFallback(query).url;
             }}
           >
-            <Globe size={20} />
+            <Icon name="Globe" size={20} />
             <div class={styles.resultInfo}>
               <span class={styles.resultTitle}>
                 Search {getFallback(query).name} for "<strong>{query.trim()}</strong>"
               </span>
             </div>
-            <ArrowRight size={16} />
+            <Icon name="ArrowRight" size={16} />
           </div>
         )}
 

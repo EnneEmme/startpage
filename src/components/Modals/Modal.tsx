@@ -1,7 +1,7 @@
 import type { ComponentChildren } from 'preact';
 import { createPortal } from 'preact/compat';
 import { useEffect, useRef } from 'preact/hooks';
-import { X } from 'lucide-preact';
+import { Icon } from '../Icon';
 import styles from './Modal.module.css';
 
 interface ModalProps {
@@ -157,7 +157,7 @@ export const Modal = ({
               title="Close (Esc)"
               aria-label="Close"
             >
-              <X size={18} />
+              <Icon name="X" size={18} />
             </button>
           </div>
         )}

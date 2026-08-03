@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown, Move } from 'lucide-preact';
+import { Icon } from './Icon';
 import { appActions } from '../stores';
 import { Modal } from './Modals/Modal';
 import styles from './ReorderModal.module.css';
@@ -29,7 +29,7 @@ export const ReorderModal = ({ isOpen, categories, onClose }: ReorderModalProps)
       isOpen={isOpen}
       onClose={onClose}
       title="Reorder Column Sections"
-      icon={<Move size={22} class={styles.titleIcon} />}
+      icon={<Icon name="Move" size={22} class={styles.titleIcon} />}
       maxWidth="500px"
     >
       <div class={styles.contentBody}>
@@ -49,7 +49,7 @@ export const ReorderModal = ({ isOpen, categories, onClose }: ReorderModalProps)
                   title="Move Up / Left"
                   aria-label={`Move ${cat} up`}
                 >
-                  <ArrowUp size={16} />
+                  <Icon name="ArrowUp" size={16} />
                 </button>
                 <button
                   disabled={idx === categories.length - 1}
@@ -58,7 +58,7 @@ export const ReorderModal = ({ isOpen, categories, onClose }: ReorderModalProps)
                   title="Move Down / Right"
                   aria-label={`Move ${cat} down`}
                 >
-                  <ArrowDown size={16} />
+                  <Icon name="ArrowDown" size={16} />
                 </button>
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
-import { Edit3, Trash2, ArrowUp, ArrowDown, Folder, Move } from 'lucide-preact';
+import { Icon } from './Icon';
 import type { LinkItem } from '../types/startpage';
 import { appActions, categoriesSignal, linksSignal, confirmDialog } from '../stores';
 import styles from './ContextMenu.module.css';
@@ -173,7 +173,7 @@ export const ContextMenu = ({
         <div class={styles.menuHeader}>{link.title}</div>
 
         <button role="menuitem" tabIndex={0} class={styles.menuItem} onClick={handleEditClick}>
-          <Edit3 size={15} /> Edit Link
+          <Icon name="Edit3" size={15} /> Edit Link
         </button>
 
         <button
@@ -182,7 +182,7 @@ export const ContextMenu = ({
           class={styles.menuItem}
           onClick={e => handleMoveLinkDirection(e, 'up')}
         >
-          <ArrowUp size={15} /> Move Up
+          <Icon name="ArrowUp" size={15} /> Move Up
         </button>
 
         <button
@@ -191,7 +191,7 @@ export const ContextMenu = ({
           class={styles.menuItem}
           onClick={e => handleMoveLinkDirection(e, 'down')}
         >
-          <ArrowDown size={15} /> Move Down
+          <Icon name="ArrowDown" size={15} /> Move Down
         </button>
 
         <div class={styles.submenuWrapper}>
@@ -206,7 +206,7 @@ export const ContextMenu = ({
               setShowCategorySubmenu(prev => !prev);
             }}
           >
-            <Folder size={15} /> Move Category...
+            <Icon name="Folder" size={15} /> Move Category...
           </button>
 
           {showCategorySubmenu && (
@@ -243,7 +243,7 @@ export const ContextMenu = ({
                 onReorderColumns();
               }}
             >
-              <Move size={15} /> Reorder Columns...
+              <Icon name="Move" size={15} /> Reorder Columns...
             </button>
           </>
         )}
@@ -256,7 +256,7 @@ export const ContextMenu = ({
           class={`${styles.menuItem} ${styles.danger}`}
           onClick={handleRemoveClick}
         >
-          <Trash2 size={15} /> Remove Link
+          <Icon name="Trash2" size={15} /> Remove Link
         </button>
       </div>
     </>
