@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
-import { copyTextToClipboard } from '../engine';
+import { copyTextToClipboard, dataStore, IMPORT_COPIED_FEEDBACK_MS } from '../engine';
 import { appActions, confirmDialog, showToast } from '../stores';
 import { Modal } from './Modals/Modal';
 import styles from './ImportExportModal.module.css';
@@ -46,7 +46,7 @@ export const ImportExportModal = ({
       copiedTimerRef.current = window.setTimeout(() => {
         copiedTimerRef.current = null;
         setCopied(false);
-      }, 2000);
+      }, IMPORT_COPIED_FEEDBACK_MS);
     } else {
       setStatusMsg({ text: 'Clipboard unavailable here: use Download File instead.', type: 'error' });
     }
@@ -69,11 +69,14 @@ export const ImportExportModal = ({
       return;
     }
 
-    const success = appActions.importJson(jsonText);
-    if (success) {
+    // Structured diagnostics come from the engine: appActions.importJson stays
+    // the boolean compatibility path for the stores layer, while this modal
+    // needs the failure reason to surface it to the user via toast.
+    const result = dataStore.importJsonDetailed(jsonText);
+    if (result.ok) {
       setStatusMsg({ text: 'Configuration imported and applied successfully!', type: 'success' });
     } else {
-      setStatusMsg({ text: 'Failed to parse JSON. Please check JSON syntax.', type: 'error' });
+      showToast(`Import failed: ${result.error}`);
     }
   };
 

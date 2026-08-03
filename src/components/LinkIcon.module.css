@@ -7,3 +7,12 @@
 .lucideIcon {
   flex-shrink: 0;
 }
+
+/* Clear the native button chrome of the icon-retry wrapper */
+.retryButton {
+  display: inline-flex;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}

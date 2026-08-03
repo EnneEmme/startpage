@@ -444,3 +444,27 @@
     width: 100%;
   }
 }
+
+/* Script-mode badge on the card preview title (amber accent token, hex fallback) */
+.scriptBadge {
+  margin-left: 4px;
+  color: var(--accent-amber, #f59e0b);
+  display: inline-block;
+}
+
+/* Monospace variant of .input for the JavaScript code editor */
+.scriptInput {
+  min-height: 105px;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+}
+
+/* Full-width empty state inside the icon picker dropdown grid */
+.pickerEmpty {
+  grid-column: 1 / -1;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}

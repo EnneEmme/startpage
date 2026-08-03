@@ -84,7 +84,7 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
         onKeyDown={e => e.stopPropagation()}
         title="Click to reload icon"
         aria-label="Reload icon"
-        style={{ display: 'inline-flex', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+        class={styles.retryButton}
       >
         <Globe size={size} class={styles.lucideIcon} />
       </button>

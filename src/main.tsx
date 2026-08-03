@@ -1,5 +1,6 @@
 import { render } from 'preact';
 import { App } from './app';
+import { ErrorBoundary } from './components';
 import { setScriptConfirmHandler } from './engine';
 import { confirmDialog } from './stores';
 import './styles/global.css';
@@ -19,5 +20,12 @@ setScriptConfirmHandler(link =>
 
 const rootEl = document.getElementById('app');
 if (rootEl) {
-  render(<App />, rootEl);
+  // ErrorBoundary: a render exception anywhere in the tree gets a recoverable
+  // fallback UI (reload / reset defaults) instead of a white page.
+  render(
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>,
+    rootEl
+  );
 }

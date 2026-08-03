@@ -7,6 +7,7 @@ export { ColumnGrid } from './ColumnGrid';
 export { ConfirmDialog } from './ConfirmDialog';
 export { ContextMenu } from './ContextMenu';
 export { DraggableLinkCard } from './DraggableLinkCard';
+export { ErrorBoundary } from './ErrorBoundary';
 export { ImportExportModal } from './ImportExportModal';
 export { JumpBar } from './JumpBar';
 export { LinkIcon } from './LinkIcon';

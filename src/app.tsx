@@ -13,7 +13,7 @@ import {
   ConfirmDialog
 } from './components';
 import type { LinkItem } from './types/startpage';
-import { scrollToCategory, scrollToTop } from './engine';
+import { scrollToCategory, scrollToTop, HIGHLIGHT_DURATION_MS } from './engine';
 import { linksSignal, categoriesSignal } from './stores';
 
 // Custom Hooks
@@ -62,7 +62,7 @@ export const App = () => {
       highlightTimerRef.current = window.setTimeout(() => {
         highlightTimerRef.current = null;
         setHighlightedCategory(null);
-      }, 1400);
+      }, HIGHLIGHT_DURATION_MS);
       scrollToCategory(catName);
     } else {
       setHighlightedCategory(null);
@@ -120,7 +120,7 @@ export const App = () => {
         />
       </header>
 
-      <main id="main-grid" style={{ width: '100%' }}>
+      <main id="main-grid">
         <ColumnGrid
           categories={categories}
           highlightedCategory={highlightedCategory}

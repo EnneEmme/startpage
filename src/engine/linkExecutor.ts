@@ -34,7 +34,8 @@ export const extractScriptCode = (link: LinkItem): string => {
     const rawSnippet = rawUrl.substring(11).trim();
     try {
       return decodeURIComponent(rawSnippet);
-    } catch {
+    } catch (err) {
+      console.warn('[LinkExecutor] Malformed URI encoding in bookmarklet, using raw snippet:', err);
       return rawSnippet;
     }
   }

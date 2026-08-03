@@ -32,6 +32,20 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     expect(event.defaultPrevented).toBe(false);
   });
 
+  it('still ignores Escape while a modal is active (Modal owns the single close path)', () => {
+    // Regression guard (P7/R3): with modalActive the global manager must not
+    // touch Escape at all — no preventDefault, no handler, no double-close.
+    keyboardManager.setModalActive(true);
+    const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
+    keyboardManager.handleKeyDown(event);
+    expect(event.defaultPrevented).toBe(false);
+    expect(mockHandlers.onOpenSearch).not.toHaveBeenCalled();
+    expect(mockHandlers.onOpenCheatsheet).not.toHaveBeenCalled();
+    expect(mockHandlers.onOpenSettings).not.toHaveBeenCalled();
+    expect(mockHandlers.onOpenVisualEdit).not.toHaveBeenCalled();
+    expect(mockHandlers.onSelectCategoryIndex).not.toHaveBeenCalled();
+  });
+
   it('triggers onOpenCheatsheet when ?, F1, or Ctrl+/ is pressed', () => {
     const questionEvent = new KeyboardEvent('keydown', { key: '?' });
     keyboardManager.handleKeyDown(questionEvent);

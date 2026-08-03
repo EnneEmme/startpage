@@ -198,6 +198,13 @@ const sanitizeCommands = (raw: unknown, source: string): LinkItem[] => {
 };
 
 /**
+ * Structured result of a JSON import: `{ ok: true }` on success, otherwise a
+ * short human-readable `error` reason (invalid JSON, unrecognized shape, no
+ * valid links) that the UI can surface to the user.
+ */
+export type ImportResult = { ok: true } | { ok: false; error: string };
+
+/**
  * Import hardening (SECURITY): imported JSON is UNTRUSTED data — backups can
  * come from anywhere. Script machinery is stripped from every imported item:
  * `isScript`/`scriptContent` are removed, and an item whose url is a
@@ -560,37 +567,69 @@ export class DataStore {
     }, null, 2);
   }
 
+  /**
+   * Boolean compatibility path kept for the stores layer (appActions.importJson
+   * is annotated `: boolean`). UI code that needs the failure reason must call
+   * importJsonDetailed().
+   */
   public importJson(jsonString: string): boolean {
+    return this.importJsonDetailed(jsonString).ok;
+  }
+
+  /**
+   * Imports an UNTRUSTED backup payload and reports a structured result
+   * (short human-readable reason on failure). Accepted shapes:
+   * `{ commands: [...] }` and `{ config: { commands: [...] }, categoryOrder?, ranks? }`
+   * (ranks are read from the top level in both shapes, mirroring exportJson).
+   */
+  public importJsonDetailed(jsonString: string): ImportResult {
     const applyRanks = (candidate: unknown) => {
       if (candidate && typeof candidate === 'object' && !Array.isArray(candidate)) {
         rankStorage.importRankData(candidate as Parameters<typeof rankStorage.importRankData>[0]);
       }
     };
 
+    let parsed: unknown;
     try {
-      const parsed = JSON.parse(jsonString);
-      if (parsed && Array.isArray(parsed.commands)) {
-        this.config = { commands: sanitizeCommands(parsed.commands, 'import') };
+      parsed = JSON.parse(jsonString);
+    } catch (err) {
+      console.warn('[DataStore] Failed to import configuration (invalid JSON):', err);
+      return { ok: false, error: 'Invalid JSON' };
+    }
+
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      const container = parsed as {
+        commands?: unknown;
+        config?: { commands?: unknown };
+        categoryOrder?: unknown;
+        ranks?: unknown;
+      };
+      // Bare shape wins when both are present (original branch precedence).
+      const isWrappedShape = !Array.isArray(container.commands);
+      const rawCommands = isWrappedShape ? container.config?.commands : container.commands;
+
+      if (Array.isArray(rawCommands)) {
+        const sanitized = sanitizeCommands(rawCommands, 'import');
+        if (rawCommands.length > 0 && sanitized.length === 0) {
+          console.warn('[DataStore] Failed to import configuration: no entry has the required fields (id/title/url)');
+          return { ok: false, error: 'No valid links in backup (missing required fields)' };
+        }
+        this.config = { commands: sanitized };
         // Old backups may contain legacy categories/scripts: normalize on import
         this.config.commands.forEach(normalizeLegacyItem);
         // Untrusted payload: strip script machinery (store-XSS hardening)
         this.config.commands = neutralizeImportedCommands(this.config.commands);
-        applyRanks(parsed.ranks);
-        this.save();
-        return true;
-      } else if (parsed && parsed.config && Array.isArray(parsed.config.commands)) {
-        this.config = { commands: sanitizeCommands(parsed.config.commands, 'import') };
-        this.config.commands.forEach(normalizeLegacyItem);
-        this.config.commands = neutralizeImportedCommands(this.config.commands);
-        if (Array.isArray(parsed.categoryOrder)) {
-          this.categoryOrder = parsed.categoryOrder.filter((c: unknown): c is string => typeof c === 'string');
+        if (isWrappedShape && Array.isArray(container.categoryOrder)) {
+          this.categoryOrder = container.categoryOrder.filter((c: unknown): c is string => typeof c === 'string');
         }
-        applyRanks(parsed.ranks);
+        applyRanks(container.ranks);
         this.save();
-        return true;
+        return { ok: true };
       }
-    } catch {}
-    return false;
+    }
+
+    console.warn('[DataStore] Failed to import configuration: unrecognized backup shape (missing "commands" array)');
+    return { ok: false, error: 'Unrecognized backup format (missing "commands" array)' };
   }
 
   public resetToDefault(): void {
@@ -599,7 +638,9 @@ export class DataStore {
     try {
       localStorage.removeItem(STORAGE_LINKS_KEY);
       localStorage.removeItem(STORAGE_ORDER_KEY);
-    } catch {}
+    } catch (err) {
+      console.warn('[DataStore] Failed to clear stored configuration during reset:', err);
+    }
     this.notify();
   }
 }

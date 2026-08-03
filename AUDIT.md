@@ -247,7 +247,7 @@
   **Fix:** workflow minimo: `bun install --frozen-lockfile` → typecheck → test → build su PR/push dev. ✅ **Decisione utente:** niente CI (config-only). Item chiuso per scelta esplicita.
 
 - [x] ⚪ **`package.json` version `1.0.0` vs policy SemVer pre-release 0.x (gemini.md §2.7) e ultima release v0.3.0.** — Riallineare. ✅ Fatto (P5): bump `0.4.0`.
-- [ ] ⚪ **ActiveModal UX minore: doppio Escape (Modal + keyboardManager), terner drop_console rimuove i warn di produzione, README main con screenshot `assets/` non committato → immagine rotta** (viola §2.3).
+- [x] ⚪ **ActiveModal UX minore: doppio Escape (Modal + keyboardManager), terner drop_console rimuove i warn di produzione, README main con screenshot `assets/` non committato → immagine rotta** (viola §2.3). ✅ Verificato (P7/R3): **doppio Escape NON presente** — keyboardManager non gestisce affatto Escape (contratto esplicito, commento in keyboardManager.ts:50-51 + early-return modalActive); l'unica close-path è il listener di Modal (stopPropagation), mentre il keydown input di SearchModal chiama stopPropagation al target → tests/searchModal.test.tsx prova onClose chiamato esattamente 1 volta; aggiunto guard test in keyboardManager.test.ts (Esc con modal attiva → zero handler/preventDefault). Nessun refactor (codice già corretto da P2). **Terser confermato**: vite.config.ts `drop_console: ['log','debug','info']` → `console.warn`/`console.error` SOPRAVVIVONO in prod (verificato su dist build: `[ScriptConsent]`/`[ErrorBoundary]` warn presenti nel bundle). **README/screenshot main: ESCLUSO dal mio scope (fase release).**
 
 ---
 
@@ -304,15 +304,15 @@
 - [x] 🟡 **Meta mobile mancanti** — index.html: no `viewport-fit=cover`, no safe-area (`bottom: 1.25rem` fisso sulla pill → fluttua su iPhone), no `theme-color`, no apple-touch-icon/manifest, no `color-scheme: dark` (scrollbar chiare Firefox).
   **Fix:** meta completo + `calc(... + env(safe-area-inset-bottom))`. ✅ Fatto (P7/R2, parzialmente pre-esistente): index.html aveva **già** `viewport-fit=cover`/`theme-color`/`color-scheme: dark` (fase P3) e `color-scheme` in :root copre le scrollbar Firefox; pill ActionToolbar aveva già `bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px))`; aggiunto lo stesso trattamento safe-area ora su: Toast (`bottom` base 1.75rem e variante mobile 5.5rem), ContextMenu bottom-sheet touch (`bottom: 1rem` → calc) e bottom sheet del Modal mobile (`padding-bottom: env(...)` sul container → contenuto footer sopra l'home indicator, sfondo esteso al bordo). Restano aperti, fuori scope CSS: apple-touch-icon/manifest.
 
-- [ ] ⚪ **Magic numbers diffusi** — 1400ms highlight, -85 offset, 120/80px scroll, 35/12px auto-scroll, 190/220 clamp, pesi Fuse 0.45/0.35, rank factor 0.15, tabelle rem tema hardcoded.
-  **Fix:** costanti nominate in `engine/constants.ts`.
+- [x] ⚪ **Magic numbers diffusi** — 1400ms highlight, -85 offset, 120/80px scroll, 35/12px auto-scroll, 190/220 clamp, pesi Fuse 0.45/0.35, rank factor 0.15, tabelle rem tema hardcoded.
+  **Fix:** costanti nominate in `engine/constants.ts`. ✅ Fatto (P7/R3): `engine/constants.ts` (11 costanti: HIGHLIGHT_DURATION_MS, CATEGORY_SCROLL_OFFSET, PAGE_CHEVRON_*×3, FUSE_WEIGHT_*×4, RANK_BOOST_FACTOR, IMPORT_COPIED_FEEDBACK_MS) wired in app.tsx/categoryScroll/fuzzySearch/ColumnGrid/ImportExportModal; clamp 190/220 già eliminati in P1 (menu ora misurato via ref), auto-scroll DnD 35/12 in `src/hooks/useDragAndDrop.ts` (read-only in R3, non migrati — nota in report).
 
-- [ ] ⚪ **Catch silenziosi ovunque** — dataStore.ts:241,371,381; rankStorage.ts:28,49,98; themeEngine.ts:222-233; `importJson` ritorna solo false.
-  **Fix:** `console.warn` con contesto (restano in dev; drop_console li toglie in prod) + errori strutturati `{ok, error}` da importJson.
+- [x] ⚪ **Catch silenziosi ovunque** — dataStore.ts:241,371,381; rankStorage.ts:28,49,98; themeEngine.ts:222-233; `importJson` ritorna solo false.
+  **Fix:** `console.warn` con contesto (restano in dev; drop_console li toglie in prod) + errori strutturati `{ok, error}` da importJson. ✅ Fatto (P7/R3): 18 catch silenti → `console.warn('[Modulo] contesto', err)` (fallback invariati); nuovo `dataStore.importJsonDetailed(): {ok:true}|{ok:false,error}` con motivi leggibili (Invalid JSON / missing "commands" array / No valid links), `importJson` boolean mantenuto come compat wrapper (appStore.ts read-only, annotazione `: boolean`), ImportExportModal mostra il motivo via toast; 5 test engine + 2 test modal nuovi/adattati.
 
-- [ ] ⚪ **Error boundary assente** — eccezione di render (dati corrotti) = pagina bianca. Aggiungere boundary con bottone "Reset defaults" in main.tsx.
+- [x] ⚪ **Error boundary assente** — eccezione di render (dati corrotti) = pagina bianca. Aggiungere boundary con bottone "Reset defaults" in main.tsx. ✅ Fatto (P7/R3): `components/ErrorBoundary.tsx` class component (componentDidCatch) con fallback dark inline-styled (rende anche senza CSS), bottoni "Reload" + "Reset defaults" (pulisce le 5 chiavi app: links/order/theme/ranks/script_consents, poi reload); wrappa `<App />` in main.tsx, export nel barrel components; tests/errorBoundary.test.tsx (3 test: passthrough sano, fallback+2 bottoni, reset selettivo chiavi).
 
-- [ ] ⚪ **Inline styles sparsi** — app.tsx:120, ScriptEditor:14, FormFields:169-176, ghost drag (giustificato), ambra ×2. Spostare in CSS/token.
+- [x] ⚪ **Inline styles sparsi** — app.tsx:120, ScriptEditor:14, FormFields:169-176, ghost drag (giustificato), ambra ×2. Spostare in CSS/token. ✅ Fatto (P7/R3): Zap badge ambra → `.scriptBadge` (`color: var(--accent-amber, #f59e0b)`) in VisualEditModal.module.css + ColumnGrid.module.css (regola duplicata per design CSS-modules); ScriptEditor → `.scriptInput` (var(--font-mono)); 2 empty-state picker → `.pickerEmpty` (var(--text-muted)); LinkIcon retry → `.retryButton` (LinkIcon.module.css); `<main id="main-grid">` width → selettore `#main-grid` in global.css. Lasciati apposta (dinamici): chip colore SettingsModal `background: item.primary`, ContextMenu `left/top`, ghost drag, Modal maxWidth.
 
 - [x] ⚪ **i18n misto IT/EN** — centralizzare stringhe se si vuole coerenza.
 

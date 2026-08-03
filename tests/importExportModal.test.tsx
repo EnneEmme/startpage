@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, fireEvent, screen, act } from '@testing-library/preact';
 import { ImportExportModal } from '../src/components/ImportExportModal';
-import { appActions, linksSignal } from '../src/stores';
+import { Toast } from '../src/components/Toast';
+import { appActions, linksSignal, dismissToast } from '../src/stores';
 import { confirmSignal, settleConfirm } from '../src/stores/confirmStore';
 import { dataStore } from '../src/engine/dataStore';
 import { rankStorage } from '../src/engine/rankStorage';
@@ -28,6 +29,7 @@ describe('ImportExportModal', () => {
   beforeEach(() => {
     dataStore.resetToDefault();
     rankStorage.clear();
+    dismissToast();
     act(() => settleConfirm(false)); // settle any dangling confirm from a previous test
   });
 
@@ -76,16 +78,40 @@ describe('ImportExportModal', () => {
     expect(imported!.category).toBe('ImportedCat');
   });
 
-  it('importing malformed JSON shows an error banner and leaves links untouched', () => {
-    render(<ImportExportModal isOpen={true} onClose={vi.fn()} />);
+  it('importing malformed JSON surfaces a toast with the reason and leaves links untouched', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <>
+        <ImportExportModal isOpen={true} onClose={vi.fn()} />
+        <Toast />
+      </>
+    );
     const before = linksSignal.value.map(l => l.id).join(',');
 
     const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
     fireEvent.input(textarea, { target: { value: '{{{not valid json' } });
     fireEvent.click(screen.getByRole('button', { name: 'Apply & Import JSON' }));
 
-    expect(screen.getByText('Failed to parse JSON. Please check JSON syntax.')).not.toBeNull();
+    // Structured import errors reach the user via the global toast (P7/R3)
+    expect(screen.getByText('Import failed: Invalid JSON')).not.toBeNull();
+    expect(screen.queryByText('Configuration imported and applied successfully!')).toBeNull();
     expect(linksSignal.value.map(l => l.id).join(',')).toBe(before);
+    warnSpy.mockRestore();
+  });
+
+  it('importing well-formed JSON with a wrong shape surfaces the schema reason', () => {
+    render(
+      <>
+        <ImportExportModal isOpen={true} onClose={vi.fn()} />
+        <Toast />
+      </>
+    );
+
+    const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
+    fireEvent.input(textarea, { target: { value: '{"someKey": 123}' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Apply & Import JSON' }));
+
+    expect(screen.getByText('Import failed: Unrecognized backup format (missing "commands" array)')).not.toBeNull();
   });
 
   it('Reset Default requires the themed confirm, then restores defaults (no window.confirm)', async () => {

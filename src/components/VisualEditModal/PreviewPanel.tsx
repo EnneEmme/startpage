@@ -31,7 +31,7 @@ export const PreviewPanel = ({ title, url, icon, firstAlias, activeTab }: Previe
       <div class={styles.previewInfo}>
         <span class={styles.previewTitle}>
           {title || 'Link Title'}
-          {activeTab === 'script' && <Zap size={11} style={{ marginLeft: '4px', color: '#f59e0b', display: 'inline-block' }} />}
+          {activeTab === 'script' && <Zap size={11} class={styles.scriptBadge} />}
         </span>
       </div>
 

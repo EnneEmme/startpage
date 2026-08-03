@@ -32,6 +32,7 @@ startpage/
 │   │
 │   ├── engine/                # Decoupled Data & Business Logic Engine
 │   │   ├── index.ts           # Explicit barrel (named exports only)
+│   │   ├── constants.ts        # Shared tunables (highlight timing, scroll geometry, search weights)
 │   │   ├── dataStore.ts       # Links, categories, dynamic ordering & LocalStorage persistence
 │   │   ├── dynamicEvaluator.ts# Dynamic URL date/time interpolation (Unimib exam/lesson URLs)
 │   │   ├── linkExecutor.ts    # Link execution engine (custom JS bookmarklets & dynamic rules)
@@ -55,6 +56,7 @@ startpage/
 │   │   ├── ColumnGrid.module.css  # Styles for ColumnGrid + CategoryColumn + DraggableLinkCard
 │   │   ├── CategoryColumn.tsx # One category column: header (dblclick rename, drag) + masked link list
 │   │   ├── DraggableLinkCard.tsx # Memoized draggable link row card (uses ColumnGrid.module.css)
+│   │   ├── ErrorBoundary.tsx  # Render-error boundary (dark fallback UI: reload / reset defaults)
 │   │   ├── LinkIcon.tsx       # Favicon / Lucide icon renderer component
 │   │   ├── LinkIcon.module.css
 │   │   ├── ContextMenu.tsx    # Right-click / long-press context menu (Edit, Remove, Move category)
@@ -108,7 +110,7 @@ startpage/
 │       ├── variables.css      # Dynamic theme palette tokens, glassmorphism, typography
 │       └── global.css         # Global reset, keyframes, scrollbar & layout resets
 │
-└── tests/                     # Automated Vitest Test Suites (29 suites + shared setup)
+└── tests/                     # Automated Vitest Test Suites (30 suites + shared setup)
     ├── setup.ts               # Global per-test storage/isolation reset (loaded via setupFiles)
     ├── dataStore.test.ts
     ├── dynamicEvaluator.test.ts
@@ -137,6 +139,7 @@ startpage/
     ├── modalHooksGuard.test.tsx
     ├── reorderModal.test.tsx
     ├── accessibility.test.tsx
+    ├── errorBoundary.test.tsx
     ├── integrationFlow.test.tsx
     └── productionBuild.test.ts
 ```

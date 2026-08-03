@@ -220,7 +220,8 @@ export class ThemeEngine {
       if (!raw) return DEFAULT_THEME_CONFIG;
       const parsed = JSON.parse(raw);
       return { ...DEFAULT_THEME_CONFIG, ...parsed };
-    } catch {
+    } catch (err) {
+      console.warn('[ThemeEngine] Failed to parse stored theme settings, using defaults:', err);
       return DEFAULT_THEME_CONFIG;
     }
   }
@@ -229,8 +230,9 @@ export class ThemeEngine {
     if (typeof localStorage === 'undefined') return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-    } catch {
-      // ignore quota storage issues
+    } catch (err) {
+      // quota/serialization issues must never break theming
+      console.warn('[ThemeEngine] Failed to persist theme settings:', err);
     }
   }
 }

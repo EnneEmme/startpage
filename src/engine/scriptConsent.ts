@@ -45,7 +45,8 @@ const readConsents = (): Record<string, string> => {
     return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
       ? parsed as Record<string, string>
       : {};
-  } catch {
+  } catch (err) {
+    console.warn('[ScriptConsent] Failed to read stored consents, starting empty:', err);
     return {};
   }
 };
@@ -53,8 +54,9 @@ const readConsents = (): Record<string, string> => {
 const writeConsents = (consents: Record<string, string>): void => {
   try {
     localStorage.setItem(CONSENTS_STORAGE_KEY, JSON.stringify(consents));
-  } catch {
+  } catch (err) {
     /* storage full/private mode: consent stays in-memory-less, re-asked next time */
+    console.warn('[ScriptConsent] Failed to persist consents:', err);
   }
 };
 
@@ -76,7 +78,8 @@ export const grantConsent = (link: LinkItem): void => {
 export const clearConsents = (): void => {
   try {
     localStorage.removeItem(CONSENTS_STORAGE_KEY);
-  } catch {
+  } catch (err) {
     /* best-effort */
+    console.warn('[ScriptConsent] Failed to clear stored consents:', err);
   }
 };

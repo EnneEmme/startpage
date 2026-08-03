@@ -23,7 +23,9 @@ const getStorage = (): Storage => {
     if (typeof window !== 'undefined' && window.localStorage) {
       return window.localStorage;
     }
-  } catch {}
+  } catch (err) {
+    console.warn('[RankStorage] window.localStorage unavailable, falling back to in-memory storage:', err);
+  }
   return new MemoryStorage();
 };
 
@@ -60,7 +62,8 @@ export class RankStorage {
       // Accept only a plain object map; anything else (number, array, null,
       // string) would make recordUsage/getRankBonus throw on property access.
       this.ranks = RankStorage.isRankMap(parsed) ? parsed : {};
-    } catch {
+    } catch (err) {
+      console.warn('[RankStorage] Failed to parse stored ranks, starting empty:', err);
       this.ranks = {};
     }
   }
@@ -140,7 +143,9 @@ export class RankStorage {
     this.cancelScheduledSave();
     try {
       this.storage.removeItem(STORAGE_KEY);
-    } catch {}
+    } catch (err) {
+      console.warn('[RankStorage] Failed to remove stored ranks:', err);
+    }
   }
 }
 

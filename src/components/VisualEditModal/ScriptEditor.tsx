@@ -10,8 +10,7 @@ export const ScriptEditor = ({ scriptSnippet, setScriptSnippet }: ScriptEditorPr
     <label class={styles.label} for="vem-script">JavaScript Code / Bookmarklet</label>
     <textarea
       id="vem-script"
-      class={styles.input}
-      style={{ minHeight: '105px', fontFamily: 'var(--font-mono)', fontSize: '0.84rem' }}
+      class={`${styles.input} ${styles.scriptInput}`}
       placeholder="e.g. (function() { const targetUrl = 'https://...'; window.location.href = targetUrl; })();"
       value={scriptSnippet}
       onInput={e => setScriptSnippet((e.target as HTMLInputElement).value)}

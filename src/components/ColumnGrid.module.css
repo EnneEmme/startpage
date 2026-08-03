@@ -491,3 +491,11 @@
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
+
+/* Script bookmarklet badge on the card title (amber accent token, hex fallback) */
+.scriptBadge {
+  margin-left: 4px;
+  color: var(--accent-amber, #f59e0b);
+  display: inline-block;
+  vertical-align: middle;
+}
