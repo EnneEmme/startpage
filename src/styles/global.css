@@ -126,12 +126,19 @@ input, textarea {
 /* WCAG keyboard focus indicator (element+pseudo batte `outline:none` a classe) */
 a:focus-visible,
 button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
 [tabindex]:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* Text fields: soft accent glow instead of a hard rectangle outline.
+   box-shadow follows border-radius (an outline offset does not), so the
+   indicator matches the rounded glass inputs; contrast vs dark bg stays >3:1. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
 /* Keyframes */

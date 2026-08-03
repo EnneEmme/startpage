@@ -27,14 +27,12 @@ const LISTBOX_ID = 'search-results-listbox';
 
 interface SearchResultRowProps {
   result: SearchResult;
-  index: number;
   selected: boolean;
   onSelect: (link: LinkItem) => void;
-  onHover: (index: number) => void;
 }
 
 /** Memoized row: only re-renders when its own selection state/result changes */
-const SearchResultRow = memo(({ result, index, selected, onSelect, onHover }: SearchResultRowProps) => {
+const SearchResultRow = memo(({ result, selected, onSelect }: SearchResultRowProps) => {
   const item = result.item;
   const targetUrl = resolveDynamicUrl(item.url, item.dynamicUrlRule);
 
@@ -45,7 +43,6 @@ const SearchResultRow = memo(({ result, index, selected, onSelect, onHover }: Se
       aria-selected={selected}
       class={`${styles.resultRow} ${selected ? styles.selected : ''}`}
       onClick={() => onSelect(item)}
-      onMouseEnter={() => onHover(index)}
     >
       <div class={styles.iconBox}>
         <LinkIcon
@@ -129,9 +126,9 @@ export const SearchModal = ({
     executeLink(link);
   }, [onClose]);
 
-  const handleHoverRow = useCallback((index: number) => {
-    setSelectedIndex(index);
-  }, []);
+  // Note: pointer hover intentionally does NOT change selectedIndex — a static
+  // cursor resting over the list would otherwise steal the keyboard selection
+  // while typing (hover shows CSS affordance only; click explicitly opens).
 
   /** Fallback web search honoring the user's configured default engine */
   const getFallback = (rawQuery: string) =>
@@ -335,10 +332,8 @@ export const SearchModal = ({
               <SearchResultRow
                 key={res.item.id}
                 result={res}
-                index={index}
                 selected={index === selectedIndex}
                 onSelect={handleSelectLink}
-                onHover={handleHoverRow}
               />
             ))}
           </div>

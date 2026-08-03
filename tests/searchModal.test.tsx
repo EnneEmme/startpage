@@ -226,5 +226,25 @@ describe('SearchModal Component', () => {
       fireEvent.keyDown(input, { key: 'ArrowDown' });
       expect(scrollSpy).toHaveBeenCalledWith({ block: 'nearest' });
     });
+
+    it('pointer hover does not steal the keyboard selection; click opens the hovered row', () => {
+      const onClose = vi.fn();
+      render(<SearchModal isOpen={true} links={mockLinks} onClose={onClose} />);
+      const input = screen.getByRole('combobox') as HTMLInputElement;
+
+      fireEvent.input(input, { target: { value: 'u' } }); // GitHub + YouTube
+      const options = screen.getAllByRole('option');
+      expect(options[0]!.getAttribute('aria-selected')).toBe('true');
+
+      // A static cursor resting over the list must not capture the selection
+      fireEvent.mouseEnter(options[1]!);
+      expect(options[0]!.getAttribute('aria-selected')).toBe('true');
+      expect(options[1]!.getAttribute('aria-selected')).toBe('false');
+      expect(input.getAttribute('aria-activedescendant')).toBe('search-opt-link-1');
+
+      // Click still activates the row under the mouse
+      fireEvent.click(options[1]!);
+      expect(onClose).toHaveBeenCalled();
+    });
   });
 });
