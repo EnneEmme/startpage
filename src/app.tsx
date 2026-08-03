@@ -135,6 +135,7 @@ export const App = () => {
       />
 
       <VisualEditModal
+        key={editTargetLink?.id ?? 'new'}
         isOpen={isModalOpen('visualEdit')}
         initialEditLink={editTargetLink}
         onClose={closeModal}
