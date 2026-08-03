@@ -1,7 +1,7 @@
 import { Check, Sliders, Palette, LayoutGrid, Type, Search, Download, Eye } from 'lucide-preact';
 import { ACCENT_COLORS } from '../engine';
 import { themeConfigSignal, settingsActions } from '../stores';
-import { Modal } from './modals/Modal';
+import { Modal } from './Modals/Modal';
 import styles from './SettingsModal.module.css';
 
 interface SettingsModalProps {

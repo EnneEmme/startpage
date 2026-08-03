@@ -4,14 +4,14 @@ import { Plus, Sliders, Globe, Zap, Search } from 'lucide-preact';
 import type { LinkItem } from '../../types/startpage';
 import { resolveDynamicUrl } from '../../engine';
 import { appActions, categoriesSignal, confirmDialog } from '../../stores';
-import styles from '../VisualEditModal.module.css';
+import styles from './VisualEditModal.module.css';
 import { searchLucideIcons } from '../iconRegistry';
 
 import { PreviewPanel } from './PreviewPanel';
 import { CategoryPicker } from './CategoryPicker';
 import { ScriptEditor } from './ScriptEditor';
 import { FormFields } from './FormFields';
-import { Modal } from '../modals/Modal';
+import { Modal } from '../Modals/Modal';
 
 interface VisualEditModalProps {
   isOpen?: boolean;

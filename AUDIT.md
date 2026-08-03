@@ -237,8 +237,8 @@
 - [x] 🟡 **`stats.html` (981 KB) tracciato in git, rigenerato a ogni build; visualizer apre browser; gzipSize assente nel report.**
   **Fix:** `visualizer({ filename:'dist/stats.html', gzipSize:true, open:false })` + `.gitignore`. ✅ Fatto (P5): visualizer gzipSize+open:false su `dist/stats.html`, aggiunto a `.gitignore`.
 
-- [ ] 🟡 **Confusione root `index.html` dev vs artifact produzione** — `structure.md:11` documenta la root `index.html` come "production bundle", ma su `dev` è il template Vite con `<script src="/src/main.tsx">`. L'artifact vero vive solo in `dist/` (gitignored) e su `main` squashed. Rischio deploy accidentale del file dev.
-  **Fix:** chiarire in structure.md il doppio ruolo; artifact solo su main. ⏳ Parziale: l'artifact vive solo in `dist/` da `base:'./'` (P5); il chiarimento testuale in structure.md resta in P7.
+- [x] 🟡 **Confusione root `index.html` dev vs artifact produzione** — `structure.md:11` documenta la root `index.html` come "production bundle", ma su `dev` è il template Vite con `<script src="/src/main.tsx">`. L'artifact vero vive solo in `dist/` (gitignored) e su `main` squashed. Rischio deploy accidentale del file dev.
+  **Fix:** chiarire in structure.md il doppio ruolo; artifact solo su main. ✅ Risolto: l'artifact vive solo in `dist/` da `base:'./'` (P5); structure.md:11 ora documenta la root `index.html` come "Vite dev template (production bundle lives in dist/ or on main)".
 
 - [x] 🟡 **Test fragili/illusionistici** — `accessibility.test.tsx` legge stringhe CSS da disco (nessun comportamento); `reorderModal.test.tsx:39-44` con `if(length>1)` = falso positivo garantito; assert sul copy EN (`getByTitle(...)`) in uiComponents/integrationFlow; `confirm` mock con restore manuale (contextMenu.test.tsx:60); singleton engine non resettati uniformemente.
   **Fix:** test su ruoli/ARIA reali (ruolo dialog di Modal esiste), asserzioni incondizionate, `within()`, setupFiles con reset globale. ✅ Fatto (P5): riscrittura `accessibility.test.tsx` senza `fs.readFileSync`, `tests/setup.ts` globale, assert su ruoli reali.
@@ -268,20 +268,20 @@
 
 ## P7 — FILE, DOCS & IGIENE REPO
 
-- [ ] 🟠 **`structure.md` gravemente stantio** (viola gemini.md §2.5): cita `GEMINI.md` (file: `gemini.md`), documenta `old_homepage/` inesistente, VisualEditModal come file piatto (ora cartella con 4 sotto-file), mancano `stores/`, `hooks/`, `components/modals/`, `components/Widgets/`, 7 test su 21 non citati.
+- [x] 🟠 **`structure.md` gravemente stantio** (viola gemini.md §2.5): cita `GEMINI.md` (file: `gemini.md`), documenta `old_homepage/` inesistente, VisualEditModal come file piatto (ora cartella con 4 sotto-file), mancano `stores/`, `hooks/`, `components/modals/`, `components/Widgets/`, 7 test su 21 non citati. ✅ Fatto (P7): riscritto dallo stato reale — root completa (eslint.config.mjs, .prettierrc, bun.lock…), `engine/scriptConsent.ts`, dettaglio `VisualEditModal/` (5 file), ownership CSS condivisi, tutte le 29 suite test + `setup.ts`.
   **Fix:** riscrivere dallo stato reale; rieleggere a ogni commit che muove file.
 
-- [ ] 🟠 **TODO.md/plan.md dichiarano completamenti falsi** — "ESLint+Prettier+Husky ✅" (inesistenti), "structuredClone ✅" (ancora JSON.parse/stringify), "union type ✅" (ancora collassato, types:15: `'unimib_orari'|'unimib_esami'|string` → fix `(string & {})`), "coverage ✅" (nessuna config), "100dvh ✅" (ancora `100vh` ovunque); plan.md:35 dice Ctrl+1-9 ma è tasto singolo; TODO Task 2 dice "hold Alt" ma è toggle.
-  **Fix:** verificare prima di spuntare; riallineare.
+- [x] 🟠 **TODO.md/plan.md dichiarano completamenti falsi** — "ESLint+Prettier+Husky ✅" (inesistenti), "structuredClone ✅" (ancora JSON.parse/stringify), "union type ✅" (ancora collassato, types:15: `'unimib_orari'|'unimib_esami'|string` → fix `(string & {})`), "coverage ✅" (nessuna config), "100dvh ✅" (ancora `100vh` ovunque); plan.md:35 dice Ctrl+1-9 ma è tasto singolo; TODO Task 2 dice "hold Alt" ma è toggle.
+  **Fix:** verificare prima di spuntare; riallineare. ✅ Fatto (P7, verifiche grep/codice): realmente veri e mantenuti → structuredClone (dataStore.ts:148,424,521), union type (types:15 ha `(string & {})`), ESLint+Prettier (P5; Husky scartato da decisione utente), coverage v8 + script, strict flags (tsc 0 errori). Corretti i falsi → "100dvh ✅" → 🔴 aperto (8× `100vh` + `!important`, tracciato in P7), plan.md Ctrl+1-9 → `Shift+1..9`, TODO Task 2 "hold Alt" → toggle Alt/Shift+Space, script obsoleti (`vitest.mjs`/`vite.js` diretti → `bun run test`/`bun run build`).
 
-- [ ] 🟡 **Chiavi localStorage doc ≠ codice** — gemini.md §1.3 cita `startpage_links/startpage_settings`; codice usa `startpage_custom_links`, `startpage_category_order`, `startpage_theme_settings` (+`startpage_ranks` corretta).
-  **Fix:** aggiornare gemini.md (il codice è il contratto reale).
+- [x] 🟡 **Chiavi localStorage doc ≠ codice** — gemini.md §1.3 cita `startpage_links/startpage_settings`; codice usa `startpage_custom_links`, `startpage_category_order`, `startpage_theme_settings` (+`startpage_ranks` corretta).
+  **Fix:** aggiornare gemini.md (il codice è il contratto reale). ✅ Risolto in P6: gemini.md §1.3 ora elenca le chiavi reali (`startpage_custom_links`, `startpage_category_order`, `startpage_theme_settings`, `startpage_ranks`, `startpage_script_consents`).
 
-- [ ] 🟡 **`refactor.js` orfano in root** — codemod usa-e-getta, regex fragile, ha prodotto artefatti `{  x  }`, non documentato.
-  **Fix:** cancellare (storia in git).
+- [x] 🟡 **`refactor.js` orfano in root** — codemod usa-e-getta, regex fragile, ha prodotto artefatti `{  x  }`, non documentato.
+  **Fix:** cancellare (storia in git). ✅ Fatto (P7): `git rm refactor.js`, nessun riferimento residuo.
 
-- [ ] 🟡 **Naming folder incoerente** — `Widgets/` (Pascal) vs `modals/` (lower) vs `VisualEditModal/`; `VisualEditModal.module.css` fuori dalla cartella del componente.
-  **Fix:** convenzione unica (cartella PascalCase + css co-locato).
+- [x] 🟡 **Naming folder incoerente** — `Widgets/` (Pascal) vs `modals/` (lower) vs `VisualEditModal/`; `VisualEditModal.module.css` fuori dalla cartella del componente.
+  **Fix:** convenzione unica (cartella PascalCase + css co-locato). ✅ Fatto (P7): `Widgets/` già eliminato (dead code P2); `modals/` → `Modals/` (9 import aggiornati + test), `VisualEditModal.module.css` co-locato nella cartella del componente (5 import aggiornati).
 
 - [ ] 🟡 **~600 righe CSS morto duplicato** — SearchModal/Cheatsheet/Settings/VisualEdit/Reorder/ImportExport module.css ridefiniscono `.overlay/.modalContainer/.modalHeader/...` mai applicate (i componenti usano `<Modal>`); classi fantasma: `fade-in-scale` (SearchModal.tsx:156) e `styles.searchContentOverrides` (:157 → stringa `"undefined"` nel DOM); `.preview*` in Settings mai usate.
   **Fix:** cancellare blocchi morti e classi inesistenti.
@@ -323,8 +323,8 @@
 
 - [x] ⚪ **LazyWidget: `requestIdleCallback`/timeout non cancellati nel cleanup** — LazyWidget.tsx:16-35: setState possibile su componente smontato. (Nota: componente attualmente dead code — se eliminato, item chiuso; se integrato, fixare.)
 
-- [ ] 🟡 **Tipi `any`/cast su tutto il perimetro icone Lucide** — `useDragAndDrop.ts:9` (`item: any`), `useKeyboardShortcuts.ts:14` (`any[]`), `VisualEditModal/index.tsx:16-22` (`icon: any`, `Record<string, any>`), `FormFields.tsx:21` (`filteredIcons: any[]`), `LinkIcon.tsx:27` (`Record<string, any>`), `LazyWidget.tsx:7-8`. Lo strict mode è vanificato in questi punti.
-  **Fix:** tipare con `LucideIcon` / `ComponentType<{size?: number; class?: string}>` (si risolve naturalmente col registry statico del P0 lucide).
+- [x] 🟡 **Tipi `any`/cast su tutto il perimetro icone Lucide** — `useDragAndDrop.ts:9` (`item: any`), `useKeyboardShortcuts.ts:14` (`any[]`), `VisualEditModal/index.tsx:16-22` (`icon: any`, `Record<string, any>`), `FormFields.tsx:21` (`filteredIcons: any[]`), `LinkIcon.tsx:27` (`Record<string, any>`), `LazyWidget.tsx:7-8`. Lo strict mode è vanificato in questi punti.
+  **Fix:** tipare con `LucideIcon` / `ComponentType<{size?: number; class?: string}>` (si risolve naturalmente col registry statico del P0 lucide). ✅ Risolto col registry statico (P0 lucide): `iconRegistry.ts` tipa tutto con `LucideIcon`; verifica 2026-08-03: zero `: any`/`Record<string, any>` in `src/` (grep).
 
 - [x] ⚪ **`app.tsx:79` `currentCats[index]` possibly undefined** — incluso nei 100 errori tsc, da risolvere col fix typecheck (guard indice su jump categoria). ✅ Risolto col typecheck 0 (P2).
 

@@ -40,12 +40,12 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ### 🔹 Task 2: Hidden Aliases, Key-Hold Trigger & Category Number Shortcuts (`1`..`9`)
 - [x] **Hide Aliases by Default**:
   - Keep link row alias badges hidden during normal browsing.
-- [x] **Modifier Key Listener (`Alt` / `Space`)**:
-  - Update `keyboardManager.ts` to emit key-down/key-up events when holding `Alt` (or `Space`).
+- [x] **Modifier Key Toggle (`Alt` / `Shift+Space`)**:
+  - `Alt` key tap (or `Shift+Space`) toggles Shortcuts View mode in `keyboardManager.ts` (toggle, not hold: the Alt keydown itself may carry altKey).
 - [x] **Category Quick-Select Badges (`1`..`9`)**:
-  - When modifier key is held, render number badges (`1`, `2`, `3`...) inside category pills in `JumpBar.tsx`.
-  - Pressing key `1`..`9` while holding the modifier key instantly scrolls and jumps to category 1..9.
-  - Reveal alias badges on link rows while modifier key is held.
+  - While Shortcuts View mode is active, number badges (`1`, `2`, `3`...) are rendered inside category pills in `JumpBar.tsx`.
+  - Pressing `Shift+1`..`Shift+9` instantly scrolls and jumps to category 1..9 (layout-independent via `e.code`; plain digits stay free for type-to-search).
+  - Alias badges on link rows are revealed while Shortcuts View mode is active.
 
 ---
 
@@ -183,9 +183,9 @@ The goal is to transform the Startpage into an ultra-premium, highly customizabl
 ## 🛠️ Execution & Testing Strategy
 
 1. **Automated Unit Testing**:
-   - Run `bun ./node_modules/vitest/vitest.mjs run` after each task to maintain 100% passing tests (59/59+).
+   - Run `bun run test` after each task to maintain 100% passing tests (currently 29 suites / 231 tests).
 2. **Production Build Compilation**:
-   - Run `bun ./node_modules/vite/bin/vite.js build` to build singlefile bundle `dist/index.html`.
+   - Run `bun run build` to build the singlefile bundle `dist/index.html`.
 3. **Deployment**:
    - Commit feature code to `dev` branch.
 
@@ -756,20 +756,20 @@ src/
 | 10 | Spezzare VisualEditModal (25KB!) | 🟡 | Manutenibilità & Modularità | ✅ **Completato** (`src/components/VisualEditModal/` + `tests/visualEditModal.test.tsx`) |
 | 11 | Design tokens completi in CSS | 🟡 | Consistenza | ✅ **Completato** (`variables.css`) |
 | 12 | Modal base component condiviso | 🟡 | -500 righe CSS duplicato & Accessibilità ARIA | ✅ **Completato** (`src/components/modals/Modal.tsx` + `tests/modalBase.test.tsx`) |
-| 13 | `structuredClone()` invece di JSON round-trip | 🟡 | Performance + correttezza | ✅ **Completato** |
-| 14 | Fix `100vh` → `100dvh` su mobile | 🟡 | Layout mobile | ✅ **Completato** |
-| 15 | ESLint + Prettier + Husky | 🟡 | Code quality | ✅ **Completato** |
-| 16 | Barrel exports (`index.ts`) | 🟡 | DX migliore | ✅ **Completato** |
+| 13 | `structuredClone()` invece di JSON round-trip | 🟡 | Performance + correttezza | ✅ **Completato** (verificato: dataStore.ts, cheatsheetData.ts) |
+| 14 | Fix `100vh` → `100dvh` su mobile | 🟡 | Layout mobile | 🔴 **Aperto** — claim precedente falso: 8 occorrenze `100vh` ancora presenti (global.css, ColumnGrid.module.css, Modal.module.css) + `!important`. Tracciato in AUDIT.md P7 |
+| 15 | ESLint + Prettier + Husky | 🟡 | Code quality | ✅ **Completato** ESLint 9 flat config + Prettier (P5). **Husky: scartato per decisione utente** (niente git hooks/CI, config-only) |
+| 16 | Barrel exports (`index.ts`) | 🟡 | DX migliore | ✅ **Completato** (export nominati espliciti) |
 
 ### Nice-to-have
 
 | # | Issue | Severity | Impatto | Stato |
 |---|-------|----------|---------|-------|
-| 17 | Bundle analyzer (`rollup-plugin-visualizer`) | 🟢 | Visibilità dimensioni bundle | ✅ **Completato** (`vite.config.ts`) |
-| 18 | Coverage thresholds | 🟢 | Qualità test | ✅ **Completato** (21 suite, 92 test 100% pass) |
-| 19 | Terser con `drop_console` e 2-pass | 🟢 | Bundle più leggero (774KB / 203KB gz) | ✅ **Completato** (`vite.config.ts` + `dist/index.html`) |
-| 20 | `noUncheckedIndexedAccess` e strict flags in tsconfig | 🟢 | Type safety | 🟡 Pianificato |
-| 21 | Fix union type collassato in `startpage.ts` | 🟢 | Autocomplete IDE | ✅ **Completato** (`startpage.ts`) |
+| 17 | Bundle analyzer (`rollup-plugin-visualizer`) | 🟢 | Visibilità dimensioni bundle | ✅ **Completato** (`vite.config.ts`, report in `dist/stats.html` con gzipSize) |
+| 18 | Coverage provider | 🟢 | Qualità test | ✅ **Completato** — v8 provider in `vitest.config.ts` + script `bun run coverage` (stato attuale: 29 suite / 231 test). Thresholds numeriche non configurate (no caccia al %) |
+| 19 | Terser con `drop_console` e 2-pass | 🟢 | Bundle più leggero | ✅ **Completato** (`vite.config.ts`; dist attuale 268.58 KB / ~79.85 KB gz, budget 350 KB) |
+| 20 | `noUncheckedIndexedAccess` e strict flags in tsconfig | 🟢 | Type safety | ✅ **Completato** — strict flags attivi (verbatimModuleSyntax, exactOptionalPropertyTypes, noUncheckedIndexedAccess), `bun run typecheck` = 0 errori |
+| 21 | Fix union type collassato in `startpage.ts` | 🟢 | Autocomplete IDE | ✅ **Completato** (`startpage.ts:15`: `'unimib_orari' \| 'unimib_esami' \| (string & {})`) |
 
 ---
 

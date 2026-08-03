@@ -1,7 +1,7 @@
 import { Eye, Zap } from 'lucide-preact';
 import { ICON_FALLBACK_URL } from '../../engine';
 import { LinkIcon } from '../LinkIcon';
-import styles from '../VisualEditModal.module.css';
+import styles from './VisualEditModal.module.css';
 
 interface PreviewPanelProps {
   title: string;

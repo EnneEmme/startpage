@@ -1,6 +1,6 @@
 import { AlertTriangle } from 'lucide-preact';
 import { confirmSignal, settleConfirm } from '../stores';
-import { Modal } from './modals/Modal';
+import { Modal } from './Modals/Modal';
 import styles from './ConfirmDialog.module.css';
 
 /**

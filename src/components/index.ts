@@ -15,4 +15,4 @@ export { SearchModal } from './SearchModal';
 export { SettingsModal } from './SettingsModal';
 export { Toast } from './Toast';
 export { VisualEditModal } from './VisualEditModal';
-export { Modal } from './modals/Modal';
+export { Modal } from './Modals/Modal';

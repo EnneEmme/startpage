@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'preact/hooks';
 import { Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
 import { copyTextToClipboard } from '../engine';
 import { appActions, confirmDialog, showToast } from '../stores';
-import { Modal } from './modals/Modal';
+import { Modal } from './Modals/Modal';
 import styles from './ImportExportModal.module.css';
 
 interface ImportExportModalProps {

@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks';
 import { X, Keyboard, Search, Sparkles, Command } from 'lucide-preact';
 import { getDynamicCheatsheetShortcuts } from '../engine';
-import { Modal } from './modals/Modal';
+import { Modal } from './Modals/Modal';
 import styles from './CheatsheetModal.module.css';
 
 interface CheatsheetModalProps {

@@ -32,7 +32,7 @@ This document outlines the detailed development roadmap for the Startpage projec
   - [x] Implement **Command Palette** prefix engine (`g <query>` Google, `yt <query>` YouTube, `gh <query>` GitHub, `w <query>` Wikipedia, custom fallback search).
   - [x] Integrate usage ranking boost into fuzzy search results.
   - [x] Implement global Keystroke Listener & Shortcuts Manager (`keyboardManager.ts`).
-  - [x] Implement numerical quick-select shortcuts parser (`Ctrl+1`..`9`).
+  - [x] Implement numerical category quick-select shortcuts (`Shift+1`..`Shift+9`, layout-independent; plain digits stay free for type-to-search).
   - [x] Implement Interactive Shortcuts Cheatsheet data provider (`cheatsheetData.ts`).
 
 - [x] **Phase 4: UI Development (Dark Premium Aesthetic & Features)**
