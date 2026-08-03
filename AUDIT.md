@@ -283,26 +283,26 @@
 - [x] 🟡 **Naming folder incoerente** — `Widgets/` (Pascal) vs `modals/` (lower) vs `VisualEditModal/`; `VisualEditModal.module.css` fuori dalla cartella del componente.
   **Fix:** convenzione unica (cartella PascalCase + css co-locato). ✅ Fatto (P7): `Widgets/` già eliminato (dead code P2); `modals/` → `Modals/` (9 import aggiornati + test), `VisualEditModal.module.css` co-locato nella cartella del componente (5 import aggiornati).
 
-- [ ] 🟡 **~600 righe CSS morto duplicato** — SearchModal/Cheatsheet/Settings/VisualEdit/Reorder/ImportExport module.css ridefiniscono `.overlay/.modalContainer/.modalHeader/...` mai applicate (i componenti usano `<Modal>`); classi fantasma: `fade-in-scale` (SearchModal.tsx:156) e `styles.searchContentOverrides` (:157 → stringa `"undefined"` nel DOM); `.preview*` in Settings mai usate.
-  **Fix:** cancellare blocchi morti e classi inesistenti.
+- [x] 🟡 **~600 righe CSS morto duplicato** — SearchModal/Cheatsheet/Settings/VisualEdit/Reorder/ImportExport module.css ridefiniscono `.overlay/.modalContainer/.modalHeader/...` mai applicate (i componenti usano `<Modal>`); classi fantasma: `fade-in-scale` (SearchModal.tsx:156) e `styles.searchContentOverrides` (:157 → stringa `"undefined"` nel DOM); `.preview*` in Settings mai usate.
+  **Fix:** cancellare blocchi morti e classi inesistenti. ✅ Fatto (P7/R2): 577 righe cancellate — chrome duplicato `.overlay/.modalContainer/.modalHeader/.closeBtn/.modalTitle/.modalSubtitle/.modalContent/.modalFooter` dai 6 module.css (grep-scoped per importer), `.preview*` in Settings, `.keycap/.shortcutBadge/@keyframes modalPop` in SearchModal; SearchModal.tsx: rimossi `className="fade-in-scale"` e `contentClassName={styles.searchContentOverrides}` (niente più `"undefined"` nel DOM).
 
-- [ ] 🟡 **Design tokens incompleti** — no spacing scale/elevation/semantic colors (success/danger hardcoded `#4ade80/#f87171`); token definiti e mai usati (`--bg-navbar`, `--accent-primary-hover`, `--accent-amber` — ambra hardcoded inline `#f59e0b` in ColumnGrid:421 e PreviewPanel:34); `--accent-gradient` statica slate non aggiornata da themeEngine → badge/bottoni restano indigo a prescindere dall'accento; radius hardcoded ovunque.
-  **Fix:** completare tokenizzazione; themeEngine emette tutti i derivati.
+- [x] 🟡 **Design tokens incompleti** — no spacing scale/elevation/semantic colors (success/danger hardcoded `#4ade80/#f87171`); token definiti e mai usati (`--bg-navbar`, `--accent-primary-hover`, `--accent-amber` — ambra hardcoded inline `#f59e0b` in ColumnGrid:421 e PreviewPanel:34); `--accent-gradient` statica slate non aggiornata da themeEngine → badge/bottoni restano indigo a prescindere dall'accento; radius hardcoded ovunque.
+  **Fix:** completare tokenizzazione; themeEngine emette tutti i derivati. ✅ Fatto (P7/R2): aggiunti `--space-1..6` (0.25/0.5/0.75/1/1.5/2rem) e semantic `--success/--danger/--warning` (radius scale esisteva già: sm/md/lg/full); `--warning: var(--accent-amber, #f59e0b)` e `--accent-amber` MANTENUTO risolvibile (richiesto dal branch parallelo); `--bg-navbar`/`--accent-primary-hover` cancellati (grep zero uso); `--accent-gradient` → `linear-gradient(135deg, var(--accent-highlight), var(--accent-primary))` (buildato dalle var che themeEngine emette su :root), consumatori commandBadge/primaryBtn: testo `#0b0d12` + shadow `var(--accent-glow)` (leggibili su ogni accento, convenzione esistente ConfirmDialog.confirmBtn); esadecimale `#4ade80/#f87171` → token nei 4 CSS; radius 12px/8px/4px 1:1 → `--radius-lg/md/sm` su chrome modali (2/6/10/14/16/24px senza token corrispondente lasciati); gli inline `style={{...#f59e0b}}` nei .tsx restano all'item 'Inline styles sparsi' (fuori scope).
 
-- [ ] 🟡 **Breakpoint incoerenti** — 599/600/601 e 1023/1024/1025 in file diversi: a 600px e 1024px due regimi coesistono.
-  **Fix:** scala unica condivisa.
+- [x] 🟡 **Breakpoint incoerenti** — 599/600/601 e 1023/1024/1025 in file diversi: a 600px e 1024px due regimi coesistono.
+  **Fix:** scala unica condivisa. ✅ Fatto (P7/R2): larghezze unificate in tutti i 9 CSS — mobile `(max-width: 599.98px)`, tablet `(min-width: 600px) and (max-width: 1023.98px)`, desktop `(min-width: 1024px)`, wide `(min-width: 1600px)` + companion `(max-width: 1599.98px)`: nessun pixel appartiene a due regimi; `max-height: 480px` (landscape modal) e pointer/hover queries invariati.
 
-- [ ] 🟡 **Densità griglia: 3 fonti di verità divergenti** — themeEngine ('normal' = `2.5rem 1.25rem`) vs ColumnGrid.module.css:4 (`5rem`) vs media query hardcoded → flash al primo paint.
-  **Fix:** unica fonte (engine via CSS var).
+- [x] 🟡 **Densità griglia: 3 fonti di verità divergenti** — themeEngine ('normal' = `2.5rem 1.25rem`) vs ColumnGrid.module.css:4 (`5rem`) vs media query hardcoded → flash al primo paint.
+  **Fix:** unica fonte (engine via CSS var). ✅ Fatto (P7/R2): ColumnGrid consuma `var(--grid-gap, 2.5rem 1.25rem)` e `var(--grid-col-min-width, 185px)` (fallback = density 'normal' dell'engine, zero flash); rimossi i gap hardcoded 3.5/4.5/5/5.5rem e i min-width 175/190px dai 4 tier; blocchi media ridotti ai soli override residui (padding); su <600px resta il floor fisico `minmax(150px, 1fr)` (il min engine ≥155px forzerebbe 1 colonna su phone) — gap già engine-driven.
 
-- [ ] 🟡 **`100vh` mobile + colonne forzate a schermo pieno** — ColumnGrid.module.css:18-39 con `!important`; ignora barre dinamiche iOS; ogni colonna ≥ una schermata anche con 2 link.
-  **Fix:** `100dvh` con fallback, rimuovere `!important`, min-height adattiva.
+- [x] 🟡 **`100vh` mobile + colonne forzate a schermo pieno** — ColumnGrid.module.css:18-39 con `!important`; ignora barre dinamiche iOS; ogni colonna ≥ una schermata anche con 2 link.
+  **Fix:** `100dvh` con fallback, rimuovere `!important`, min-height adattiva. ✅ Fatto (P7/R2): coppie vh→dvh in global.css (html/body, #app) e ColumnGrid (linksList ×3); `!important` ×4 rimossi; `.columnCard` min-height ora solo in `@media (min-width: 1024px)` (Row 2 sotto il fold preservato su desktop, commento mantenuto), mobile/tablet adattivi al contenuto; Modal.module.css già aveva la coppia 100vh/100dvh.
 
-- [ ] 🟡 **Glassmorphism senza controllo costi** — 19 `backdrop-filter` in 13 file (overlay blur(16px) + header saturate + nav blur(20px)) = repaint continui; `-webkit-` prefix incoerente (manca in 7 file → effetto assente Safari <18); nessun fallback `@supports`.
-  **Fix:** ridurre livelli, prefix uniformi, fallback opaco.
+- [x] 🟡 **Glassmorphism senza controllo costi** — 19 `backdrop-filter` in 13 file (overlay blur(16px) + header saturate + nav blur(20px)) = repaint continui; `-webkit-` prefix incoerente (manca in 7 file → effetto assente Safari <18); nessun fallback `@supports`.
+  **Fix:** ridurre livelli, prefix uniformi, fallback opaco. ✅ Fatto (P7/R2): 19 occorrenze/13 file → 12 occorrenze in **6 layer strategici** (overlay modale, bubble header `.topRightTools`, pill `.floatingBottomNav`, JumpBar, ContextMenu, Toast); blur rimosso dall'elemento decorativo (cues `.pageScrollDownIndicator` → bg quasi opaco `var(--bg-secondary, …0.95)`); prefisso `-webkit-` aggiunto ai 3 layer mancanti (Modal/ContextMenu/Toast) così ogni layer rimasto ha coppia prefissata + fallback `background` oggettivo nella dichiarazione precedente (overlay 0.85α, altri bg opachi); i 6 layer dei modali dead-code erano spariti col purge CSS (commit A).
 
-- [ ] 🟡 **Meta mobile mancanti** — index.html: no `viewport-fit=cover`, no safe-area (`bottom: 1.25rem` fisso sulla pill → fluttua su iPhone), no `theme-color`, no apple-touch-icon/manifest, no `color-scheme: dark` (scrollbar chiare Firefox).
-  **Fix:** meta completo + `calc(... + env(safe-area-inset-bottom))`.
+- [x] 🟡 **Meta mobile mancanti** — index.html: no `viewport-fit=cover`, no safe-area (`bottom: 1.25rem` fisso sulla pill → fluttua su iPhone), no `theme-color`, no apple-touch-icon/manifest, no `color-scheme: dark` (scrollbar chiare Firefox).
+  **Fix:** meta completo + `calc(... + env(safe-area-inset-bottom))`. ✅ Fatto (P7/R2, parzialmente pre-esistente): index.html aveva **già** `viewport-fit=cover`/`theme-color`/`color-scheme: dark` (fase P3) e `color-scheme` in :root copre le scrollbar Firefox; pill ActionToolbar aveva già `bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px))`; aggiunto lo stesso trattamento safe-area ora su: Toast (`bottom` base 1.75rem e variante mobile 5.5rem), ContextMenu bottom-sheet touch (`bottom: 1rem` → calc) e bottom sheet del Modal mobile (`padding-bottom: env(...)` sul container → contenuto footer sopra l'home indicator, sfondo esteso al bordo). Restano aperti, fuori scope CSS: apple-touch-icon/manifest.
 
 - [ ] ⚪ **Magic numbers diffusi** — 1400ms highlight, -85 offset, 120/80px scroll, 35/12px auto-scroll, 190/220 clamp, pesi Fuse 0.45/0.35, rank factor 0.15, tabelle rem tema hardcoded.
   **Fix:** costanti nominate in `engine/constants.ts`.
@@ -316,10 +316,10 @@
 
 - [x] ⚪ **i18n misto IT/EN** — centralizzare stringhe se si vuole coerenza.
 
-- [ ] ⚪ **Scrollbar solo `-webkit`** — global.css:51-67: Firefox mostra scrollbar nativa chiara; manca `scrollbar-color`.
+- [x] ⚪ **Scrollbar solo `-webkit`** — global.css:51-67: Firefox mostra scrollbar nativa chiara; manca `scrollbar-color`. ✅ Fatto (P7/R2): aggiunto `scrollbar-color: rgba(255, 255, 255, 0.12) var(--bg-primary)` su `html` in global.css (stessi colori thumb/track delle regole `-webkit-scrollbar`; `color-scheme: dark` in :root già forzava lo schema scuro).
 
-- [ ] ⚪ **`.linkRow:hover translateX(2px)` jitter + `transition` su `display`** — ColumnGrid.module.css:328-331: traslazione hover può jitterare su colonne strette; :373-375 transition su proprietà non animabile.
-  **Fix:** hover solo su background/shadow; rimuovere transition inutile.
+- [x] ⚪ **`.linkRow:hover translateX(2px)` jitter + `transition` su `display`** — ColumnGrid.module.css:328-331: traslazione hover può jitterare su colonne strette; :373-375 transition su proprietà non animabile.
+  **Fix:** hover solo su background/shadow; rimuovere transition inutile. ✅ Fatto (P7/R2): `.linkRow:hover` ora cambia solo background + `box-shadow: var(--shadow-sm)` (transform rimosso → zero jitter su colonne strette); verifica grep: **nessuna** `transition` elenca `display` in ColumnGrid.module.css (il flag display dei badge alias arriva dalla var dell'engine in modo discreto; la transition copre solo proprietà animabili: opacity/background/border-color/color/font-size).
 
 - [x] ⚪ **LazyWidget: `requestIdleCallback`/timeout non cancellati nel cleanup** — LazyWidget.tsx:16-35: setState possibile su componente smontato. (Nota: componente attualmente dead code — se eliminato, item chiuso; se integrato, fixare.)
 

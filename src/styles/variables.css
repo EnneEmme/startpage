@@ -15,7 +15,6 @@
   --bg-card: rgba(20, 20, 23, 0.45);
   --bg-card-hover: rgba(28, 28, 32, 0.65);
   --bg-glass: rgba(16, 16, 18, 0.85);
-  --bg-navbar: rgba(20, 20, 23, 0.65);
   --bg-modal-overlay: rgba(5, 5, 7, 0.85);
 
   /* Subtle Seamless Contrast Borders */
@@ -25,11 +24,31 @@
 
   /* Sleek Platinum Accents (Overridden dynamically by ThemeEngine) */
   --accent-primary: #e2e8f0;
-  --accent-primary-hover: #ffffff;
   --accent-glow: rgba(226, 232, 240, 0.18);
-  --accent-gradient: linear-gradient(135deg, #334155, #1e293b);
   --accent-highlight: #f8fafc;
+  /* Accent-derived: follows the accent chosen in the theme engine
+     (--accent-primary/--accent-highlight get overridden on :root). */
+  --accent-gradient: linear-gradient(
+    135deg,
+    var(--accent-highlight, #f8fafc),
+    var(--accent-primary, #e2e8f0)
+  );
+  /* Standalone amber accent kept as a resolvable token (parallel branches
+     reference var(--accent-amber, #f59e0b)); --warning aliases it. */
   --accent-amber: #f59e0b;
+
+  /* Semantic Colors */
+  --success: #4ade80;
+  --danger: #f87171;
+  --warning: var(--accent-amber, #f59e0b);
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
 
   /* Typography Colors */
   --text-primary: #f8fafc;
@@ -49,8 +68,10 @@
   --focus-ring: 2px solid var(--accent-primary);
 
   /* Typography (system stack; headings differ via weight/letter-spacing) */
-  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-body:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-heading:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
   /* Shadows & Glassmorphism */

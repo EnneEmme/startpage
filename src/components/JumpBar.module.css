@@ -9,7 +9,9 @@
   -webkit-backdrop-filter: var(--glass-backdrop);
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
   border-radius: var(--radius-full);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(255, 255, 255, 0.06) inset;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.06) inset;
   max-width: calc(100% - 180px);
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -17,7 +19,11 @@
   width: fit-content;
   min-width: 0;
   pointer-events: auto;
-  transition: mask-image 0.2s ease, -webkit-mask-image 0.2s ease, border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    mask-image 0.2s ease,
+    -webkit-mask-image 0.2s ease,
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .jumpBar::-webkit-scrollbar {
@@ -36,8 +42,20 @@
 }
 
 .jumpBar.fadeBoth {
-  mask-image: linear-gradient(to right, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
 }
 
 /* The edge fades can visually swallow the focus ring of a pill scrolled to
@@ -107,13 +125,13 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1023.98px) {
   .jumpBar {
     max-width: 100%;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599.98px) {
   .tabBtn {
     padding: 0.5rem 0.75rem;
     font-size: 0.82rem;

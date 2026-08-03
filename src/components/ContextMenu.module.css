@@ -19,6 +19,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  -webkit-backdrop-filter: var(--glass-backdrop); /* blurs the page behind the menu */
   backdrop-filter: var(--glass-backdrop);
 }
 
@@ -55,7 +56,7 @@
 
 .menuItem.danger:hover {
   background: rgba(248, 113, 113, 0.15);
-  color: #f87171;
+  color: var(--danger);
 }
 
 .divider {
@@ -99,7 +100,8 @@
   .menuContainer {
     left: 0.75rem !important;
     right: 0.75rem;
-    bottom: 1rem;
+    /* Bottom sheet: clear of the home-indicator safe area on touch devices */
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     top: auto !important;
     width: auto;
     padding: 0.6rem;

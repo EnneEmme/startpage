@@ -1,6 +1,6 @@
 .toastHost {
   position: fixed;
-  bottom: 1.75rem;
+  bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: var(--z-toast);
@@ -13,6 +13,7 @@
   border: 1px solid var(--border-color-hover);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
+  -webkit-backdrop-filter: var(--glass-backdrop);
   backdrop-filter: var(--glass-backdrop);
   animation: toast-slide-up 0.22s ease-out;
 }
@@ -63,8 +64,8 @@
 }
 
 /* Keep the toast above the mobile bottom-nav pill */
-@media (max-width: 1023px) {
+@media (max-width: 1023.98px) {
   .toastHost {
-    bottom: 5.5rem;
+    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
   }
 }

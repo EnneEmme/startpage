@@ -1,59 +1,52 @@
+/* Grid density is owned by the theme engine via CSS vars
+   (--grid-col-min-width / --grid-gap); fallbacks mirror the engine's
+   'normal' density (185px / 2.5rem 1.25rem) so first paint already matches. */
 .gridContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 185px), 1fr));
-  gap: var(--grid-gap, 5rem 1.25rem);
+  gap: var(--grid-gap, 2.5rem 1.25rem);
   width: 100%;
   padding: 0.1rem 0 3.5rem;
 }
 
 /* Mobile Screens (< 600px): 1-2 columns */
-@media (max-width: 599px) {
+@media (max-width: 599.98px) {
   .gridContainer {
+    /* Physical-fit floor for tiny viewports: the engine min-width (>= 155px)
+       would squeeze phones to a single column */
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 3.5rem 0.75rem;
+    gap: var(--grid-gap, 2.5rem 1.25rem);
     padding: 0.5rem 0 3.5rem;
-  }
-
-  .columnCard {
-    min-height: calc(100vh - 130px) !important;
   }
 
   .linksList {
-    max-height: calc(100vh - 200px) !important;
+    max-height: calc(100vh - 200px);
+    max-height: calc(100dvh - 200px);
   }
 }
 
-/* Medium Screens / Tablets (600px - 1024px): 2-4 columns */
-@media (min-width: 600px) and (max-width: 1024px) {
+/* Medium Screens / Tablets (600px - 1023.98px): 2-4 columns */
+@media (min-width: 600px) and (max-width: 1023.98px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 175px), 1fr));
-    gap: var(--grid-gap, 4.5rem 1.1rem);
     padding: 0.5rem 0 3.5rem;
-  }
-
-  .columnCard {
-    min-height: calc(100vh - 120px) !important;
   }
 
   .linksList {
-    max-height: calc(100vh - 190px) !important;
+    max-height: calc(100vh - 190px);
+    max-height: calc(100dvh - 190px);
   }
 }
 
-/* Laptop / Standard Desktop (1025px - 1599px): 4-6 columns */
-@media (min-width: 1025px) and (max-width: 1599px) {
+/* Laptop / Standard Desktop (1024px - 1599.98px): 4-6 columns */
+@media (min-width: 1024px) and (max-width: 1599.98px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 185px), 1fr));
-    gap: var(--grid-gap, 5rem 1.25rem);
     padding: 0.5rem 0 3.5rem;
   }
 }
 
-/* Large Monitors & Ultrawide (> 1600px): 6-9 columns */
+/* Large Monitors & Ultrawide (>= 1600px): 6-9 columns */
 @media (min-width: 1600px) {
   .gridContainer {
-    grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 190px), 1fr));
-    gap: var(--grid-gap, 5.5rem 1.4rem);
     padding: 0.5rem 0 4rem;
   }
 }
@@ -65,11 +58,22 @@
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-lg);
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
   user-select: none;
   -webkit-user-select: none;
   position: relative;
-  min-height: calc(100vh - 110px); /* Guarantees Row 2 starts > 60px below screen bottom */
+}
+
+/* Desktop only (>= 1024px): force each column to ~one screenful so Row 2
+   peeks below the fold; on smaller screens columns size to their content. */
+@media (min-width: 1024px) {
+  .columnCard {
+    min-height: calc(100vh - 110px); /* Guarantees Row 2 starts > 60px below screen bottom */
+    min-height: calc(100dvh - 110px);
+  }
 }
 
 .columnCard.dragOver {
@@ -82,12 +86,16 @@
 @keyframes highlightPulseKeyframe {
   0% {
     background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 0 20px rgba(255, 255, 255, 0.15);
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 255, 0.3),
+      0 0 20px rgba(255, 255, 255, 0.15);
     transform: scale(1.02);
   }
   50% {
     background: var(--accent-glow, rgba(226, 232, 240, 0.18));
-    box-shadow: 0 0 0 2px var(--border-color-hover, rgba(226, 232, 240, 0.5)), 0 0 25px var(--accent-glow, rgba(226, 232, 240, 0.25));
+    box-shadow:
+      0 0 0 2px var(--border-color-hover, rgba(226, 232, 240, 0.5)),
+      0 0 25px var(--accent-glow, rgba(226, 232, 240, 0.25));
     transform: scale(1.02);
   }
   100% {
@@ -151,13 +159,16 @@
   flex-direction: column;
   gap: 0.25rem;
   max-height: calc(100vh - 180px);
+  max-height: calc(100dvh - 180px);
   padding-bottom: 0.75rem;
   overflow-y: auto;
   scrollbar-width: none; /* Hide scrollbar Firefox */
   -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
   overscroll-behavior-y: contain; /* Isolate scrolling to column only */
   overscroll-behavior-x: contain;
-  transition: mask-image 0.2s ease, -webkit-mask-image 0.2s ease;
+  transition:
+    mask-image 0.2s ease,
+    -webkit-mask-image 0.2s ease;
   scroll-behavior: smooth;
 }
 
@@ -178,8 +189,20 @@
 }
 
 .linksList.fadeBoth {
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
 }
 
 /* Page-Wide Fixed Bottom-Center Minimalist Down Indicator Cue */
@@ -194,20 +217,25 @@
   width: 32px;
   height: 32px;
   border-radius: var(--radius-full);
-  background: var(--bg-glass, rgba(16, 16, 18, 0.88));
-  backdrop-filter: blur(12px);
+  /* No backdrop-filter here: the cue is a small decorative element that
+     would cost a full repaint layer; a near-opaque bg keeps the glass look */
+  background: var(--bg-secondary, rgba(16, 16, 18, 0.95));
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
   color: var(--accent-highlight);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 15px var(--accent-glow, rgba(226, 232, 240, 0.2));
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.6),
+    0 0 15px var(--accent-glow, rgba(226, 232, 240, 0.2));
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
   z-index: var(--z-nav);
   cursor: pointer;
 }
 
 /* Hide Scroll Down Cue on Tablet & Mobile when Floating Bottom Nav is present (< 1024px) */
-@media (max-width: 1023px) {
+@media (max-width: 1023.98px) {
   .pageScrollDownIndicator {
     display: none !important;
   }
@@ -236,7 +264,9 @@
 .linkCardDragWrapper {
   width: 100%;
   border-radius: var(--radius-md);
-  transition: opacity 0.15s ease, background 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease;
   cursor: grab;
   position: relative;
   user-select: none;
@@ -326,8 +356,10 @@
 }
 
 .linkRow:hover {
+  /* No translateX here: on narrow columns the 2px shift visibly jittered;
+     hover feedback is background + shadow only */
   background: var(--bg-card-hover);
-  transform: translateX(2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .iconContainer {
@@ -373,7 +405,12 @@
   -webkit-user-select: none;
   display: var(--alias-badge-display-override, none);
   opacity: var(--alias-badge-opacity-override, 0);
-  transition: opacity 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, font-size 0.2s ease;
+  transition:
+    opacity 0.15s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    font-size 0.2s ease;
 }
 
 .aliasBadge.visibleAliasBadge {
@@ -440,7 +477,9 @@
   border-radius: var(--radius-sm);
   padding: 0.3rem 0.65rem;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .emptyStateAction:hover {
