@@ -323,6 +323,16 @@ export class DataStore {
     }
   }
 
+  /**
+   * Deliberately SYNCHRONOUS (no debounce — evaluated and rejected during the
+   * perf/audit-p4 pass): dataStore mutations are discrete, low-frequency user
+   * actions (add/edit/remove/move), not a hot path like click ranking
+   * (rankStorage.scheduleSave). Synchronous save+notify keeps subscribers
+   * (signals, tests, cross-tab consistency) strictly ordered after each
+   * mutation and avoids speculative regressions on flows that read storage
+   * right after writing. Do not "optimize" this without trunk-level
+   * integration-test evidence.
+   */
   public save(): void {
     try {
       localStorage.setItem(STORAGE_LINKS_KEY, JSON.stringify(this.config));

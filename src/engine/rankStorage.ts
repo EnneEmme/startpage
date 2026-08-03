@@ -27,9 +27,18 @@ const getStorage = (): Storage => {
   return new MemoryStorage();
 };
 
+/**
+ * Hot-path persistence policy: recordUsage() runs on EVERY link click, so
+ * writes are trailing-debounced (the in-memory map is always up to date; only
+ * the localStorage write is deferred). flush() drains the pending write
+ * synchronously and is wired to page hide/unload at module init.
+ */
+export const RANK_SAVE_DEBOUNCE_MS = 300;
+
 export class RankStorage {
   private ranks: Record<string, RankItem> = {};
   private storage: Storage;
+  private saveTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(customStorage?: Storage) {
     this.storage = customStorage || getStorage();
@@ -56,12 +65,40 @@ export class RankStorage {
     }
   }
 
+  /** Immediate synchronous persist; also drains any pending debounced write. */
   public save(): void {
+    this.cancelScheduledSave();
     try {
       this.storage.setItem(STORAGE_KEY, JSON.stringify(this.ranks));
     } catch (err) {
       console.warn('Failed to save ranks to storage:', err);
     }
+  }
+
+  /**
+   * Synchronously drains the pending debounced write, if any. Safe to call
+   * from beforeunload / visibilitychange(hidden) handlers: it never defers.
+   */
+  public flush(): void {
+    if (this.saveTimer !== null) {
+      this.save();
+    }
+  }
+
+  private cancelScheduledSave(): void {
+    if (this.saveTimer !== null) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = null;
+    }
+  }
+
+  /** Trailing-debounce the disk write; the in-memory map is already current. */
+  private scheduleSave(): void {
+    this.cancelScheduledSave();
+    this.saveTimer = setTimeout(() => {
+      this.saveTimer = null;
+      this.save();
+    }, RANK_SAVE_DEBOUNCE_MS);
   }
 
   public recordUsage(linkId: string): void {
@@ -71,7 +108,7 @@ export class RankStorage {
       clicks: current.clicks + 1,
       lastUsedTimestamp: Date.now()
     };
-    this.save();
+    this.scheduleSave();
   }
 
   public getRankBonus(linkId: string): number {
@@ -93,11 +130,14 @@ export class RankStorage {
 
   public importRankData(data: Record<string, RankItem>): void {
     this.ranks = { ...data };
-    this.save();
+    this.scheduleSave();
   }
 
   public clear(): void {
     this.ranks = {};
+    // Synchronous + cancels any pending debounced write, so a late timer can
+    // never resurrect cleared ranks onto disk.
+    this.cancelScheduledSave();
     try {
       this.storage.removeItem(STORAGE_KEY);
     } catch {}
@@ -105,3 +145,16 @@ export class RankStorage {
 }
 
 export const rankStorage = new RankStorage();
+
+// Module init: never lose the trailing debounce window on page hide/close.
+// Guarded so importing the module in node (tests without a DOM) is a no-op.
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => rankStorage.flush());
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        rankStorage.flush();
+      }
+    });
+  }
+}
