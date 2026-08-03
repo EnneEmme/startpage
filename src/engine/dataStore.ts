@@ -10,34 +10,17 @@ const STORAGE_LINKS_KEY = 'startpage_custom_links';
 const STORAGE_ORDER_KEY = 'startpage_category_order';
 const STORAGE_MIGRATIONS_KEY = 'startpage_migrations';
 const MIGRATION_V2 = 'v2_legacy_normalization';
+const MIGRATION_V3 = 'migrated_v3_unimib_dynamic';
 
-export const ORARI_SCRIPT = `(function() {
-  var parseDate = function(date) {
-    var dd = String(date.getDate()).padStart(2, '0');
-    var mm = String(date.getMonth() + 1).padStart(2, '0');
-    var yyyy = date.getFullYear();
-    return dd + '-' + mm + '-' + yyyy;
-  };
-  var today = parseDate(new Date());
-  var url = "https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easycourse&form-type=corso&include=corso&txtcurr=1+-+PERCORSO+COMUNE&anno=2025&scuola=&corso=F1802Q&anno2%5B%5D=GGG%7C1&visualizzazione_orario=cal&date=" + today + "&periodo_didattico=&_lang=it&list=&week_grid_type=-1&ar_codes_=EC508261%7CEC512923%7CEC508282%7CEC512924%7CEC509735&ar_select_=true%7Ctrue%7Ctrue%7Ctrue%7Cfalse&col_cells=0&empty_box=0&only_grid=0&highlighted_date=0&all_events=0#";
-  window.location.href = url;
-})();`;
-
-export const ESAMI_SCRIPT = `(function() {
-  var parseDate = function(date) {
-    var dd = String(date.getDate()).padStart(2, '0');
-    var mm = String(date.getMonth() + 1).padStart(2, '0');
-    var yyyy = date.getFullYear();
-    return dd + '-' + mm + '-' + yyyy;
-  };
-  var today = new Date();
-  var date = new Date(today);
-  date.setDate(date.getDate() + 60);
-  var todayStr = parseDate(today);
-  var dateStr = parseDate(date);
-  var url = "https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easytest&form-type=et_cdl&include=et_cdl&et_er=1&scuola=AreaScientifica-Informatica&esami_cdl=F1802Q&anno2%5B%5D=1&datefrom=" + todayStr + "&dateto=" + dateStr + "&_lang=it&list=&week_grid_type=-1&ar_codes_=&ar_select_=&col_cells=0&empty_box=0&only_grid=0&highlighted_date=0&all_events=0#";
-  window.location.href = url;
-})();`;
+/**
+ * Stable, readable base URLs for the built-in Unimib links: they feed
+ * favicons/tooltips/edit-forms only — navigation always goes through the
+ * `dynamicUrlRule` (dynamicEvaluator is the single source of truth for the
+ * full dated URL). This is what remains of the old `javascript:` stubs after
+ * the dynamic-only migration: no script machinery ships in the defaults.
+ */
+export const UNIMIB_ORARI_BASE_URL = 'https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easycourse&corso=F1802Q';
+export const UNIMIB_ESAMI_BASE_URL = 'https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easytest&esami_cdl=F1802Q';
 
 export const DEFAULT_CONFIG: StartpageConfig = {
   commands: [
@@ -87,8 +70,8 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     { id: 'school_mail', title: 'Mail', url: 'https://mail.google.com/mail/u/1/#inbox', aliases: ['wm', 'schoolmail'], category: 'School', searchPath: '/#search/text={}' },
     { id: 'school_drive', title: 'Drive', url: 'https://drive.google.com/drive/u/1/my-drive', aliases: ['wd', 'schooldrive'], category: 'School', searchPath: '/drive/search?q={}' },
     { id: 'segreteria', title: 'Segreteria', url: 'https://s3w.si.unimib.it/auth/studente/HomePageStudente.do', aliases: ['segreteria'], category: 'School' },
-    { id: 'unimib_esami', title: 'Esami', url: 'javascript:updateEsami()', aliases: ['esami', 'unimib_esami'], category: 'School', dynamicUrlRule: 'unimib_esami', isScript: true, scriptContent: ESAMI_SCRIPT },
-    { id: 'unimib_orari', title: 'Orari', url: 'javascript:updateOrari()', aliases: ['orari', 'unimib_orari'], category: 'School', dynamicUrlRule: 'unimib_orari', isScript: true, scriptContent: ORARI_SCRIPT },
+    { id: 'unimib_esami', title: 'Esami', url: UNIMIB_ESAMI_BASE_URL, aliases: ['esami', 'unimib_esami'], category: 'School', dynamicUrlRule: 'unimib_esami' },
+    { id: 'unimib_orari', title: 'Orari', url: UNIMIB_ORARI_BASE_URL, aliases: ['orari', 'unimib_orari'], category: 'School', dynamicUrlRule: 'unimib_orari' },
     { id: 'appunti', title: 'Appunti', url: 'https://mega.nz/folder/4bUhDBzA#EkBRNE5HKmguMammZohU6g/folder/9b8wlKQa', aliases: ['app', 'appunti'], category: 'School' },
     { id: 'aml', title: 'AML', url: 'https://elearning.unimib.it/enrol/index.php?id=68868', aliases: ['metodiscie', 'aml'], category: 'School' },
     { id: 'ai_course', title: 'AI', url: 'https://elearning.unimib.it/enrol/index.php?id=68862', aliases: ['AI', 'ai_course'], category: 'School' },
@@ -215,10 +198,100 @@ const sanitizeCommands = (raw: unknown, source: string): LinkItem[] => {
 };
 
 /**
+ * Import hardening (SECURITY): imported JSON is UNTRUSTED data — backups can
+ * come from anywhere. Script machinery is stripped from every imported item:
+ * `isScript`/`scriptContent` are removed, and an item whose url is a
+ * `javascript:` bookmarklet is discarded entirely (a scriptless javascript:
+ * url has no legitimate purpose and would re-arm stored XSS). An item
+ * survives only if its remaining url is web-navigable (http(s):// or
+ * root-relative "/").
+ *
+ * load() from localStorage stays permissive BY DESIGN: that is the profile's
+ * OWN trusted data, written by this same app.
+ */
+const isWebNavigableUrl = (url: string): boolean => /^https?:\/\//i.test(url.trim()) || url.trim().startsWith('/');
+
+const neutralizeImportedScript = (item: LinkItem): LinkItem | null => {
+  const hasScriptFlag = item.isScript === true;
+  const hasScriptContent = typeof item.scriptContent === 'string' && item.scriptContent.trim().length > 0;
+  const hasJavascriptUrl = item.url.trim().toLowerCase().startsWith('javascript:');
+  if (!hasScriptFlag && !hasScriptContent && !hasJavascriptUrl) return item;
+
+  if (!isWebNavigableUrl(item.url)) {
+    console.warn(`[DataStore] Import: discarded scripted link "${item.title}" (no navigable url left after stripping javascript:)`);
+    return null;
+  }
+
+  const cleaned: LinkItem = { ...item };
+  delete cleaned.isScript;
+  delete cleaned.scriptContent;
+  console.warn(`[DataStore] Import: neutralized scripted link "${item.title}" (script machinery stripped, url kept)`);
+  return cleaned;
+};
+
+/**
+ * importJson pipeline step (runs AFTER normalizeLegacyItem): strips script
+ * machinery from the untrusted payload, counting and logging discards.
+ */
+const neutralizeImportedCommands = (items: LinkItem[]): LinkItem[] => {
+  const clean: LinkItem[] = [];
+  let discarded = 0;
+  for (const item of items) {
+    const neutralized = neutralizeImportedScript(item);
+    if (neutralized) {
+      clean.push(neutralized);
+    } else {
+      discarded++;
+    }
+  }
+  if (discarded > 0) {
+    console.warn(`[DataStore] Discarded ${discarded} scripted link(s) from import`);
+  }
+  return clean;
+};
+
+/**
+ * Built-in Unimib links are dynamic-url links, NOT scripts (single source of
+ * truth: dynamicEvaluator). Strips any leftover script machinery (legacy
+ * default scripts or tampered payloads), ensures the correct dynamicUrlRule,
+ * and replaces a `javascript:` stub url with the readable portal base url.
+ * User customizations (title/icon/category/aliases) are preserved.
+ * Matches by dynamicUrlRule, legacy id, or exact default title.
+ * Returns true when the item was modified.
+ */
+const normalizeUnimibDynamicItem = (item: LinkItem): boolean => {
+  const isOrari = item.dynamicUrlRule === 'unimib_orari' || item.id === 'unimib_orari' || item.id === 'orari' || item.title === 'Orari';
+  const isEsami = item.dynamicUrlRule === 'unimib_esami' || item.id === 'unimib_esami' || item.id === 'esami' || item.title === 'Esami';
+  if (!isOrari && !isEsami) return false;
+
+  const rule = isOrari ? 'unimib_orari' : 'unimib_esami';
+  const baseUrl = isOrari ? UNIMIB_ORARI_BASE_URL : UNIMIB_ESAMI_BASE_URL;
+  let dirty = false;
+
+  if (item.dynamicUrlRule !== rule) {
+    item.dynamicUrlRule = rule;
+    dirty = true;
+  }
+  if (item.isScript !== undefined) {
+    delete item.isScript;
+    dirty = true;
+  }
+  if (item.scriptContent !== undefined) {
+    delete item.scriptContent;
+    dirty = true;
+  }
+  if (item.url.trim().toLowerCase().startsWith('javascript:')) {
+    item.url = baseUrl;
+    dirty = true;
+  }
+  return dirty;
+};
+
+/**
  * One-shot legacy normalization (migration v2):
  * - merges the old 'LLMs 2'/'LLMs' categories into 'AI & LLMs'
- * - normalizes the built-in Unimib script links (legacy items identified by
- *   id or exact default title) so they keep working after refactors.
+ * - normalizes the built-in Unimib links (legacy items identified by id or
+ *   exact default title) into their dynamic-url scriptless form.
  * Idempotent: safe to run on imports of old backups as well.
  * Returns true when the item was modified.
  */
@@ -228,18 +301,7 @@ const normalizeLegacyItem = (item: LinkItem): boolean => {
     item.category = 'AI & LLMs';
     dirty = true;
   }
-  if (item.id === 'unimib_orari' || item.id === 'orari' || item.title === 'Orari') {
-    item.isScript = true;
-    item.url = 'javascript:updateOrari()';
-    item.scriptContent = ORARI_SCRIPT;
-    dirty = true;
-  }
-  if (item.id === 'unimib_esami' || item.id === 'esami' || item.title === 'Esami') {
-    item.isScript = true;
-    item.url = 'javascript:updateEsami()';
-    item.scriptContent = ESAMI_SCRIPT;
-    dirty = true;
-  }
+  if (normalizeUnimibDynamicItem(item)) dirty = true;
   return dirty;
 };
 
@@ -308,17 +370,30 @@ export class DataStore {
       console.warn('[DataStore] Failed to read migration flags:', err);
     }
 
-    if (!done[MIGRATION_V2]) {
-      let dirty = false;
-      this.config.commands.forEach(item => {
-        if (normalizeLegacyItem(item)) dirty = true;
-      });
-      done[MIGRATION_V2] = true;
+    // Ordered one-shot migrations; each normalizer is item-level idempotent.
+    const migrations: Record<string, (item: LinkItem) => boolean> = {
+      [MIGRATION_V2]: normalizeLegacyItem,
+      // v3 (security): Unimib links become dynamic-url-only — strips script
+      // machinery and javascript: stub urls from stored profiles.
+      [MIGRATION_V3]: normalizeUnimibDynamicItem
+    };
+
+    const persistFlags = () => {
       try {
         localStorage.setItem(STORAGE_MIGRATIONS_KEY, JSON.stringify(done));
       } catch (err) {
         console.warn('[DataStore] Failed to persist migration flags:', err);
       }
+    };
+
+    for (const [flag, normalize] of Object.entries(migrations)) {
+      if (done[flag]) continue;
+      let dirty = false;
+      this.config.commands.forEach(item => {
+        if (normalize(item)) dirty = true;
+      });
+      done[flag] = true;
+      persistFlags();
       if (dirty) this.save();
     }
   }
@@ -498,12 +573,15 @@ export class DataStore {
         this.config = { commands: sanitizeCommands(parsed.commands, 'import') };
         // Old backups may contain legacy categories/scripts: normalize on import
         this.config.commands.forEach(normalizeLegacyItem);
+        // Untrusted payload: strip script machinery (store-XSS hardening)
+        this.config.commands = neutralizeImportedCommands(this.config.commands);
         applyRanks(parsed.ranks);
         this.save();
         return true;
       } else if (parsed && parsed.config && Array.isArray(parsed.config.commands)) {
         this.config = { commands: sanitizeCommands(parsed.config.commands, 'import') };
         this.config.commands.forEach(normalizeLegacyItem);
+        this.config.commands = neutralizeImportedCommands(this.config.commands);
         if (Array.isArray(parsed.categoryOrder)) {
           this.categoryOrder = parsed.categoryOrder.filter((c: unknown): c is string => typeof c === 'string');
         }

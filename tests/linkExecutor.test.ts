@@ -1,6 +1,10 @@
-import { describe, it, expect, vi } from 'vitest';
-import { executeLink, isBookmarkletOrScript, extractScriptCode } from '../src/engine/linkExecutor';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { executeLink, isBookmarkletOrScript, extractScriptCode, setScriptConfirmHandler } from '../src/engine/linkExecutor';
+import { DEFAULT_CONFIG } from '../src/engine/dataStore';
+import { clearConsents, hasConsent } from '../src/engine/scriptConsent';
 import type { LinkItem } from '../src/types/startpage';
+
+const tick = () => new Promise(resolve => setTimeout(resolve, 0));
 
 describe('LinkExecutor Engine', () => {
   it('identifies bookmarklet and script links correctly', () => {
@@ -71,5 +75,150 @@ describe('LinkExecutor Engine', () => {
     expect(executeLink(undefined as unknown as LinkItem)).toBe(false);
 
     windowSpy.mockRestore();
+  });
+
+  describe('script security (D1)', () => {
+    beforeEach(() => {
+      localStorage.clear();
+      clearConsents();
+      setScriptConfirmHandler(null);
+    });
+
+    it('script errors return false and never fall back to javascript: navigation', () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const badLink: LinkItem = {
+        id: 'bad_1',
+        title: 'Bad Script',
+        url: '',
+        isScript: true,
+        scriptContent: 'throw new Error("boom")',
+        aliases: [],
+        category: 'Tools'
+      };
+
+      expect(executeLink(badLink)).toBe(false);
+      expect(errorSpy).toHaveBeenCalledWith('[LinkExecutor] Script execution error:', expect.any(Error));
+      // The old window.location.href='javascript:...' fallback is gone for good
+      const logged = errorSpy.mock.calls.map(call => String(call[0])).join(' ');
+      expect(logged).not.toContain('Fallback');
+      errorSpy.mockRestore();
+    });
+
+    it('executes scripts without a consent handler (pure-engine retrocompat)', () => {
+      let dummyValue = 0;
+      (globalThis as Record<string, unknown>).__secNoHandlerRun = () => { dummyValue = 7; };
+      const link: LinkItem = {
+        id: 'nohandler_1', title: 'No Handler', url: '', isScript: true,
+        scriptContent: 'globalThis.__secNoHandlerRun()', aliases: [], category: 'Tools'
+      };
+
+      expect(executeLink(link)).toBe(true);
+      expect(dummyValue).toBe(7);
+    });
+
+    it('denied consent prevents execution and persists nothing', async () => {
+      let ran = 0;
+      (globalThis as Record<string, unknown>).__secDenyRun = () => { ran++; };
+      const handler = vi.fn(() => Promise.resolve(false));
+      setScriptConfirmHandler(handler);
+      const link: LinkItem = {
+        id: 'deny_1', title: 'Deny Me', url: '', isScript: true,
+        scriptContent: 'globalThis.__secDenyRun()', aliases: [], category: 'Tools'
+      };
+
+      // Click owned by the consent flow → true even though nothing ran (yet)
+      expect(executeLink(link)).toBe(true);
+      await tick();
+      expect(handler).toHaveBeenCalledTimes(1);
+      expect(ran).toBe(0);
+      expect(hasConsent(link)).toBe(false);
+    });
+
+    it('granted consent executes and persists (no re-prompt on next click)', async () => {
+      let ran = 0;
+      (globalThis as Record<string, unknown>).__secGrantRun = () => { ran++; };
+      const handler = vi.fn(() => Promise.resolve(true));
+      setScriptConfirmHandler(handler);
+      const link: LinkItem = {
+        id: 'grant_1', title: 'Grant Me', url: '', isScript: true,
+        scriptContent: 'globalThis.__secGrantRun()', aliases: [], category: 'Tools'
+      };
+
+      executeLink(link);
+      await tick();
+      expect(ran).toBe(1);
+      expect(hasConsent(link)).toBe(true);
+      expect(localStorage.getItem('startpage_script_consents')).toContain('grant_1');
+
+      // Second click: persisted consent → direct execution, handler untouched
+      expect(executeLink(link)).toBe(true);
+      expect(ran).toBe(2);
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('editing the script body invalidates the persisted consent (re-ask)', async () => {
+      let ran = 0;
+      (globalThis as Record<string, unknown>).__secEditRun = () => { ran++; };
+      const handler = vi.fn(() => Promise.resolve(true));
+      setScriptConfirmHandler(handler);
+      const link: LinkItem = {
+        id: 'edit_1', title: 'Edit Me', url: '', isScript: true,
+        scriptContent: 'globalThis.__secEditRun()', aliases: [], category: 'Tools'
+      };
+
+      executeLink(link);
+      await tick();
+      expect(ran).toBe(1);
+
+      // Same id, tampered body → consent no longer valid → prompt again
+      const edited: LinkItem = { ...link, scriptContent: 'globalThis.__secEditRun(); globalThis.__secEditRun();' };
+      expect(hasConsent(edited)).toBe(false);
+      executeLink(edited);
+      await tick();
+      expect(handler).toHaveBeenCalledTimes(2);
+      expect(ran).toBe(3);
+    });
+
+    it('default Unimib links are dynamic-only (no script) and navigate via rule', () => {
+      const windowSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const handler = vi.fn(() => Promise.resolve(true));
+      setScriptConfirmHandler(handler);
+      const orari = DEFAULT_CONFIG.commands.find(l => l.id === 'unimib_orari')!;
+
+      // Shipped defaults carry no script machinery at all
+      expect(orari.isScript).toBeUndefined();
+      expect(orari.scriptContent).toBeUndefined();
+      expect(isBookmarkletOrScript(orari)).toBe(false);
+
+      expect(executeLink(orari, '_blank')).toBe(true);
+      expect(windowSpy).toHaveBeenCalledWith(
+        expect.stringContaining('view=easycourse'),
+        '_blank',
+        'noopener,noreferrer'
+      );
+      const navigatedUrl = windowSpy.mock.calls[0]![0] as string;
+      expect(navigatedUrl).not.toContain('javascript:');
+      expect(navigatedUrl).toMatch(/anno=\d{4}/);
+      expect(handler).not.toHaveBeenCalled();
+      windowSpy.mockRestore();
+    });
+
+    it('confirm handler rejection fails closed (no execution, no crash)', async () => {
+      let ran = 0;
+      (globalThis as Record<string, unknown>).__secRejectRun = () => { ran++; };
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      setScriptConfirmHandler(() => Promise.reject(new Error('dialog exploded')));
+      const link: LinkItem = {
+        id: 'reject_1', title: 'Reject', url: '', isScript: true,
+        scriptContent: 'globalThis.__secRejectRun()', aliases: [], category: 'Tools'
+      };
+
+      expect(executeLink(link)).toBe(true);
+      await tick();
+      expect(ran).toBe(0);
+      expect(hasConsent(link)).toBe(false);
+      expect(errorSpy).toHaveBeenCalledWith('[LinkExecutor] Script confirm handler error:', expect.any(Error));
+      errorSpy.mockRestore();
+    });
   });
 });

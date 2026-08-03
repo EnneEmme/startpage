@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { DataStore, DEFAULT_CONFIG, sanitizeLinkItem } from '../src/engine/dataStore';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { DataStore, DEFAULT_CONFIG, sanitizeLinkItem, UNIMIB_ESAMI_BASE_URL, UNIMIB_ORARI_BASE_URL } from '../src/engine/dataStore';
 import { rankStorage } from '../src/engine/rankStorage';
 import type { LinkItem } from '../src/types/startpage';
 
@@ -114,6 +114,79 @@ describe('DataStore Engine & Edge Cases', () => {
     expect(secondLoad.getLinks()[0]!.category).toBe('LLMs 2');
   });
 
+  it('ships a default config with no script machinery at all (D3)', () => {
+    for (const link of DEFAULT_CONFIG.commands) {
+      expect(link.isScript).toBeUndefined();
+      expect(link.scriptContent).toBeUndefined();
+      expect(link.url.toLowerCase().startsWith('javascript:')).toBe(false);
+    }
+    const orari = DEFAULT_CONFIG.commands.find(l => l.id === 'unimib_orari')!;
+    expect(orari.url).toBe(UNIMIB_ORARI_BASE_URL);
+    expect(orari.dynamicUrlRule).toBe('unimib_orari');
+  });
+
+  it('migration v3 converts stored Unimib script links to dynamic-only (D3, idempotent)', () => {
+    // Pre-v3 profile: v2 done, Unimib links still in script form
+    localStorage.clear();
+    localStorage.setItem('startpage_migrations', JSON.stringify({ v2_legacy_normalization: true }));
+    const legacyCommands = [
+      {
+        // user-renamed + customized: only the machinery must go
+        id: 'unimib_orari', title: 'Lezioni mie', url: 'javascript:updateOrari()',
+        aliases: ['orari'], category: 'ScuolaCustom', icon: 'https://example.com/icon.png',
+        dynamicUrlRule: 'unimib_orari', isScript: true, scriptContent: 'globalThis.__v3Old = 1'
+      },
+      {
+        // legacy shape without dynamicUrlRule: matched by id/title, rule ensured
+        id: 'esami', title: 'Esami', url: 'javascript:updateEsami()',
+        aliases: ['esami'], category: 'School', isScript: true, scriptContent: 'alert(1)'
+      },
+      {
+        // untouched: an unrelated custom bookmarklet stays as-is (user data)
+        id: 'mybm', title: 'My Bookmarklet', url: 'javascript:alert(1)',
+        aliases: [], category: 'Tools', isScript: true, scriptContent: 'alert(1)'
+      }
+    ];
+    localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: legacyCommands }));
+
+    const migrated = new DataStore();
+    const links = migrated.getLinks();
+
+    const orari = links.find(l => l.id === 'unimib_orari')!;
+    expect(orari.isScript).toBeUndefined();
+    expect(orari.scriptContent).toBeUndefined();
+    expect(orari.url).toBe(UNIMIB_ORARI_BASE_URL);
+    expect(orari.dynamicUrlRule).toBe('unimib_orari');
+    // rename/custom icons/category survive
+    expect(orari.title).toBe('Lezioni mie');
+    expect(orari.icon).toBe('https://example.com/icon.png');
+    expect(orari.category).toBe('ScuolaCustom');
+
+    const esami = links.find(l => l.id === 'esami')!;
+    expect(esami.isScript).toBeUndefined();
+    expect(esami.scriptContent).toBeUndefined();
+    expect(esami.url).toBe(UNIMIB_ESAMI_BASE_URL);
+    expect(esami.dynamicUrlRule).toBe('unimib_esami');
+
+    // unrelated user scripts are NOT touched by the Unimib migration
+    const bm = links.find(l => l.id === 'mybm')!;
+    expect(bm.isScript).toBe(true);
+
+    // flag persisted + migrated items persisted script-free (the unrelated
+    // user bookmarklet legitimately keeps its own scriptContent)
+    expect(localStorage.getItem('startpage_migrations')).toContain('migrated_v3_unimib_dynamic');
+    const persisted = JSON.parse(localStorage.getItem('startpage_custom_links')!) as { commands: LinkItem[] };
+    const persistedUnimib = persisted.commands.filter(l => l.id === 'unimib_orari' || l.id === 'esami');
+    for (const item of persistedUnimib) {
+      expect(item.scriptContent).toBeUndefined();
+      expect(item.isScript).toBeUndefined();
+    }
+
+    // idempotent: a reload leaves everything identical
+    const second = new DataStore();
+    expect(second.getLinks()).toEqual(links);
+  });
+
   it('edits a link in place preserving its position in the category column', () => {
     const social = dataStore.getCategories().find(c => c.name === 'Social')!;
     const firstId = social.links[0]!.id;
@@ -171,5 +244,127 @@ describe('DataStore Engine & Edge Cases', () => {
     expect(rankStorage.getRankData()['mail']!.clicks).toBe(2);
 
     rankStorage.clear();
+  });
+
+  describe('import hardening against stored-XSS scripts (D2)', () => {
+    it('strips isScript/scriptContent from imported items but keeps the web url', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      (globalThis as Record<string, unknown>).__d2Pwned = undefined;
+      const hostile = JSON.stringify({
+        commands: [{
+          id: 'evil1', title: 'Evil Blog', url: 'https://evil.example.com',
+          aliases: ['evil'], category: 'Dev',
+          isScript: true, scriptContent: 'globalThis.__d2Pwned = 1'
+        }]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      const imported = dataStore.getLinks().find(l => l.id === 'evil1');
+      expect(imported).toBeDefined();
+      expect(imported!.url).toBe('https://evil.example.com');
+      expect(imported!.isScript).toBeUndefined();
+      expect(imported!.scriptContent).toBeUndefined();
+      // No script machinery survived → nothing to execute (stored-XSS disarmed)
+      expect((globalThis as Record<string, unknown>).__d2Pwned).toBeUndefined();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Evil Blog'));
+      warnSpy.mockRestore();
+    });
+
+    it('discards imported items whose url is a javascript: bookmarklet', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const hostile = JSON.stringify({
+        commands: [
+          { id: 'evil2', title: 'AlertBomb', url: 'javascript:alert(1)', aliases: [], category: 'Tools' },
+          { id: 'good1', title: 'Good', url: 'https://good.example.com', aliases: [], category: 'Tools' }
+        ]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      const ids = dataStore.getLinks().map(l => l.id);
+      expect(ids).toContain('good1');
+      expect(ids).not.toContain('evil2');
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('AlertBomb'));
+      warnSpy.mockRestore();
+    });
+
+    it('handles mixed good/neutralizable/discardable payloads per-item', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const hostile = JSON.stringify({
+        commands: [
+          { id: 'good1', title: 'Good One', url: 'https://good.example.com', aliases: [], category: 'Tools' },
+          { id: 'good2', title: 'Good Two', url: 'https://good2.example.com', aliases: [], category: 'Tools' },
+          { id: 'strip1', title: 'StripMe', url: 'https://strip.example.com', aliases: [], category: 'Tools', scriptContent: 'alert(1)' },
+          { id: 'drop1', title: 'DropMe', url: 'javascript:alert(document.cookie)', aliases: [], category: 'Tools', isScript: true }
+        ]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      const links = dataStore.getLinks();
+      expect(links.map(l => l.id)).toEqual(['good1', 'good2', 'strip1']);
+      const stripped = links.find(l => l.id === 'strip1')!;
+      expect(stripped.scriptContent).toBeUndefined();
+      expect(stripped.url).toBe('https://strip.example.com');
+      warnSpy.mockRestore();
+    });
+
+    it('discards scripted items whose remaining url is not web-navigable', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const hostile = JSON.stringify({
+        commands: [{
+          id: 'evil3', title: 'FtpScript', url: 'ftp://files.example.com/x',
+          aliases: [], category: 'Tools', isScript: true, scriptContent: 'alert(1)'
+        }]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      expect(dataStore.getLinks().some(l => l.id === 'evil3')).toBe(false);
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('FtpScript'));
+      warnSpy.mockRestore();
+    });
+
+    it('load() from own localStorage stays permissive (trusted profile data)', () => {
+      localStorage.clear();
+      localStorage.setItem('startpage_custom_links', JSON.stringify({
+        commands: [{
+          id: 'my_bookmarklet', title: 'My Bookmarklet', url: 'javascript:alert(1)',
+          aliases: [], category: 'Tools', isScript: true, scriptContent: 'alert(1)'
+        }]
+      }));
+      localStorage.setItem('startpage_migrations', JSON.stringify({ v2_legacy_normalization: true }));
+
+      const store = new DataStore();
+      const kept = store.getLinks().find(l => l.id === 'my_bookmarklet');
+      expect(kept).toBeDefined();
+      expect(kept!.isScript).toBe(true);
+      expect(kept!.scriptContent).toBe('alert(1)');
+    });
+
+    it('export→import round-trip of the default profile keeps the Unimib links', () => {
+      const exported = dataStore.exportJson();
+      expect(dataStore.importJson(exported)).toBe(true);
+      const links = dataStore.getLinks();
+      expect(links.some(l => l.id === 'unimib_orari')).toBe(true);
+      expect(links.some(l => l.id === 'unimib_esami')).toBe(true);
+    });
+
+    it('a tampered Unimib-shaped item is re-canonicalized on import', () => {
+      const hostile = JSON.stringify({
+        commands: [{
+          id: 'unimib_orari', title: 'Orari', url: 'javascript:evil()',
+          aliases: ['orari'], category: 'School',
+          dynamicUrlRule: 'unimib_orari', isScript: true,
+          scriptContent: 'globalThis.__d2Tampered = 1'
+        }]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      const orari = dataStore.getLinks().find(l => l.id === 'unimib_orari')!;
+      // Unimib links are dynamic-only: the normalizer drops machinery entirely
+      expect(orari.scriptContent).toBeUndefined();
+      expect(orari.isScript).toBeUndefined();
+      expect(orari.url).toBe(UNIMIB_ORARI_BASE_URL);
+      expect(orari.dynamicUrlRule).toBe('unimib_orari');
+      expect((globalThis as Record<string, unknown>).__d2Tampered).toBeUndefined();
+    });
   });
 });
