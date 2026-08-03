@@ -183,7 +183,7 @@ export const FormFields = ({
                   )
                 ) : (
                   <div style={{ gridColumn: '1 / -1', padding: '1.25rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.6' }}>
-                    🔍 Type in the field above to search <strong>{ICON_LIST.length} icone Lucide</strong> (e.g. <em>coffee, rocket, mail, shield, code, music</em>). Site icons are resolved automatically via favicon.
+                    🔍 Type in the field above to search <strong>{ICON_LIST.length} Lucide icons</strong> (e.g. <em>coffee, rocket, mail, shield, code, music</em>). Site icons are resolved automatically via favicon.
                   </div>
                 )}
               </div>

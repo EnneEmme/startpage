@@ -37,6 +37,8 @@ describe('SearchModal Component', () => {
     expect(input).not.toBeNull();
     expect(getByText('navigate')).not.toBeNull();
     expect(getByText('complete')).not.toBeNull();
+    // Cross-platform shortcut hint (jsdom reports a non-Mac platform)
+    expect(getByText('Ctrl+↵')).not.toBeNull();
   });
 
   it('filters results and triggers Tab completion', () => {

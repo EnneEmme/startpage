@@ -42,7 +42,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
       icon={<Keyboard size={18} class={styles.keyboardIcon} />}
       footer={
         <span class={styles.footerHint}>
-          💡 Premi <kbd class={styles.miniKbd}>?</kbd> in qualsiasi momento per aprire/chiudere questa guida
+          💡 Press <kbd class={styles.miniKbd}>?</kbd> at any time to open/close this guide
         </span>
       }
     >

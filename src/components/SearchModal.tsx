@@ -17,6 +17,10 @@ interface SearchModalProps {
 
 const MAX_SEARCH_RESULTS = 10;
 
+/** Cross-platform label for the Cmd/Ctrl+Enter shortcut */
+const MODIFIER_ENTER_HINT =
+  typeof navigator !== 'undefined' && /mac/i.test(navigator.platform) ? '⌘↵' : 'Ctrl+↵';
+
 /** Stable ids keep aria-activedescendant valid across re-renders */
 const optionId = (linkId: string) => `search-opt-${linkId}`;
 const LISTBOX_ID = 'search-results-listbox';
@@ -80,6 +84,17 @@ export const SearchModal = ({
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const selectionTimerRef = useRef<number | null>(null);
+
+  // No dangling timeout if the modal closes mid-flow
+  useEffect(
+    () => () => {
+      if (selectionTimerRef.current !== null) {
+        window.clearTimeout(selectionTimerRef.current);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     fuzzySearchEngine.setLinks(links);
@@ -208,14 +223,15 @@ export const SearchModal = ({
         setQuery(newQuery);
         setSelectedIndex(0);
 
-        if (inputRef.current) {
-          inputRef.current.focus();
-          setTimeout(() => {
-            if (inputRef.current) {
-              inputRef.current.setSelectionRange(newQuery.length, newQuery.length);
-            }
-          }, 10);
+        // The input already has focus (the keydown came from it): just move
+        // the caret past the prefix once the new value is committed.
+        if (selectionTimerRef.current !== null) {
+          window.clearTimeout(selectionTimerRef.current);
         }
+        selectionTimerRef.current = window.setTimeout(() => {
+          selectionTimerRef.current = null;
+          inputRef.current?.setSelectionRange(newQuery.length, newQuery.length);
+        }, 10);
         return;
       }
 
@@ -360,7 +376,7 @@ export const SearchModal = ({
             <kbd class={styles.hintKbd}>↵</kbd> open
           </span>
           <span class={styles.hintItem}>
-            <kbd class={styles.hintKbd}>⌘↵</kbd> search site
+            <kbd class={styles.hintKbd}>{MODIFIER_ENTER_HINT}</kbd> search site
           </span>
           <span class={styles.hintItem}>
             <kbd class={styles.hintKbd}>Esc</kbd> dismiss
