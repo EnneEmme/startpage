@@ -7,32 +7,49 @@
 import Fuse from 'fuse.js';
 import type { LinkItem, SearchResult, CommandPrefixRule } from '../types/startpage';
 import { rankStorage } from './rankStorage';
-import { FUSE_WEIGHT_ALIASES, FUSE_WEIGHT_CATEGORY, FUSE_WEIGHT_TITLE, FUSE_WEIGHT_URL, RANK_BOOST_FACTOR } from './constants';
+import {
+  FUSE_WEIGHT_ALIASES,
+  FUSE_WEIGHT_CATEGORY,
+  FUSE_WEIGHT_TITLE,
+  FUSE_WEIGHT_URL,
+  RANK_BOOST_FACTOR,
+} from './constants';
 
 export const DEFAULT_PREFIX_RULES: CommandPrefixRule[] = [
   { key: 'g', name: 'Google Search', searchUrlTemplate: 'https://www.google.com/search?q={q}' },
-  { key: 'yt', name: 'YouTube Search', searchUrlTemplate: 'https://www.youtube.com/results?search_query={q}' },
+  {
+    key: 'yt',
+    name: 'YouTube Search',
+    searchUrlTemplate: 'https://www.youtube.com/results?search_query={q}',
+  },
   { key: 'gh', name: 'GitHub Search', searchUrlTemplate: 'https://github.com/search?q={q}' },
-  { key: 'w', name: 'Wikipedia Search', searchUrlTemplate: 'https://wikipedia.org/w/index.php?search={q}' },
+  {
+    key: 'w',
+    name: 'Wikipedia Search',
+    searchUrlTemplate: 'https://wikipedia.org/w/index.php?search={q}',
+  },
   { key: 'ddg', name: 'DuckDuckGo Search', searchUrlTemplate: 'https://duckduckgo.com/?q={q}' },
-  { key: 'b', name: 'Bing Search', searchUrlTemplate: 'https://www.bing.com/search?q={q}' }
+  { key: 'b', name: 'Bing Search', searchUrlTemplate: 'https://www.bing.com/search?q={q}' },
 ];
 
 const GOOGLE_FALLBACK_RULE: CommandPrefixRule = DEFAULT_PREFIX_RULES[0] ?? {
   key: 'g',
   name: 'Google Search',
-  searchUrlTemplate: 'https://www.google.com/search?q={q}'
+  searchUrlTemplate: 'https://www.google.com/search?q={q}',
 };
 
 /**
  * Resolves a plain web search URL for the configured default engine.
  * Falls back to Google when the key is unknown (e.g. legacy stored values).
  */
-export const getEngineFallback = (engineKey: string, query: string): { name: string; url: string } => {
+export const getEngineFallback = (
+  engineKey: string,
+  query: string,
+): { name: string; url: string } => {
   const rule = DEFAULT_PREFIX_RULES.find(r => r.key === engineKey) ?? GOOGLE_FALLBACK_RULE;
   return {
     name: rule.name.replace(/\s+Search$/, ''),
-    url: rule.searchUrlTemplate.replace('{q}', encodeURIComponent(query))
+    url: rule.searchUrlTemplate.replace('{q}', encodeURIComponent(query)),
   };
 };
 
@@ -64,22 +81,22 @@ export class FuzzySearchEngine {
         {
           title: link.title.toLowerCase(),
           category: link.category ? link.category.toLowerCase() : '',
-          aliases: (link.aliases ?? []).map(a => a.toLowerCase())
-        }
-      ])
+          aliases: (link.aliases ?? []).map(a => a.toLowerCase()),
+        },
+      ]),
     );
     this.fuse = new Fuse(links, {
       keys: [
         { name: 'aliases', weight: FUSE_WEIGHT_ALIASES },
         { name: 'title', weight: FUSE_WEIGHT_TITLE },
         { name: 'category', weight: FUSE_WEIGHT_CATEGORY },
-        { name: 'url', weight: FUSE_WEIGHT_URL }
+        { name: 'url', weight: FUSE_WEIGHT_URL },
       ],
       threshold: 0.35, // Balanced typo tolerance without noise
       distance: 100,
       includeScore: true,
       ignoreLocation: true,
-      minMatchCharLength: 1
+      minMatchCharLength: 1,
     });
   }
 
@@ -106,7 +123,7 @@ export class FuzzySearchEngine {
           prefix,
           query,
           engineName: matchedDefault.name,
-          redirectUrl: template.replace('{q}', encodeURIComponent(query))
+          redirectUrl: template.replace('{q}', encodeURIComponent(query)),
         };
       }
 
@@ -118,7 +135,11 @@ export class FuzzySearchEngine {
       });
 
       if (matchedCustomLink) {
-        const pathOrUrl = (matchedCustomLink.searchTemplate || matchedCustomLink.searchPath || '').trim();
+        const pathOrUrl = (
+          matchedCustomLink.searchTemplate ||
+          matchedCustomLink.searchPath ||
+          ''
+        ).trim();
         let fullTemplate = pathOrUrl;
 
         // If user provided relative path/param (e.g. "/results?search_query={q}" or "?q={q}")
@@ -141,7 +162,7 @@ export class FuzzySearchEngine {
           prefix,
           query,
           engineName: `${matchedCustomLink.title} Search`,
-          redirectUrl: targetTemplate.replace('{q}', encodeURIComponent(query))
+          redirectUrl: targetTemplate.replace('{q}', encodeURIComponent(query)),
         };
       }
     }
@@ -166,7 +187,7 @@ export class FuzzySearchEngine {
         entry = {
           title: item.title.toLowerCase(),
           category: item.category ? item.category.toLowerCase() : '',
-          aliases: (item.aliases ?? []).map(a => a.toLowerCase())
+          aliases: (item.aliases ?? []).map(a => a.toLowerCase()),
         };
         this.lowercaseCache.set(item.id, entry);
       }
@@ -188,7 +209,7 @@ export class FuzzySearchEngine {
           score: fuseScore,
           rankBonus,
           finalScore: fuseScore - rankBonus * RANK_BOOST_FACTOR,
-          matchedAlias
+          matchedAlias,
         });
       }
     }
@@ -223,7 +244,11 @@ export class FuzzySearchEngine {
         priorityScore = -10.0;
       }
       // Criteria D: Alias Starts With Query -> Priority #4
-      else if (matchedSubAlias && subAliasIdx >= 0 && lower.aliases[subAliasIdx]!.startsWith(lowerQuery)) {
+      else if (
+        matchedSubAlias &&
+        subAliasIdx >= 0 &&
+        lower.aliases[subAliasIdx]!.startsWith(lowerQuery)
+      ) {
         isMatch = true;
         priorityScore = -5.0;
       }
@@ -248,7 +273,7 @@ export class FuzzySearchEngine {
           score: currentFuseScore,
           rankBonus,
           finalScore: Math.min(existing ? existing.finalScore : computedScore, computedScore),
-          matchedAlias: matchedExactAlias || matchedSubAlias || existing?.matchedAlias
+          matchedAlias: matchedExactAlias || matchedSubAlias || existing?.matchedAlias,
         });
       }
     }

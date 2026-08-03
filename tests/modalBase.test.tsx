@@ -6,7 +6,7 @@ test('renders Modal component correctly when open', () => {
   render(
     <Modal isOpen={true} onClose={() => {}} title="Test Modal">
       <div>Modal Content</div>
-    </Modal>
+    </Modal>,
   );
 
   expect(screen.getByText('Test Modal')).toBeDefined();
@@ -17,7 +17,7 @@ test('does not render when isOpen is false', () => {
   render(
     <Modal isOpen={false} onClose={() => {}} title="Hidden Modal">
       <div>Hidden Content</div>
-    </Modal>
+    </Modal>,
   );
 
   expect(screen.queryByRole('dialog')).toBeNull();
@@ -28,7 +28,7 @@ test('calls onClose when close button is clicked', () => {
   render(
     <Modal isOpen={true} onClose={handleClose} title="Closeable Modal">
       <div>Content</div>
-    </Modal>
+    </Modal>,
   );
 
   // Selezione per nome accessibile (aria-label="Close"), non per title copy
@@ -43,7 +43,7 @@ test('calls onClose when backdrop is clicked', () => {
   render(
     <Modal isOpen={true} onClose={handleClose} title="Backdrop Modal">
       <div>Content</div>
-    </Modal>
+    </Modal>,
   );
 
   // Modal portals to document.body; the overlay wraps the dialog

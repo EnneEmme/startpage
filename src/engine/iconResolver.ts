@@ -46,14 +46,12 @@ export const extractOrigin = (url: string): string => {
 
 export const BRAND_FAVICON_OVERRIDES: Record<string, string[]> = {
   'notebooklm.google.com': [
-    'https://ssl.gstatic.com/docs/doclist/images/infinite_notebooklm_color_32dp.png'
+    'https://ssl.gstatic.com/docs/doclist/images/infinite_notebooklm_color_32dp.png',
   ],
-  'aistudio.google.com': [
-    'https://ssl.gstatic.com/ai/aistudio/favicon.png'
-  ],
+  'aistudio.google.com': ['https://ssl.gstatic.com/ai/aistudio/favicon.png'],
   'gemini.google.com': [
-    'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a610345.svg'
-  ]
+    'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a610345.svg',
+  ],
 };
 
 export const getFaviconCandidates = (url: string, cacheBustTimestamp: number = 0): string[] => {
@@ -76,7 +74,7 @@ export const getFaviconCandidates = (url: string, cacheBustTimestamp: number = 0
   candidates.push(
     `https://www.google.com/s2/favicons?domain=${domain}&sz=64${cbParam}`,
     `https://icon.horse/icon/${domain}${cbParamPath}`,
-    `https://icons.duckduckgo.com/ip3/${domain}.ico${cbParamPath}`
+    `https://icons.duckduckgo.com/ip3/${domain}.ico${cbParamPath}`,
   );
 
   return candidates;
@@ -121,9 +119,11 @@ export const setCachedFaviconIndex = (domain: string, index: number): void => {
  * <img>/CSS surface as "trusted icon" input. RFC 2397 scheme/MIME matching
  * is case-insensitive.
  */
-const ALLOWED_IMAGE_DATA_URL = /^data:image\/(png|jpe?g|gif|webp|svg\+xml|x-icon|vnd\.microsoft\.icon)/i;
+const ALLOWED_IMAGE_DATA_URL =
+  /^data:image\/(png|jpe?g|gif|webp|svg\+xml|x-icon|vnd\.microsoft\.icon)/i;
 
-export const isAllowedImageDataUrl = (spec: string): boolean => ALLOWED_IMAGE_DATA_URL.test(spec.trim());
+export const isAllowedImageDataUrl = (spec: string): boolean =>
+  ALLOWED_IMAGE_DATA_URL.test(spec.trim());
 
 export const formatSvgToDataUrl = (svgCode: string): string => {
   let cleanSvg = svgCode.trim();
@@ -157,7 +157,7 @@ export const resolveIcon = (url: string, iconSpec?: string): ResolvedIcon => {
   if (!iconSpec || iconSpec.trim() === '') {
     return {
       type: 'favicon',
-      src: getFaviconUrl(url)
+      src: getFaviconUrl(url),
     };
   }
 
@@ -167,7 +167,7 @@ export const resolveIcon = (url: string, iconSpec?: string): ResolvedIcon => {
   if (spec.startsWith('<svg') || spec.toLowerCase().includes('<svg')) {
     return {
       type: 'custom_url',
-      src: formatSvgToDataUrl(spec)
+      src: formatSvgToDataUrl(spec),
     };
   }
 
@@ -175,7 +175,7 @@ export const resolveIcon = (url: string, iconSpec?: string): ResolvedIcon => {
   if (spec.startsWith('http://') || spec.startsWith('https://') || spec.startsWith('/')) {
     return {
       type: 'custom_url',
-      src: spec
+      src: spec,
     };
   }
 
@@ -186,18 +186,18 @@ export const resolveIcon = (url: string, iconSpec?: string): ResolvedIcon => {
     if (isAllowedImageDataUrl(spec)) {
       return {
         type: 'custom_url',
-        src: spec
+        src: spec,
       };
     }
     return {
       type: 'favicon',
-      src: getFaviconUrl(url)
+      src: getFaviconUrl(url),
     };
   }
 
   // Otherwise treat as Lucide / named icon identifier
   return {
     type: 'lucide',
-    src: spec
+    src: spec,
   };
 };

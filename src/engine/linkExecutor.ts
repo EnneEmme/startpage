@@ -81,7 +81,10 @@ const runScriptCode = (code: string): boolean => {
  * `preventDefault()` on the anchor to avoid double navigation.
  * Returns `false` when there was nothing to do.
  */
-export const executeLink = (link: LinkItem, targetWindow: '_blank' | '_self' = '_self'): boolean => {
+export const executeLink = (
+  link: LinkItem,
+  targetWindow: '_blank' | '_self' = '_self',
+): boolean => {
   if (!link) return false;
 
   // Record usage click
@@ -91,7 +94,10 @@ export const executeLink = (link: LinkItem, targetWindow: '_blank' | '_self' = '
   const targetUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
 
   // 2. Check if script or bookmarklet
-  if (isBookmarkletOrScript(link) || (targetUrl && targetUrl.trim().toLowerCase().startsWith('javascript:'))) {
+  if (
+    isBookmarkletOrScript(link) ||
+    (targetUrl && targetUrl.trim().toLowerCase().startsWith('javascript:'))
+  ) {
     const code = extractScriptCode(link);
 
     // Consent gate: without a persisted per-script-hash consent, ask through

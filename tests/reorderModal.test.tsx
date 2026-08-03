@@ -12,11 +12,7 @@ describe('ReorderModal Component', () => {
     const categories = ['Social', 'School', 'Fun'];
     // Modal portals to document.body, so assert against baseElement
     const { baseElement } = render(
-      <ReorderModal
-        isOpen={true}
-        categories={categories}
-        onClose={() => {}}
-      />
+      <ReorderModal isOpen={true} categories={categories} onClose={() => {}} />,
     );
 
     expect(baseElement.textContent).toContain('Reorder Column Sections');
@@ -28,13 +24,7 @@ describe('ReorderModal Component', () => {
   it('reorders categories via the store action when moving a category up', () => {
     const categories = ['Social', 'School', 'Fun'];
 
-    render(
-      <ReorderModal
-        isOpen={true}
-        categories={categories}
-        onClose={() => {}}
-      />
-    );
+    render(<ReorderModal isOpen={true} categories={categories} onClose={() => {}} />);
 
     // Click Move Up on 'School' (second item)
     const moveUpBtns = document.querySelectorAll('button[title="Move Up / Left"]');

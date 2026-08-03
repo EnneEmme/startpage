@@ -25,5 +25,5 @@ export const settingsActions = {
     themeEngine.setAliasVisibility(visibility),
 
   setDefaultSearchEngine: (engine: 'g' | 'ddg' | 'b' | 'yt' | 'gh'): void =>
-    themeEngine.setDefaultSearchEngine(engine)
+    themeEngine.setDefaultSearchEngine(engine),
 };

@@ -8,7 +8,7 @@ import {
   dragOverCategoryIdSignal,
   dragOverLinkIdSignal,
   dropPositionSignal,
-  justDroppedLinkIdSignal
+  justDroppedLinkIdSignal,
 } from '../src/stores/dragStore';
 import { useDragAndDrop, cancelDragAndDropTimers } from '../src/hooks/useDragAndDrop';
 
@@ -47,7 +47,7 @@ describe('Drag and Drop & Category Data Helpers', () => {
 
     const orderAfter = dataStore.getCategoryOrder();
     dataStore.addCategory('NewCat'); // duplicate: no-op
-    dataStore.addCategory('   ');    // blank: no-op
+    dataStore.addCategory('   '); // blank: no-op
     expect(dataStore.getCategoryOrder()).toEqual(orderAfter);
   });
 
@@ -58,7 +58,7 @@ describe('Drag and Drop & Category Data Helpers', () => {
       title: 'Tmp',
       url: 'https://example.com',
       aliases: [],
-      category: 'NewCat'
+      category: 'NewCat',
     });
 
     const catNames = dataStore.getCategories().map(c => c.name);
@@ -92,7 +92,9 @@ describe('dragStore signals (hover state outside component state)', () => {
 
   it('guards writes: assigning an identical value does not notify subscribers', () => {
     let calls = 0;
-    const unsubscribe = dragOverLinkIdSignal.subscribe(() => { calls++; });
+    const unsubscribe = dragOverLinkIdSignal.subscribe(() => {
+      calls++;
+    });
     const afterSubscribe = calls; // subscribe() fires once immediately
 
     dragStore.setDragOverLink('youtube', 'below');
@@ -111,7 +113,9 @@ describe('dragStore signals (hover state outside component state)', () => {
 
     // Same target, other side: only the position changes
     let calls = 0;
-    const unsubscribe = dragOverLinkIdSignal.subscribe(() => { calls++; });
+    const unsubscribe = dragOverLinkIdSignal.subscribe(() => {
+      calls++;
+    });
     dragStore.setDragOverLink('github', 'below');
     expect(dropPositionSignal.value).toBe('below');
     expect(calls).toBe(1); // only the immediate subscribe() notification
@@ -161,7 +165,9 @@ describe('dragStore signals (hover state outside component state)', () => {
     expect(draggedLinkIdSignal.value).toBe(null);
     expect(justDroppedLinkIdSignal.value).toBe('mail');
 
-    act(() => { vi.advanceTimersByTime(400); });
+    act(() => {
+      vi.advanceTimersByTime(400);
+    });
     expect(justDroppedLinkIdSignal.value).toBe(null);
   });
 
@@ -185,18 +191,24 @@ describe('dragStore signals (hover state outside component state)', () => {
       dragStore.setDraggedLinkId('mail');
       result!.handleDrop(fakeEvent, 'Fun', 0);
     });
-    act(() => { vi.advanceTimersByTime(200); }); // still within first 350ms window
+    act(() => {
+      vi.advanceTimersByTime(200);
+    }); // still within first 350ms window
 
     act(() => {
       dragStore.setDraggedLinkId('github');
       result!.handleDrop(fakeEvent, 'Fun', 0);
     });
-    act(() => { vi.advanceTimersByTime(200); }); // 400ms after first drop, 200ms after second
+    act(() => {
+      vi.advanceTimersByTime(200);
+    }); // 400ms after first drop, 200ms after second
 
     // First timer must have been replaced: the second drop is still highlighted
     expect(justDroppedLinkIdSignal.value).toBe('github');
 
-    act(() => { vi.advanceTimersByTime(200); });
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
     expect(justDroppedLinkIdSignal.value).toBe(null);
   });
 
@@ -226,7 +238,9 @@ describe('dragStore signals (hover state outside component state)', () => {
 
     // Without a cleanup the stale timer would wipe the animation state late;
     // here it must stay untouched by timer callbacks.
-    act(() => { vi.advanceTimersByTime(1000); });
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
     expect(justDroppedLinkIdSignal.value).toBe('mail');
   });
 });

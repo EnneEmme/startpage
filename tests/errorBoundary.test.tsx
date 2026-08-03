@@ -16,7 +16,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <p>healthy tree</p>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('healthy tree')).not.toBeNull();
@@ -29,7 +29,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowingChild />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByRole('alert')).not.toBeNull();
@@ -46,7 +46,7 @@ describe('ErrorBoundary', () => {
       'startpage_category_order',
       'startpage_theme_settings',
       'startpage_ranks',
-      'startpage_script_consents'
+      'startpage_script_consents',
     ];
     APP_KEYS.forEach(key => localStorage.setItem(key, '{"seed":1}'));
     const unrelatedKey = 'unrelated_site_data';
@@ -55,7 +55,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowingChild />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
     fireEvent.click(screen.getByRole('button', { name: 'Reset defaults' }));
 

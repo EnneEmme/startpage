@@ -15,13 +15,22 @@ interface CategoryPickerProps {
 }
 
 export const CategoryPicker = ({
-  categories, category, isCreatingNewCategory, newCategoryName,
-  isCategoryPickerOpen, onSelectCategory, onCreateNewCategory,
-  onSetIsCreatingNewCategory, onSetNewCategoryName, onSetIsCategoryPickerOpen
+  categories,
+  category,
+  isCreatingNewCategory,
+  newCategoryName,
+  isCategoryPickerOpen,
+  onSelectCategory,
+  onCreateNewCategory,
+  onSetIsCreatingNewCategory,
+  onSetNewCategoryName,
+  onSetIsCategoryPickerOpen,
 }: CategoryPickerProps) => {
   return (
     <div class={styles.fieldGroup}>
-      <label class={styles.label} for="vem-category">Column / Category</label>
+      <label class={styles.label} for="vem-category">
+        Column / Category
+      </label>
       <div class={styles.customSelectWrapper}>
         {!isCreatingNewCategory ? (
           <button
@@ -49,11 +58,7 @@ export const CategoryPicker = ({
               onInput={e => onSetNewCategoryName((e.target as HTMLInputElement).value)}
               autoFocus
             />
-            <button
-              type="button"
-              class={styles.confirmCatBtn}
-              onClick={onCreateNewCategory}
-            >
+            <button type="button" class={styles.confirmCatBtn} onClick={onCreateNewCategory}>
               Add
             </button>
             <button
@@ -67,7 +72,11 @@ export const CategoryPicker = ({
         )}
 
         {isCategoryPickerOpen && !isCreatingNewCategory && (
-          <div class={`${styles.customDropdownMenu} fade-in`} role="listbox" aria-label="Available categories">
+          <div
+            class={`${styles.customDropdownMenu} fade-in`}
+            role="listbox"
+            aria-label="Available categories"
+          >
             {categories.map(cat => (
               <div
                 key={cat}

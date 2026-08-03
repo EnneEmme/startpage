@@ -1,7 +1,8 @@
 import { useState } from 'preact/hooks';
 import type { LinkItem } from '../types/startpage';
 
-export type ModalId = 'search' | 'cheatsheet' | 'importExport' | 'visualEdit' | 'settings' | 'reorder';
+export type ModalId =
+  'search' | 'cheatsheet' | 'importExport' | 'visualEdit' | 'settings' | 'reorder';
 
 /**
  * Discriminated modal state: at most one modal can be open at any time.

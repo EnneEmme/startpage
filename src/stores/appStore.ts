@@ -47,5 +47,5 @@ export const appActions = {
   resetToDefaults: (): void => {
     dataStore.resetToDefault();
     rankStorage.clear();
-  }
+  },
 };

@@ -12,7 +12,7 @@ const sampleLink: LinkItem = {
   title: 'Sample',
   url: 'https://example.com',
   aliases: [],
-  category: 'Dev'
+  category: 'Dev',
 };
 
 describe('Custom Hooks', () => {
@@ -54,9 +54,11 @@ describe('Custom Hooks', () => {
 
     // Known link id resolves against the store at the given coordinates
     act(() => {
-      window.dispatchEvent(new CustomEvent('startpage:open-context-menu', {
-        detail: { linkId: 'github', clientX: 33, clientY: 44 }
-      }));
+      window.dispatchEvent(
+        new CustomEvent('startpage:open-context-menu', {
+          detail: { linkId: 'github', clientX: 33, clientY: 44 },
+        }),
+      );
     });
     expect(result.menu?.link?.id).toBe('github');
     expect(result.menu?.x).toBe(33);
@@ -64,9 +66,11 @@ describe('Custom Hooks', () => {
 
     // Unknown id is ignored (menu state untouched)
     act(() => {
-      window.dispatchEvent(new CustomEvent('startpage:open-context-menu', {
-        detail: { linkId: 'no-such-link' }
-      }));
+      window.dispatchEvent(
+        new CustomEvent('startpage:open-context-menu', {
+          detail: { linkId: 'no-such-link' },
+        }),
+      );
     });
     expect(result.menu?.link?.id).toBe('github');
 
@@ -74,9 +78,11 @@ describe('Custom Hooks', () => {
 
     // Missing coordinates fall back to the viewport center
     act(() => {
-      window.dispatchEvent(new CustomEvent('startpage:open-context-menu', {
-        detail: { linkId: 'github' }
-      }));
+      window.dispatchEvent(
+        new CustomEvent('startpage:open-context-menu', {
+          detail: { linkId: 'github' },
+        }),
+      );
     });
     expect(result.menu?.link?.id).toBe('github');
     expect(result.menu?.x).toBe(Math.floor(window.innerWidth / 2));

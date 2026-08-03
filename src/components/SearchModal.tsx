@@ -1,7 +1,13 @@
 import { memo } from 'preact/compat';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'preact/hooks';
 import { Search, Globe, ArrowRight, CornerDownLeft, Sparkles, X } from 'lucide-preact';
-import { fuzzySearchEngine, resolveDynamicUrl, executeLink, getEngineFallback, ICON_FALLBACK_URL } from '../engine';
+import {
+  fuzzySearchEngine,
+  resolveDynamicUrl,
+  executeLink,
+  getEngineFallback,
+  ICON_FALLBACK_URL,
+} from '../engine';
 import { themeConfigSignal } from '../stores';
 import type { LinkItem, SearchResult } from '../types/startpage';
 import { LinkIcon } from './LinkIcon';
@@ -56,9 +62,7 @@ const SearchResultRow = memo(({ result, selected, onSelect }: SearchResultRowPro
       <div class={styles.resultInfo}>
         <div class={styles.titleLine}>
           <span class={styles.resultTitle}>{item.title}</span>
-          {item.category && (
-            <span class={styles.categoryBadge}>{item.category}</span>
-          )}
+          {item.category && <span class={styles.categoryBadge}>{item.category}</span>}
           {result.matchedAlias && (
             <span class={styles.aliasMatched}>alias: {result.matchedAlias}</span>
           )}
@@ -71,12 +75,7 @@ const SearchResultRow = memo(({ result, selected, onSelect }: SearchResultRowPro
   );
 });
 
-export const SearchModal = ({
-  isOpen,
-  initialQuery = '',
-  links,
-  onClose
-}: SearchModalProps) => {
+export const SearchModal = ({ isOpen, initialQuery = '', links, onClose }: SearchModalProps) => {
   const [query, setQuery] = useState<string>(initialQuery);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -90,7 +89,7 @@ export const SearchModal = ({
         window.clearTimeout(selectionTimerRef.current);
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -111,20 +110,23 @@ export const SearchModal = ({
   }, [isOpen, initialQuery]);
 
   // Compute search only when query/links actually change (not on hover re-renders)
-  const parsedPrefix = useMemo(
-    () => fuzzySearchEngine.parseCommandPrefix(query),
-    [query]
-  );
+  const parsedPrefix = useMemo(() => fuzzySearchEngine.parseCommandPrefix(query), [query]);
   const searchResults: SearchResult[] = useMemo(
-    () => (parsedPrefix.isPrefixCommand ? [] : fuzzySearchEngine.search(query).slice(0, MAX_SEARCH_RESULTS)),
+    () =>
+      parsedPrefix.isPrefixCommand
+        ? []
+        : fuzzySearchEngine.search(query).slice(0, MAX_SEARCH_RESULTS),
     // links is the engine's data source (synced via effect above)
-    [query, links, parsedPrefix.isPrefixCommand]
+    [query, links, parsedPrefix.isPrefixCommand],
   );
 
-  const handleSelectLink = useCallback((link: LinkItem) => {
-    onClose();
-    executeLink(link);
-  }, [onClose]);
+  const handleSelectLink = useCallback(
+    (link: LinkItem) => {
+      onClose();
+      executeLink(link);
+    },
+    [onClose],
+  );
 
   // Note: pointer hover intentionally does NOT change selectedIndex — a static
   // cursor resting over the list would otherwise steal the keyboard selection
@@ -150,12 +152,15 @@ export const SearchModal = ({
   // active option via aria-activedescendant (focus stays on the input).
   const isListboxOpen = !parsedPrefix.isPrefixCommand && searchResults.length > 0;
   const selectedResult = searchResults[selectedIndex];
-  const activeOptionId = isListboxOpen && selectedResult ? optionId(selectedResult.item.id) : undefined;
+  const activeOptionId =
+    isListboxOpen && selectedResult ? optionId(selectedResult.item.id) : undefined;
   const liveAnnouncement = parsedPrefix.isPrefixCommand
     ? ''
     : searchResults.length > 0
       ? `${searchResults.length} result${searchResults.length === 1 ? '' : 's'} available.`
-      : (query.trim() ? 'No results found.' : '');
+      : query.trim()
+        ? 'No results found.'
+        : '';
 
   const handleExecuteCommandPrefix = () => {
     if (parsedPrefix.redirectUrl) {
@@ -175,7 +180,9 @@ export const SearchModal = ({
     if (e.key === 'Tab') {
       // Trap Tab only when a real completion can be applied; otherwise let it
       // propagate so the clear button stays reachable from the keyboard.
-      const candidate = !parsedPrefix.isPrefixCommand ? searchResults[selectedIndex]?.item : undefined;
+      const candidate = !parsedPrefix.isPrefixCommand
+        ? searchResults[selectedIndex]?.item
+        : undefined;
       if (candidate && candidate.title !== query) {
         e.preventDefault();
         setQuery(candidate.title);
@@ -203,7 +210,12 @@ export const SearchModal = ({
       e.preventDefault();
 
       // Cmd+Enter or Ctrl+Enter: switch to site query mode for the selected link card
-      if ((e.metaKey || e.ctrlKey) && !parsedPrefix.isPrefixCommand && searchResults.length > 0 && searchResults[selectedIndex]) {
+      if (
+        (e.metaKey || e.ctrlKey) &&
+        !parsedPrefix.isPrefixCommand &&
+        searchResults.length > 0 &&
+        searchResults[selectedIndex]
+      ) {
         const item = searchResults[selectedIndex].item;
         let prefixKey = item.aliases && item.aliases.length > 0 ? item.aliases[0] : '';
         if (!prefixKey) {
@@ -325,7 +337,13 @@ export const SearchModal = ({
 
         {/* Fuzzy Search Results List (capped at MAX_SEARCH_RESULTS) */}
         {!parsedPrefix.isPrefixCommand && searchResults.length > 0 && (
-          <div class={styles.resultsList} role="listbox" id={LISTBOX_ID} aria-label="Search results" ref={listRef}>
+          <div
+            class={styles.resultsList}
+            role="listbox"
+            id={LISTBOX_ID}
+            aria-label="Search results"
+            ref={listRef}
+          >
             {searchResults.map((res, index) => (
               <SearchResultRow
                 key={res.item.id}

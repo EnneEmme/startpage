@@ -14,8 +14,8 @@ setScriptConfirmHandler(link =>
     message: `"${link.title}" wants to run custom JavaScript. Run it?`,
     confirmLabel: 'Run script',
     cancelLabel: 'Cancel',
-    danger: true
-  })
+    danger: true,
+  }),
 );
 
 const rootEl = document.getElementById('app');
@@ -26,6 +26,6 @@ if (rootEl) {
     <ErrorBoundary>
       <App />
     </ErrorBoundary>,
-    rootEl
+    rootEl,
   );
 }

@@ -9,11 +9,7 @@ interface ReorderModalProps {
   onClose: () => void;
 }
 
-export const ReorderModal = ({
-  isOpen,
-  categories,
-  onClose
-}: ReorderModalProps) => {
+export const ReorderModal = ({ isOpen, categories, onClose }: ReorderModalProps) => {
   const handleMove = (index: number, direction: 'up' | 'down') => {
     const newOrder = [...categories];
     const targetIdx = direction === 'up' ? index - 1 : index + 1;
@@ -37,8 +33,10 @@ export const ReorderModal = ({
       maxWidth="500px"
     >
       <div class={styles.contentBody}>
-        <p class={styles.hintText}>Use the arrow buttons to arrange column sections in your preferred order:</p>
-        
+        <p class={styles.hintText}>
+          Use the arrow buttons to arrange column sections in your preferred order:
+        </p>
+
         <div class={styles.reorderList}>
           {categories.map((cat, idx) => (
             <div key={cat} class={styles.reorderRow}>

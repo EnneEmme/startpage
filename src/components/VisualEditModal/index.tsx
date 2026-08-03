@@ -26,12 +26,14 @@ export const VisualEditModal = ({
   initialEditLink,
   initialLink,
   onClose,
-  onSave
+  onSave,
 }: VisualEditModalProps) => {
   const targetLink = initialEditLink || initialLink;
   const isEditing = Boolean(targetLink);
 
-  const resolvedDisplayUrl = targetLink ? resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) : '';
+  const resolvedDisplayUrl = targetLink
+    ? resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule)
+    : '';
 
   const [title, setTitle] = useState(targetLink?.title || '');
   const [url, setUrl] = useState(targetLink?.url || resolvedDisplayUrl || '');
@@ -39,15 +41,23 @@ export const VisualEditModal = ({
   const [icon, setIcon] = useState(targetLink?.icon || '');
   const [category, setCategory] = useState(targetLink?.category || 'General');
 
-  const initialMode = targetLink?.isScript || targetLink?.scriptContent || (targetLink?.url && targetLink.url.toLowerCase().startsWith('javascript:'))
-    ? 'script'
-    : (targetLink?.searchTemplate || targetLink?.searchPath ? 'search' : 'web');
+  const initialMode =
+    targetLink?.isScript ||
+    targetLink?.scriptContent ||
+    (targetLink?.url && targetLink.url.toLowerCase().startsWith('javascript:'))
+      ? 'script'
+      : targetLink?.searchTemplate || targetLink?.searchPath
+        ? 'search'
+        : 'web';
 
   const [activeTab, setActiveTab] = useState<'web' | 'script' | 'search'>(initialMode);
   const [scriptSnippet, setScriptSnippet] = useState<string>(
-    targetLink?.scriptContent || (targetLink?.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : '')
+    targetLink?.scriptContent ||
+      (targetLink?.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : ''),
   );
-  const [searchTemplate, setSearchTemplate] = useState(targetLink?.searchTemplate || targetLink?.searchPath || '');
+  const [searchTemplate, setSearchTemplate] = useState(
+    targetLink?.searchTemplate || targetLink?.searchPath || '',
+  );
 
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -75,12 +85,15 @@ export const VisualEditModal = ({
       const isScript = Boolean(
         targetLink.isScript ||
         targetLink.scriptContent ||
-        (targetLink.url && targetLink.url.toLowerCase().startsWith('javascript:'))
+        (targetLink.url && targetLink.url.toLowerCase().startsWith('javascript:')),
       );
       const isSearch = Boolean(targetLink.searchTemplate || targetLink.searchPath);
 
-      setActiveTab(isScript ? 'script' : (isSearch ? 'search' : 'web'));
-      setScriptSnippet(targetLink.scriptContent || (targetLink.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : ''));
+      setActiveTab(isScript ? 'script' : isSearch ? 'search' : 'web');
+      setScriptSnippet(
+        targetLink.scriptContent ||
+          (targetLink.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : ''),
+      );
       setSearchTemplate(targetLink.searchTemplate || targetLink.searchPath || '');
     } else {
       setTitle('');
@@ -95,17 +108,24 @@ export const VisualEditModal = ({
   }, [isOpen, targetLink]);
 
   // Snapshot of the pristine form, used to detect unsaved ("dirty") edits.
-  const baseline = useMemo(() => ({
-    title: targetLink?.title || '',
-    url: targetLink ? (targetLink.url || resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) || '') : '',
-    aliases: targetLink?.aliases ? targetLink.aliases.join(', ') : '',
-    icon: targetLink?.icon || '',
-    category: targetLink?.category || 'General',
-    activeTab: initialMode,
-    scriptSnippet: targetLink?.scriptContent || (targetLink?.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : ''),
-    searchTemplate: targetLink?.searchTemplate || targetLink?.searchPath || ''
-    // initialMode is fully derived from targetLink — same dependency
-  }), [targetLink]);
+  const baseline = useMemo(
+    () => ({
+      title: targetLink?.title || '',
+      url: targetLink
+        ? targetLink.url || resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) || ''
+        : '',
+      aliases: targetLink?.aliases ? targetLink.aliases.join(', ') : '',
+      icon: targetLink?.icon || '',
+      category: targetLink?.category || 'General',
+      activeTab: initialMode,
+      scriptSnippet:
+        targetLink?.scriptContent ||
+        (targetLink?.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : ''),
+      searchTemplate: targetLink?.searchTemplate || targetLink?.searchPath || '',
+      // initialMode is fully derived from targetLink — same dependency
+    }),
+    [targetLink],
+  );
 
   // Rules of hooks: the guard below must stay after every hook declaration.
   if (!isOpen) return null;
@@ -130,7 +150,7 @@ export const VisualEditModal = ({
       title: 'Discard changes?',
       message: 'This link form has unsaved changes. Discard them?',
       confirmLabel: 'Discard',
-      danger: true
+      danger: true,
     }).then(ok => {
       if (ok) onClose();
     });
@@ -162,8 +182,10 @@ export const VisualEditModal = ({
       .map(a => a.trim().toLowerCase())
       .filter(Boolean);
 
-    const linkId = targetLink?.id || `link_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const targetCat = isCreatingNewCategory && newCategoryName.trim() ? newCategoryName.trim() : category;
+    const linkId =
+      targetLink?.id || `link_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const targetCat =
+      isCreatingNewCategory && newCategoryName.trim() ? newCategoryName.trim() : category;
 
     let finalUrl = url.trim();
     let finalScriptContent: string | undefined = undefined;
@@ -173,7 +195,9 @@ export const VisualEditModal = ({
     if (isScriptMode) {
       const code = scriptSnippet.trim();
       finalScriptContent = code;
-      finalUrl = code.toLowerCase().startsWith('javascript:') ? code : `javascript:${encodeURI(code)}`;
+      finalUrl = code.toLowerCase().startsWith('javascript:')
+        ? code
+        : `javascript:${encodeURI(code)}`;
     }
 
     const finalDynamicRule = targetLink?.dynamicUrlRule;
@@ -188,7 +212,7 @@ export const VisualEditModal = ({
       isScript: isScriptMode || undefined,
       scriptContent: finalScriptContent,
       dynamicUrlRule: finalDynamicRule,
-      searchTemplate: isSearchMode && searchTemplate.trim() ? searchTemplate.trim() : undefined
+      searchTemplate: isSearchMode && searchTemplate.trim() ? searchTemplate.trim() : undefined,
     };
 
     // A user-created category must be registered in the column order,
@@ -240,99 +264,116 @@ export const VisualEditModal = ({
       hideHeader={false}
     >
       <form onSubmit={handleSubmit} class={styles.formContent}>
-          <PreviewPanel
-            title={title}
-            url={url}
-            icon={icon}
-            firstAlias={firstAlias}
+        <PreviewPanel
+          title={title}
+          url={url}
+          icon={icon}
+          firstAlias={firstAlias}
+          activeTab={activeTab}
+        />
+
+        {/* Mode Tab Switcher Segmented Control */}
+        <div
+          class={styles.segmentedTabsWrapper}
+          role="tablist"
+          aria-label="Link type"
+          onKeyDown={handleTablistKeyDown}
+        >
+          <button
+            type="button"
+            role="tab"
+            id="vem-tab-web"
+            aria-selected={activeTab === 'web'}
+            aria-controls="vem-panel-web"
+            tabIndex={activeTab === 'web' ? 0 : -1}
+            class={`${styles.tabSegment} ${activeTab === 'web' ? styles.activeTabSegment : ''}`}
+            onClick={() => setActiveTab('web')}
+          >
+            <Globe size={14} />
+            <span>Standard Website</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="vem-tab-script"
+            aria-selected={activeTab === 'script'}
+            aria-controls="vem-panel-script"
+            tabIndex={activeTab === 'script' ? 0 : -1}
+            class={`${styles.tabSegment} ${activeTab === 'script' ? styles.activeTabSegment : ''}`}
+            onClick={() => setActiveTab('script')}
+          >
+            <Zap size={14} />
+            <span>Script JS / Bookmarklet</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="vem-tab-search"
+            aria-selected={activeTab === 'search'}
+            aria-controls="vem-panel-search"
+            tabIndex={activeTab === 'search' ? 0 : -1}
+            class={`${styles.tabSegment} ${activeTab === 'search' ? styles.activeTabSegment : ''}`}
+            onClick={() => setActiveTab('search')}
+          >
+            <Search size={14} />
+            <span>Search Engine</span>
+          </button>
+        </div>
+
+        {/* Mode-dependent fields (panel labelled by the active tab) */}
+        <div
+          role="tabpanel"
+          class={styles.tabPanel}
+          id={`vem-panel-${activeTab}`}
+          aria-labelledby={`vem-tab-${activeTab}`}
+        >
+          <FormFields
             activeTab={activeTab}
+            title={title}
+            setTitle={setTitle}
+            url={url}
+            setUrl={setUrl}
+            searchTemplate={searchTemplate}
+            setSearchTemplate={setSearchTemplate}
+            aliases={aliases}
+            setAliases={setAliases}
+            icon={icon}
+            setIcon={setIcon}
+            isIconDropdownOpen={isIconDropdownOpen}
+            setIsIconDropdownOpen={setIsIconDropdownOpen}
+            iconSearchQuery={iconSearchQuery}
+            setIconSearchQuery={setIconSearchQuery}
+            filteredIcons={filteredIcons}
           />
 
-          {/* Mode Tab Switcher Segmented Control */}
-          <div class={styles.segmentedTabsWrapper} role="tablist" aria-label="Link type" onKeyDown={handleTablistKeyDown}>
-            <button
-              type="button"
-              role="tab"
-              id="vem-tab-web"
-              aria-selected={activeTab === 'web'}
-              aria-controls="vem-panel-web"
-              tabIndex={activeTab === 'web' ? 0 : -1}
-              class={`${styles.tabSegment} ${activeTab === 'web' ? styles.activeTabSegment : ''}`}
-              onClick={() => setActiveTab('web')}
-            >
-              <Globe size={14} />
-              <span>Standard Website</span>
-            </button>
-            <button
-              type="button"
-              role="tab"
-              id="vem-tab-script"
-              aria-selected={activeTab === 'script'}
-              aria-controls="vem-panel-script"
-              tabIndex={activeTab === 'script' ? 0 : -1}
-              class={`${styles.tabSegment} ${activeTab === 'script' ? styles.activeTabSegment : ''}`}
-              onClick={() => setActiveTab('script')}
-            >
-              <Zap size={14} />
-              <span>Script JS / Bookmarklet</span>
-            </button>
-            <button
-              type="button"
-              role="tab"
-              id="vem-tab-search"
-              aria-selected={activeTab === 'search'}
-              aria-controls="vem-panel-search"
-              tabIndex={activeTab === 'search' ? 0 : -1}
-              class={`${styles.tabSegment} ${activeTab === 'search' ? styles.activeTabSegment : ''}`}
-              onClick={() => setActiveTab('search')}
-            >
-              <Search size={14} />
-              <span>Search Engine</span>
-            </button>
-          </div>
+          {activeTab === 'script' && (
+            <ScriptEditor scriptSnippet={scriptSnippet} setScriptSnippet={setScriptSnippet} />
+          )}
+        </div>
 
-          {/* Mode-dependent fields (panel labelled by the active tab) */}
-          <div role="tabpanel" class={styles.tabPanel} id={`vem-panel-${activeTab}`} aria-labelledby={`vem-tab-${activeTab}`}>
-            <FormFields
-              activeTab={activeTab}
-              title={title} setTitle={setTitle}
-              url={url} setUrl={setUrl}
-              searchTemplate={searchTemplate} setSearchTemplate={setSearchTemplate}
-              aliases={aliases} setAliases={setAliases}
-              icon={icon} setIcon={setIcon}
-              isIconDropdownOpen={isIconDropdownOpen} setIsIconDropdownOpen={setIsIconDropdownOpen}
-              iconSearchQuery={iconSearchQuery} setIconSearchQuery={setIconSearchQuery}
-              filteredIcons={filteredIcons}
-            />
+        <CategoryPicker
+          categories={categories}
+          category={category}
+          isCreatingNewCategory={isCreatingNewCategory}
+          newCategoryName={newCategoryName}
+          isCategoryPickerOpen={isCategoryPickerOpen}
+          onSelectCategory={handleSelectCategory}
+          onCreateNewCategory={handleCreateNewCategory}
+          onSetIsCreatingNewCategory={setIsCreatingNewCategory}
+          onSetNewCategoryName={setNewCategoryName}
+          onSetIsCategoryPickerOpen={setIsCategoryPickerOpen}
+        />
 
-            {activeTab === 'script' && (
-              <ScriptEditor scriptSnippet={scriptSnippet} setScriptSnippet={setScriptSnippet} />
-            )}
-          </div>
-
-          <CategoryPicker
-            categories={categories}
-            category={category}
-            isCreatingNewCategory={isCreatingNewCategory}
-            newCategoryName={newCategoryName}
-            isCategoryPickerOpen={isCategoryPickerOpen}
-            onSelectCategory={handleSelectCategory}
-            onCreateNewCategory={handleCreateNewCategory}
-            onSetIsCreatingNewCategory={setIsCreatingNewCategory}
-            onSetNewCategoryName={setNewCategoryName}
-            onSetIsCategoryPickerOpen={setIsCategoryPickerOpen}
-          />
-
-          {/* Actions */}
-          <div class={styles.modalFooter}>
-            <button type="button" class={styles.cancelBtn} onClick={handleRequestClose}>
-              Cancel
-            </button>
-            <button type="submit" class={styles.saveBtn}>
-              {isEditing ? 'Save Changes' : 'Create Link'}
-            </button>
-          </div>
-        </form>
+        {/* Actions */}
+        <div class={styles.modalFooter}>
+          <button type="button" class={styles.cancelBtn} onClick={handleRequestClose}>
+            Cancel
+          </button>
+          <button type="submit" class={styles.saveBtn}>
+            {isEditing ? 'Save Changes' : 'Create Link'}
+          </button>
+        </div>
+      </form>
     </Modal>
   );
 };

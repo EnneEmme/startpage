@@ -21,12 +21,15 @@ export const BASE_CHEATSHEET_SHORTCUTS: ShortcutGroup[] = [
       { keys: ['Any Key'], description: 'Start typing anywhere to activate fuzzy search' },
       { keys: [','], description: 'Open Settings & Customization modal' },
       { keys: ['Shift', 'N'], description: 'Open Add New Link modal' },
-      { keys: ['Alt', 'or', 'Shift+Space'], description: 'Toggle Aliases & Category Number Shortcuts (Shift+1..9)' },
+      {
+        keys: ['Alt', 'or', 'Shift+Space'],
+        description: 'Toggle Aliases & Category Number Shortcuts (Shift+1..9)',
+      },
       { keys: ['Shift', '1..9'], description: 'Instantly jump to category #1 through #9' },
       { keys: ['↑', '↓'], description: 'Navigate search result candidates' },
       { keys: ['Enter'], description: 'Open highlighted search result or URL' },
-      { keys: ['Esc'], description: 'Close search overlay or active modal' }
-    ]
+      { keys: ['Esc'], description: 'Close search overlay or active modal' },
+    ],
   },
   {
     category: 'Command Palette Prefixes',
@@ -35,9 +38,9 @@ export const BASE_CHEATSHEET_SHORTCUTS: ShortcutGroup[] = [
       { keys: ['yt', '<query>'], description: 'Search YouTube' },
       { keys: ['gh', '<query>'], description: 'Search GitHub' },
       { keys: ['w', '<query>'], description: 'Search Wikipedia' },
-      { keys: ['ddg', '<query>'], description: 'Search DuckDuckGo' }
-    ]
-  }
+      { keys: ['ddg', '<query>'], description: 'Search DuckDuckGo' },
+    ],
+  },
 ];
 
 export function getDynamicCheatsheetShortcuts(): ShortcutGroup[] {
@@ -56,7 +59,7 @@ export function getDynamicCheatsheetShortcuts(): ShortcutGroup[] {
         if (!exists) {
           commandGroup.items.push({
             keys: [alias, '<query>'],
-            description: `Search ${link.title}`
+            description: `Search ${link.title}`,
           });
         }
       }

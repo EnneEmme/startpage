@@ -12,7 +12,7 @@ export const JumpBar = ({
   categories,
   activeCategory,
   showShortcuts = false,
-  onSelectCategory
+  onSelectCategory,
 }: JumpBarProps) => {
   const jumpBarRef = useRef<HTMLDivElement>(null);
   const [scrollState, setScrollState] = useState({ canScrollLeft: false, canScrollRight: false });
@@ -27,7 +27,7 @@ export const JumpBar = ({
     setScrollState(prev =>
       prev.canScrollLeft === canScrollLeft && prev.canScrollRight === canScrollRight
         ? prev
-        : { canScrollLeft, canScrollRight }
+        : { canScrollLeft, canScrollRight },
     );
   };
 
@@ -88,9 +88,7 @@ export const JumpBar = ({
           aria-current={activeCategory === cat ? true : undefined}
           onClick={() => handleTabClick(cat)}
         >
-          {showShortcuts && idx < 9 && (
-            <span class={styles.shortcutNumberBadge}>{idx + 1}</span>
-          )}
+          {showShortcuts && idx < 9 && <span class={styles.shortcutNumberBadge}>{idx + 1}</span>}
           <span>{cat}</span>
         </button>
       ))}

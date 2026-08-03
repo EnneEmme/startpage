@@ -10,7 +10,7 @@ describe('ContextMenu Component', () => {
     title: 'Test Link',
     url: 'https://example.com',
     aliases: ['test'],
-    category: 'Dev'
+    category: 'Dev',
   };
 
   it('renders context menu at cursor position with link title', () => {
@@ -22,7 +22,7 @@ describe('ContextMenu Component', () => {
         onClose={() => {}}
         onEdit={() => {}}
         onRemove={() => {}}
-      />
+      />,
     );
 
     expect(container.textContent).toContain('Test Link');
@@ -44,7 +44,7 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={onEditSpy}
         onRemove={() => {}}
-      />
+      />,
     );
 
     fireEvent.click(getByText('Edit Link'));
@@ -64,7 +64,7 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={() => {}}
         onRemove={onRemoveSpy}
-      />
+      />,
     );
 
     fireEvent.click(getByText('Remove Link'));
@@ -90,7 +90,7 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={() => {}}
         onRemove={onRemoveSpy}
-      />
+      />,
     );
 
     fireEvent.click(getByText('Remove Link'));
@@ -111,7 +111,7 @@ describe('ContextMenu Component', () => {
         onClose={onCloseSpy}
         onEdit={() => {}}
         onRemove={() => {}}
-      />
+      />,
     );
 
     const backdrop = container.querySelector('[class*="menuBackdrop"]');
@@ -131,7 +131,7 @@ describe('ContextMenu Component', () => {
           onEdit={() => {}}
           onRemove={() => {}}
           onReorderColumns={() => {}}
-        />
+        />,
       );
 
       const menu = screen.getByRole('menu', { name: 'Actions for Test Link' });
@@ -142,7 +142,7 @@ describe('ContextMenu Component', () => {
         'Move Down',
         'Move Category...',
         'Reorder Columns...',
-        'Remove Link'
+        'Remove Link',
       ]);
     });
 
@@ -155,7 +155,7 @@ describe('ContextMenu Component', () => {
           onClose={() => {}}
           onEdit={() => {}}
           onRemove={() => {}}
-        />
+        />,
       );
 
       const items = screen.getAllByRole('menuitem');
@@ -173,7 +173,7 @@ describe('ContextMenu Component', () => {
           onClose={() => {}}
           onEdit={() => {}}
           onRemove={() => {}}
-        />
+        />,
       );
 
       const menu = screen.getByRole('menu', { name: 'Actions for Test Link' });
@@ -207,7 +207,7 @@ describe('ContextMenu Component', () => {
           onClose={() => {}}
           onEdit={() => {}}
           onRemove={() => {}}
-        />
+        />,
       );
 
       const trigger = screen.getByText('Move Category...').closest('button')!;
@@ -238,7 +238,7 @@ describe('ContextMenu Component', () => {
           onClose={onCloseSpy}
           onEdit={() => {}}
           onRemove={() => {}}
-        />
+        />,
       );
 
       fireEvent.keyDown(window, { key: 'Escape' });

@@ -11,7 +11,7 @@ const makeLink = (overrides: Partial<LinkItem>): LinkItem => ({
   url: 'https://example.com',
   category: 'General',
   aliases: [],
-  ...overrides
+  ...overrides,
 });
 
 describe('Signals State Management', () => {
@@ -23,11 +23,13 @@ describe('Signals State Management', () => {
     const initialLinksCount = linksSignal.value.length;
 
     // Add link to datastore directly
-    dataStore.addLink(makeLink({
-      id: 'test_link',
-      title: 'Test',
-      url: 'https://test.com'
-    }));
+    dataStore.addLink(
+      makeLink({
+        id: 'test_link',
+        title: 'Test',
+        url: 'https://test.com',
+      }),
+    );
 
     expect(linksSignal.value.length).toBe(initialLinksCount + 1);
     expect(linksSignal.value.find(l => l.id === 'test_link')).toBeDefined();

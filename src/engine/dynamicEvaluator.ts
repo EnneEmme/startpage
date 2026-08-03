@@ -88,7 +88,11 @@ export const clearDynamicUrlCache = (): void => {
   dynamicUrlCacheStats.computeCount = 0;
 };
 
-export const resolveDynamicUrl = (rawUrl: string, dynamicRule?: string, date: Date = new Date()): string => {
+export const resolveDynamicUrl = (
+  rawUrl: string,
+  dynamicRule?: string,
+  date: Date = new Date(),
+): string => {
   const cacheKey = `${date.toDateString()}|${dynamicRule ?? ''}|${rawUrl}`;
   const cached = dynamicUrlCache.get(cacheKey);
   if (cached !== undefined) {

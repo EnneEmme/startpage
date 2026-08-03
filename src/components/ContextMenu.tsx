@@ -26,7 +26,7 @@ export const ContextMenu = ({
   onClose,
   onEdit,
   onRemove,
-  onReorderColumns
+  onReorderColumns,
 }: ContextMenuProps) => {
   const [showCategorySubmenu, setShowCategorySubmenu] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -50,7 +50,10 @@ export const ContextMenu = ({
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const left = Math.max(VIEWPORT_GAP, Math.min(x, window.innerWidth - rect.width - VIEWPORT_GAP));
-    const top = Math.max(VIEWPORT_GAP, Math.min(y, window.innerHeight - rect.height - VIEWPORT_GAP));
+    const top = Math.max(
+      VIEWPORT_GAP,
+      Math.min(y, window.innerHeight - rect.height - VIEWPORT_GAP),
+    );
     setPosition({ left, top });
     setSubmenuOpensLeft(left + rect.width + SUBMENU_FOOTPRINT > window.innerWidth);
   }, [x, y]);
@@ -77,16 +80,20 @@ export const ContextMenu = ({
   // open submenu, in DOM order), Home/End jump to the first/last item.
   const handleMenuKeyDown = (e: KeyboardEvent) => {
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
-    const items = Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
+    const items = Array.from(
+      menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [],
+    );
     if (items.length === 0) return;
     e.preventDefault();
     const currentIdx = items.indexOf(document.activeElement as HTMLElement);
     switch (e.key) {
       case 'ArrowDown':
-        (items[currentIdx < 0 ? 0 : (currentIdx + 1) % items.length])?.focus();
+        items[currentIdx < 0 ? 0 : (currentIdx + 1) % items.length]?.focus();
         break;
       case 'ArrowUp':
-        (items[currentIdx < 0 ? items.length - 1 : (currentIdx - 1 + items.length) % items.length])?.focus();
+        items[
+          currentIdx < 0 ? items.length - 1 : (currentIdx - 1 + items.length) % items.length
+        ]?.focus();
         break;
       case 'Home':
         items[0]?.focus();
@@ -110,7 +117,7 @@ export const ContextMenu = ({
       title: 'Remove link',
       message: `Remove "${link.title}"?`,
       confirmLabel: 'Remove',
-      danger: true
+      danger: true,
     }).then(ok => {
       if (ok) {
         onRemove(link.id);
@@ -163,79 +170,94 @@ export const ContextMenu = ({
         onClick={e => e.stopPropagation()}
         onKeyDown={handleMenuKeyDown}
       >
-      <div class={styles.menuHeader}>{link.title}</div>
+        <div class={styles.menuHeader}>{link.title}</div>
 
-      <button role="menuitem" tabIndex={0} class={styles.menuItem} onClick={handleEditClick}>
-        <Edit3 size={15} /> Edit Link
-      </button>
+        <button role="menuitem" tabIndex={0} class={styles.menuItem} onClick={handleEditClick}>
+          <Edit3 size={15} /> Edit Link
+        </button>
 
-      <button role="menuitem" tabIndex={-1} class={styles.menuItem} onClick={e => handleMoveLinkDirection(e, 'up')}>
-        <ArrowUp size={15} /> Move Up
-      </button>
-
-      <button role="menuitem" tabIndex={-1} class={styles.menuItem} onClick={e => handleMoveLinkDirection(e, 'down')}>
-        <ArrowDown size={15} /> Move Down
-      </button>
-
-      <div class={styles.submenuWrapper}>
         <button
           role="menuitem"
           tabIndex={-1}
-          aria-haspopup="menu"
-          aria-expanded={showCategorySubmenu}
           class={styles.menuItem}
-          onClick={e => {
-            e.stopPropagation();
-            setShowCategorySubmenu(prev => !prev);
-          }}
+          onClick={e => handleMoveLinkDirection(e, 'up')}
         >
-          <Folder size={15} /> Move Category...
+          <ArrowUp size={15} /> Move Up
         </button>
 
-        {showCategorySubmenu && (
-          <div
-            role="menu"
-            aria-label="Move to category"
-            class={`${styles.categorySubmenu} ${submenuOpensLeft ? styles.flipLeft : ''}`}
-          >
-            {categories.map(cat => (
-              <button
-                key={cat}
-                role="menuitem"
-                tabIndex={-1}
-                class={`${styles.submenuItem} ${cat === link.category ? styles.active : ''}`}
-                onClick={e => handleMoveToCategory(e, cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+        <button
+          role="menuitem"
+          tabIndex={-1}
+          class={styles.menuItem}
+          onClick={e => handleMoveLinkDirection(e, 'down')}
+        >
+          <ArrowDown size={15} /> Move Down
+        </button>
 
-      {onReorderColumns && (
-        <>
-          <div class={styles.divider} />
+        <div class={styles.submenuWrapper}>
           <button
             role="menuitem"
             tabIndex={-1}
+            aria-haspopup="menu"
+            aria-expanded={showCategorySubmenu}
             class={styles.menuItem}
             onClick={e => {
               e.stopPropagation();
-              onClose();
-              onReorderColumns();
+              setShowCategorySubmenu(prev => !prev);
             }}
           >
-            <Move size={15} /> Reorder Columns...
+            <Folder size={15} /> Move Category...
           </button>
-        </>
-      )}
 
-      <div class={styles.divider} />
+          {showCategorySubmenu && (
+            <div
+              role="menu"
+              aria-label="Move to category"
+              class={`${styles.categorySubmenu} ${submenuOpensLeft ? styles.flipLeft : ''}`}
+            >
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  role="menuitem"
+                  tabIndex={-1}
+                  class={`${styles.submenuItem} ${cat === link.category ? styles.active : ''}`}
+                  onClick={e => handleMoveToCategory(e, cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
-      <button role="menuitem" tabIndex={-1} class={`${styles.menuItem} ${styles.danger}`} onClick={handleRemoveClick}>
-        <Trash2 size={15} /> Remove Link
-      </button>
+        {onReorderColumns && (
+          <>
+            <div class={styles.divider} />
+            <button
+              role="menuitem"
+              tabIndex={-1}
+              class={styles.menuItem}
+              onClick={e => {
+                e.stopPropagation();
+                onClose();
+                onReorderColumns();
+              }}
+            >
+              <Move size={15} /> Reorder Columns...
+            </button>
+          </>
+        )}
+
+        <div class={styles.divider} />
+
+        <button
+          role="menuitem"
+          tabIndex={-1}
+          class={`${styles.menuItem} ${styles.danger}`}
+          onClick={handleRemoveClick}
+        >
+          <Trash2 size={15} /> Remove Link
+        </button>
       </div>
     </>
   );

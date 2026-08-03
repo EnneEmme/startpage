@@ -35,11 +35,7 @@ export const PreviewPanel = ({ title, url, icon, firstAlias, activeTab }: Previe
         </span>
       </div>
 
-      {firstAlias && (
-        <span class={styles.previewAliasBadge}>
-          {firstAlias}
-        </span>
-      )}
+      {firstAlias && <span class={styles.previewAliasBadge}>{firstAlias}</span>}
     </div>
   </div>
 );

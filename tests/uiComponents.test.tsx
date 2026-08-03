@@ -12,7 +12,7 @@ describe('UI Components Unit Tests', () => {
         onOpenCheatsheet={vi.fn()}
         onOpenVisualEdit={vi.fn()}
         onOpenSettings={vi.fn()}
-      />
+      />,
     );
     // Selezione per ruolo + nome accessibile (aria-label), non per title:
     // i bottoni restano trovabili anche se cambia il copy dei tooltip.
@@ -29,7 +29,7 @@ describe('UI Components Unit Tests', () => {
         onOpenCheatsheet={vi.fn()}
         onOpenVisualEdit={vi.fn()}
         onOpenSettings={onOpenSettings}
-      />
+      />,
     );
 
     fireEvent.click(getByRole('button', { name: 'Settings & Themes' }));
@@ -40,7 +40,7 @@ describe('UI Components Unit Tests', () => {
     const onSelect = vi.fn();
     const categories = ['Social', 'Dev', 'AI'];
     const { getByText } = render(
-      <JumpBar categories={categories} activeCategory="Social" onSelectCategory={onSelect} />
+      <JumpBar categories={categories} activeCategory="Social" onSelectCategory={onSelect} />,
     );
 
     expect(getByText('All')).not.toBeNull();

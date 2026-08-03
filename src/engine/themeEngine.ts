@@ -27,7 +27,7 @@ export const ACCENT_COLORS: AccentColorOption[] = [
     primary: '#e2e8f0',
     highlight: '#f8fafc',
     glow: 'rgba(226, 232, 240, 0.18)',
-    borderHover: 'rgba(226, 232, 240, 0.4)'
+    borderHover: 'rgba(226, 232, 240, 0.4)',
   },
   {
     id: 'emerald',
@@ -35,7 +35,7 @@ export const ACCENT_COLORS: AccentColorOption[] = [
     primary: '#10b981',
     highlight: '#34d399',
     glow: 'rgba(16, 185, 129, 0.18)',
-    borderHover: 'rgba(16, 185, 129, 0.4)'
+    borderHover: 'rgba(16, 185, 129, 0.4)',
   },
   {
     id: 'sapphire',
@@ -43,7 +43,7 @@ export const ACCENT_COLORS: AccentColorOption[] = [
     primary: '#3b82f6',
     highlight: '#60a5fa',
     glow: 'rgba(59, 130, 246, 0.18)',
-    borderHover: 'rgba(59, 130, 246, 0.4)'
+    borderHover: 'rgba(59, 130, 246, 0.4)',
   },
   {
     id: 'violet',
@@ -51,7 +51,7 @@ export const ACCENT_COLORS: AccentColorOption[] = [
     primary: '#8b5cf6',
     highlight: '#a78bfa',
     glow: 'rgba(139, 92, 246, 0.18)',
-    borderHover: 'rgba(139, 92, 246, 0.4)'
+    borderHover: 'rgba(139, 92, 246, 0.4)',
   },
   {
     id: 'amber',
@@ -59,7 +59,7 @@ export const ACCENT_COLORS: AccentColorOption[] = [
     primary: '#f59e0b',
     highlight: '#fbbf24',
     glow: 'rgba(245, 158, 11, 0.18)',
-    borderHover: 'rgba(245, 158, 11, 0.4)'
+    borderHover: 'rgba(245, 158, 11, 0.4)',
   },
   {
     id: 'rose',
@@ -67,18 +67,18 @@ export const ACCENT_COLORS: AccentColorOption[] = [
     primary: '#f43f5e',
     highlight: '#fb7185',
     glow: 'rgba(244, 63, 94, 0.18)',
-    borderHover: 'rgba(244, 63, 94, 0.4)'
-  }
+    borderHover: 'rgba(244, 63, 94, 0.4)',
+  },
 ];
 
 const STORAGE_KEY = 'startpage_theme_settings';
 
 const DEFAULT_THEME_CONFIG: ThemeConfig = {
   accentColorId: 'silver', // Default accent is silver/platinum gray
-  gridDensity: 'normal',   // Default density is balanced 185px
-  fontSize: 'medium',      // Default font size is medium (1.02rem)
-  aliasVisibility: 'smart',// Default alias visibility is smart hidden (hold Alt)
-  defaultSearchEngine: 'g'
+  gridDensity: 'normal', // Default density is balanced 185px
+  fontSize: 'medium', // Default font size is medium (1.02rem)
+  aliasVisibility: 'smart', // Default alias visibility is smart hidden (hold Alt)
+  defaultSearchEngine: 'g',
 };
 
 export class ThemeEngine {
@@ -151,16 +151,16 @@ export class ThemeEngine {
     root.style.setProperty('--border-color-hover', accent.borderHover);
 
     // Apply 3-tier grid density scale with optimized vertical row gaps
-    let minColWidth = '185px';      // DEFAULT ('normal')
+    let minColWidth = '185px'; // DEFAULT ('normal')
     let gridGap = '2.5rem 1.25rem';
     let linkPadding = '0.34rem 0.45rem';
 
     if (config.gridDensity === 'compact') {
-      minColWidth = '155px';       // ULTRA COMPACT
+      minColWidth = '155px'; // ULTRA COMPACT
       gridGap = '1.75rem 0.85rem';
       linkPadding = '0.26rem 0.38rem';
     } else if (config.gridDensity === 'spaced') {
-      minColWidth = '230px';       // WIDE / SPACED
+      minColWidth = '230px'; // WIDE / SPACED
       gridGap = '3.5rem 1.75rem';
       linkPadding = '0.45rem 0.6rem';
     }
@@ -171,7 +171,7 @@ export class ThemeEngine {
 
     // Apply 4-tier font size scale (+10% upscale for crystal clear readability)
     let baseSize = '1.10rem';
-    let linkSize = '1.02rem';      // DEFAULT ('medium')
+    let linkSize = '1.02rem'; // DEFAULT ('medium')
     let headerSize = '1.18rem';
     let badgeSize = '0.74rem';
 

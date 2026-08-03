@@ -5,8 +5,7 @@ import { LinkIcon } from '../src/components/LinkIcon';
 const URL = 'https://github.com';
 
 /** Re-query the favicon <img> (preact updates it in place across state changes) */
-const faviconImg = (container: ParentNode) =>
-  container.querySelector<HTMLImageElement>('img')!;
+const faviconImg = (container: ParentNode) => container.querySelector<HTMLImageElement>('img')!;
 
 describe('LinkIcon', () => {
   it('walks the provider chain on img error (google -> icon.horse -> duckduckgo)', () => {
@@ -75,9 +74,7 @@ describe('LinkIcon', () => {
   });
 
   it('never resolves favicons for javascript: URLs (neutral Globe, no img)', () => {
-    const { container } = render(
-      <LinkIcon url="javascript:alert(1)" title="Snippet" />
-    );
+    const { container } = render(<LinkIcon url="javascript:alert(1)" title="Snippet" />);
 
     expect(container.querySelector('img')).toBeNull();
     expect(container.querySelector('svg')).not.toBeNull();

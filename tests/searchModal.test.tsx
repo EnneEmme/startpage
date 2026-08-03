@@ -23,15 +23,13 @@ const mockLinks: LinkItem[] = [
 describe('SearchModal Component', () => {
   it('does not render when isOpen is false', () => {
     const { container } = render(
-      <SearchModal isOpen={false} links={mockLinks} onClose={vi.fn()} />
+      <SearchModal isOpen={false} links={mockLinks} onClose={vi.fn()} />,
     );
     expect(container.firstChild).toBeNull();
   });
 
   it('renders input, results, and footer hints when open', () => {
-    const { getByText } = render(
-      <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
-    );
+    const { getByText } = render(<SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />);
 
     // Combobox has a stable accessible name: never select by placeholder copy
     const input = screen.getByRole('combobox', { name: 'Search links, aliases, or commands' });
@@ -43,9 +41,7 @@ describe('SearchModal Component', () => {
   });
 
   it('filters results and triggers Tab completion', () => {
-    const { getByText } = render(
-      <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
-    );
+    const { getByText } = render(<SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />);
 
     const input = screen.getByRole('combobox') as HTMLInputElement;
     fireEvent.input(input, { target: { value: 'Git' } });
@@ -63,9 +59,7 @@ describe('SearchModal Component', () => {
 
   it('triggers onClose when Escape is pressed', () => {
     const onClose = vi.fn();
-    render(
-      <SearchModal isOpen={true} links={mockLinks} onClose={onClose} />
-    );
+    render(<SearchModal isOpen={true} links={mockLinks} onClose={onClose} />);
 
     const input = screen.getByRole('combobox');
     fireEvent.keyDown(input, { key: 'Escape' });
@@ -75,7 +69,7 @@ describe('SearchModal Component', () => {
 
   it('shows command palette badge for engine prefixes', () => {
     const { getAllByText } = render(
-      <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
+      <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />,
     );
 
     const input = screen.getByRole('combobox');
@@ -85,9 +79,7 @@ describe('SearchModal Component', () => {
   });
 
   it('renders clear button when query is present and clears text on click', () => {
-    render(
-      <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
-    );
+    render(<SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />);
 
     const input = screen.getByRole('combobox') as HTMLInputElement;
     fireEvent.input(input, { target: { value: 'Test' } });
@@ -101,9 +93,7 @@ describe('SearchModal Component', () => {
   });
 
   it('switches to site search mode when Cmd+Enter is pressed on a result row', () => {
-    const { getByText } = render(
-      <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
-    );
+    const { getByText } = render(<SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />);
 
     const input = screen.getByRole('combobox') as HTMLInputElement;
     fireEvent.input(input, { target: { value: 'YouTube' } });
@@ -158,8 +148,7 @@ describe('SearchModal Component', () => {
       const options = screen.getAllByRole('option');
       expect(options.length).toBeGreaterThan(1);
 
-      const selectedIdOf = () =>
-        options.find(o => o.getAttribute('aria-selected') === 'true')?.id;
+      const selectedIdOf = () => options.find(o => o.getAttribute('aria-selected') === 'true')?.id;
 
       fireEvent.keyDown(input, { key: 'ArrowDown' });
       expect(input.getAttribute('aria-activedescendant')).toBe(selectedIdOf());
@@ -193,7 +182,9 @@ describe('SearchModal Component', () => {
       // that trap may cancel Tab in jsdom regardless, so we must sample here).
       const dialog = screen.getByRole('dialog');
       let preventedAtDialog: boolean | null = null;
-      dialog.addEventListener('keydown', e => { preventedAtDialog = e.defaultPrevented; });
+      dialog.addEventListener('keydown', e => {
+        preventedAtDialog = e.defaultPrevented;
+      });
 
       // No results: Tab must not be trapped (clear button stays reachable)
       fireEvent.input(input, { target: { value: 'zzz-no-match' } });
@@ -216,7 +207,7 @@ describe('SearchModal Component', () => {
       Object.defineProperty(Element.prototype, 'scrollIntoView', {
         value: scrollSpy,
         configurable: true,
-        writable: true
+        writable: true,
       });
 
       render(<SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />);

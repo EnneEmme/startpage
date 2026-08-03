@@ -17,21 +17,23 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
   const shortcutGroups = getDynamicCheatsheetShortcuts();
 
   // Filter shortcuts by search query
-  const filteredGroups = shortcutGroups.map(group => {
-    const filteredItems = group.items.filter(item => {
-      const q = searchQuery.toLowerCase().trim();
-      if (!q) return true;
-      const matchDesc = item.description.toLowerCase().includes(q);
-      const matchKey = item.keys.some(k => k.toLowerCase().includes(q));
-      const matchCat = group.category.toLowerCase().includes(q);
-      return matchDesc || matchKey || matchCat;
-    });
+  const filteredGroups = shortcutGroups
+    .map(group => {
+      const filteredItems = group.items.filter(item => {
+        const q = searchQuery.toLowerCase().trim();
+        if (!q) return true;
+        const matchDesc = item.description.toLowerCase().includes(q);
+        const matchKey = item.keys.some(k => k.toLowerCase().includes(q));
+        const matchCat = group.category.toLowerCase().includes(q);
+        return matchDesc || matchKey || matchCat;
+      });
 
-    return {
-      ...group,
-      items: filteredItems
-    };
-  }).filter(group => group.items.length > 0);
+      return {
+        ...group,
+        items: filteredItems,
+      };
+    })
+    .filter(group => group.items.length > 0);
 
   return (
     <Modal
@@ -73,36 +75,36 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
 
       {/* Body Content */}
       <div>
-          {filteredGroups.length > 0 ? (
-            filteredGroups.map(group => (
-              <div key={group.category} class={styles.shortcutSection}>
-                <div class={styles.categoryHeaderRow}>
-                  <Sparkles size={13} class={styles.categorySparkle} />
-                  <h3 class={styles.categoryHeader}>{group.category}</h3>
-                </div>
-                <div class={styles.shortcutGrid}>
-                  {group.items.map((item, idx) => (
-                    <div key={idx} class={styles.shortcutCard}>
-                      <span class={styles.shortcutDesc}>{item.description}</span>
-                      <div class={styles.keysBadgeContainer}>
-                        {item.keys.map((k, kIdx) => (
-                          <kbd key={kIdx} class={styles.keyBadge}>
-                            {k}
-                          </kbd>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+        {filteredGroups.length > 0 ? (
+          filteredGroups.map(group => (
+            <div key={group.category} class={styles.shortcutSection}>
+              <div class={styles.categoryHeaderRow}>
+                <Sparkles size={13} class={styles.categorySparkle} />
+                <h3 class={styles.categoryHeader}>{group.category}</h3>
               </div>
-            ))
-          ) : (
-            <div class={styles.noResultsState}>
-              <Command size={32} class={styles.noResultsIcon} />
-              <p>No shortcuts found for "{searchQuery}"</p>
+              <div class={styles.shortcutGrid}>
+                {group.items.map((item, idx) => (
+                  <div key={idx} class={styles.shortcutCard}>
+                    <span class={styles.shortcutDesc}>{item.description}</span>
+                    <div class={styles.keysBadgeContainer}>
+                      {item.keys.map((k, kIdx) => (
+                        <kbd key={kIdx} class={styles.keyBadge}>
+                          {k}
+                        </kbd>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
-        </div>
+          ))
+        ) : (
+          <div class={styles.noResultsState}>
+            <Command size={32} class={styles.noResultsIcon} />
+            <p>No shortcuts found for "{searchQuery}"</p>
+          </div>
+        )}
+      </div>
     </Modal>
   );
 };

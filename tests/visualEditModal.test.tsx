@@ -14,7 +14,7 @@ describe('VisualEditModal Modular Architecture', () => {
   it('can switch between tabs and show correct fields', () => {
     const onClose = vi.fn();
     render(<VisualEditModal isOpen={true} onClose={onClose} />);
-    
+
     // Default is Web
     expect(screen.getByText('Website URL')).toBeTruthy();
 
@@ -96,10 +96,10 @@ describe('VisualEditModal Modular Architecture', () => {
       render(<VisualEditModal isOpen={true} onClose={onClose} />);
 
       fireEvent.input(screen.getByLabelText('Link Title'), {
-        target: { value: 'Fresh Link' }
+        target: { value: 'Fresh Link' },
       });
       fireEvent.input(screen.getByLabelText('Website URL'), {
-        target: { value: 'https://fresh.example.com' }
+        target: { value: 'https://fresh.example.com' },
       });
 
       // Open the category dropdown and switch to "create new category" mode
@@ -108,7 +108,7 @@ describe('VisualEditModal Modular Architecture', () => {
       fireEvent.click(screen.getByText('Create New Category...'));
 
       fireEvent.input(screen.getByLabelText('New category name'), {
-        target: { value: 'TestCategoryXYZ' }
+        target: { value: 'TestCategoryXYZ' },
       });
       fireEvent.click(screen.getByText('Add'));
 
@@ -117,7 +117,9 @@ describe('VisualEditModal Modular Architecture', () => {
       expect(onClose).toHaveBeenCalledTimes(1);
       expect(dataStore.getCategoryOrder()).toContain('TestCategoryXYZ');
       expect(
-        dataStore.getLinks().some(l => l.title === 'Fresh Link' && l.category === 'TestCategoryXYZ')
+        dataStore
+          .getLinks()
+          .some(l => l.title === 'Fresh Link' && l.category === 'TestCategoryXYZ'),
       ).toBe(true);
     });
 
@@ -134,7 +136,7 @@ describe('VisualEditModal Modular Architecture', () => {
 
       // Dirty form: overlay click opens the themed confirm instead
       fireEvent.input(screen.getByLabelText('Link Title'), {
-        target: { value: 'Something typed' }
+        target: { value: 'Something typed' },
       });
       fireEvent.click(overlay);
       expect(onClose).not.toHaveBeenCalled();
