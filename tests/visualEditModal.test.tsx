@@ -74,19 +74,19 @@ describe('VisualEditModal Modular Architecture', () => {
       const onClose = vi.fn();
       const { rerender } = render(<VisualEditModal isOpen={true} onClose={onClose} />);
 
-      const titleInput = screen.getByPlaceholderText(/e.g. GitHub/i) as HTMLInputElement;
+      const titleInput = screen.getByLabelText('Link Title') as HTMLInputElement;
       fireEvent.input(titleInput, { target: { value: 'Dirty Title' } });
 
       // open an accessory dropdown so we can verify it resets too
       fireEvent.click(screen.getByText(/Pick \(/));
-      expect(screen.queryByPlaceholderText(/Search \d+ Lucide icons/)).not.toBeNull();
+      expect(screen.queryByRole('textbox', { name: 'Search Lucide icons' })).not.toBeNull();
 
       rerender(<VisualEditModal isOpen={false} onClose={onClose} />);
       rerender(<VisualEditModal isOpen={true} onClose={onClose} />);
 
-      const reopenedTitle = screen.getByPlaceholderText(/e.g. GitHub/i) as HTMLInputElement;
+      const reopenedTitle = screen.getByLabelText('Link Title') as HTMLInputElement;
       expect(reopenedTitle.value).toBe('');
-      expect(screen.queryByPlaceholderText(/Search \d+ Lucide icons/)).toBeNull();
+      expect(screen.queryByRole('textbox', { name: 'Search Lucide icons' })).toBeNull();
       expect(screen.getByRole('tabpanel').id).toBe('vem-panel-web');
     });
 
@@ -95,10 +95,10 @@ describe('VisualEditModal Modular Architecture', () => {
       const onClose = vi.fn();
       render(<VisualEditModal isOpen={true} onClose={onClose} />);
 
-      fireEvent.input(screen.getByPlaceholderText(/e.g. GitHub, ChatGPT, Mail/i), {
+      fireEvent.input(screen.getByLabelText('Link Title'), {
         target: { value: 'Fresh Link' }
       });
-      fireEvent.input(screen.getByPlaceholderText('e.g. https://www.youtube.com'), {
+      fireEvent.input(screen.getByLabelText('Website URL'), {
         target: { value: 'https://fresh.example.com' }
       });
 
@@ -133,7 +133,7 @@ describe('VisualEditModal Modular Architecture', () => {
       onClose.mockClear();
 
       // Dirty form: overlay click opens the themed confirm instead
-      fireEvent.input(screen.getByPlaceholderText(/e.g. GitHub, ChatGPT, Mail/i), {
+      fireEvent.input(screen.getByLabelText('Link Title'), {
         target: { value: 'Something typed' }
       });
       fireEvent.click(overlay);

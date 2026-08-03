@@ -37,7 +37,7 @@ describe('Modal hooks guards (isOpen toggle)', () => {
     expect(container.innerHTML).toBe('');
 
     rerender(<CheatsheetModal isOpen={true} onClose={onClose} />);
-    expect(screen.getByPlaceholderText(/Filter shortcuts/)).toBeTruthy();
+    expect(screen.getByRole('textbox', { name: 'Filter shortcuts' })).toBeTruthy();
   });
 
   it('VisualEditModal survives close → open cycles and resets add-link form', () => {
