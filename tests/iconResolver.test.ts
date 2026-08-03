@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { extractDomain, extractOrigin, getCachedFaviconIndex, getFaviconCandidates, getFaviconUrl, resolveIcon, setCachedFaviconIndex } from '../src/engine/iconResolver';
+import { extractDomain, extractOrigin, formatSvgToDataUrl, getCachedFaviconIndex, getFaviconCandidates, getFaviconUrl, isAllowedImageDataUrl, resolveIcon, setCachedFaviconIndex } from '../src/engine/iconResolver';
 
 describe('iconResolver Engine', () => {
   it('extracts domain correctly from valid URL', () => {
@@ -67,6 +67,56 @@ describe('iconResolver Engine', () => {
     const resolved = resolveIcon('https://twitter.com', 'Twitter');
     expect(resolved.type).toBe('lucide');
     expect(resolved.src).toBe('Twitter');
+  });
+
+  describe('data: URL whitelist (D4)', () => {
+    it('accepts whitelisted image MIME types (png/jpg/gif/webp/svg/ico)', () => {
+      const allowed = [
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg==',
+        'data:image/jpeg;base64,/9j/4AAQSkZJRg==',
+        'data:image/jpg;base64,/9j/4AAQSkZJRg==',
+        'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
+        'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBI=',
+        'data:image/svg+xml;base64,PHN2Zy8+',
+        'data:image/svg+xml;utf8,<svg></svg>',
+        'data:image/x-icon;base64,AAABAA==',
+        'data:image/vnd.microsoft.icon;base64,AAABAA=='
+      ];
+      for (const spec of allowed) {
+        expect(isAllowedImageDataUrl(spec)).toBe(true);
+        const resolved = resolveIcon('https://example.com', spec);
+        expect(resolved.type).toBe('custom_url');
+        expect(resolved.src).toBe(spec);
+      }
+    });
+
+    it('rejects non-image data: URLs (data:text/html → favicon fallback)', () => {
+      const hostile = 'data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==';
+      expect(isAllowedImageDataUrl(hostile)).toBe(false);
+      const resolved = resolveIcon('https://example.com', hostile);
+      // NOT rendered as a custom icon: falls back to the favicon pipeline
+      expect(resolved.type).toBe('favicon');
+      expect(resolved.src).toBe('https://icon.horse/icon/example.com');
+
+      expect(isAllowedImageDataUrl('data:application/javascript;base64,YQ==')).toBe(false);
+      expect(isAllowedImageDataUrl('data:text/plain;base64,YQ==')).toBe(false);
+      expect(isAllowedImageDataUrl('data:image/bmp;base64,Qk0=')).toBe(false); // not whitelisted
+    });
+
+    it('is case-insensitive on scheme and MIME (RFC 2397)', () => {
+      expect(isAllowedImageDataUrl('DATA:IMAGE/PNG;base64,iVBORw0KGgo=')).toBe(true);
+      const resolved = resolveIcon('https://example.com', 'DATA:TEXT/HTML;base64,PGI+');
+      expect(resolved.type).toBe('favicon');
+    });
+
+    it('formatSvgToDataUrl passes through whitelisted image data: only', () => {
+      const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg==';
+      expect(formatSvgToDataUrl(png)).toBe(png);
+      // hostile/unknown data: payload → empty source (img onError fallback)
+      expect(formatSvgToDataUrl('data:text/html;base64,PHNjcmlwdD48L3NjcmlwdD4=')).toBe('');
+      // raw SVG keeps the existing encoding behavior
+      expect(formatSvgToDataUrl('<svg viewBox="0 0 1 1"></svg>')).toContain('data:image/svg+xml;base64,');
+    });
   });
 
   describe('favicon provider cache', () => {

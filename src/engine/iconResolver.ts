@@ -111,9 +111,24 @@ export const setCachedFaviconIndex = (domain: string, index: number): void => {
   }
 };
 
+/**
+ * SECURITY: only IMAGE MIME data: URLs are valid icon sources. Arbitrary
+ * data: payloads (e.g. data:text/html;base64,...) must never reach an
+ * <img>/CSS surface as "trusted icon" input. RFC 2397 scheme/MIME matching
+ * is case-insensitive.
+ */
+const ALLOWED_IMAGE_DATA_URL = /^data:image\/(png|jpe?g|gif|webp|svg\+xml|x-icon|vnd\.microsoft\.icon)/i;
+
+export const isAllowedImageDataUrl = (spec: string): boolean => ALLOWED_IMAGE_DATA_URL.test(spec.trim());
+
 export const formatSvgToDataUrl = (svgCode: string): string => {
   let cleanSvg = svgCode.trim();
-  if (cleanSvg.startsWith('data:')) return cleanSvg;
+  if (/^data:/i.test(cleanSvg)) {
+    // Already a data URL: pass through whitelisted image MIME types only;
+    // anything else is not a usable icon source (callers' <img> onError
+    // fallback chain handles the empty source).
+    return isAllowedImageDataUrl(cleanSvg) ? cleanSvg : '';
+  }
 
   // Clean markdown link formatting (e.g. [http://www.w3.org/...](http://www.w3.org/...))
   cleanSvg = cleanSvg.replace(/\[https?:\/\/[^\]]+\]\((https?:\/\/[^)]+)\)/g, '$1');
@@ -151,11 +166,27 @@ export const resolveIcon = (url: string, iconSpec?: string): ResolvedIcon => {
     };
   }
 
-  // If iconSpec is a direct HTTP/HTTPS URL or base64 image or local path
-  if (spec.startsWith('http://') || spec.startsWith('https://') || spec.startsWith('data:') || spec.startsWith('/')) {
+  // If iconSpec is a direct HTTP/HTTPS URL or local path
+  if (spec.startsWith('http://') || spec.startsWith('https://') || spec.startsWith('/')) {
     return {
       type: 'custom_url',
       src: spec
+    };
+  }
+
+  // data: URLs: whitelisted image MIME types only (e.g. base64 icons).
+  // Anything else (data:text/html, data:application/...) is invalid input:
+  // fall back to the domain favicon pipeline instead of rendering it.
+  if (/^data:/i.test(spec)) {
+    if (isAllowedImageDataUrl(spec)) {
+      return {
+        type: 'custom_url',
+        src: spec
+      };
+    }
+    return {
+      type: 'favicon',
+      src: getFaviconUrl(url)
     };
   }
 
