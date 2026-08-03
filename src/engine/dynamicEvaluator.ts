@@ -30,7 +30,11 @@ export const getUnimibEsamiUrl = (currentDate: Date = new Date()): string => {
   return `https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easytest&form-type=et_cdl&include=et_cdl&et_er=1&scuola=AreaScientifica-Informatica&esami_cdl=F1802Q&anno2%5B%5D=1&datefrom=${todayDate}&dateto=${dateto}&_lang=it&list=&week_grid_type=-1&ar_codes_=&ar_select_=&col_cells=0&empty_box=0&only_grid=0&highlighted_date=0&all_events=0#`;
 };
 
-export const resolveDynamicUrl = (rawUrl: string, dynamicRule?: string, date: Date = new Date()): string => {
+/**
+ * Pure evaluation (no external state): depends only on (rawUrl, dynamicRule,
+ * date). Extracted so resolveDynamicUrl can wrap it with a memo cache.
+ */
+const computeDynamicUrl = (rawUrl: string, dynamicRule: string | undefined, date: Date): string => {
   if (dynamicRule === 'unimib_orari') {
     return getUnimibOrariUrl(date);
   }
@@ -47,5 +51,45 @@ export const resolveDynamicUrl = (rawUrl: string, dynamicRule?: string, date: Da
     resolved = resolved.replace(/\{\{YYYY-MM-DD\}\}/g, parseDateISO(date));
   }
 
+  return resolved;
+};
+
+/**
+ * resolveDynamicUrl is called once per link per render (grid columns, search
+ * rows, edit modal). It is pure wrt (url, rule, day): all dynamic rules only
+ * depend on "today" — so results are memoized for the current day. The cache
+ * key is `day | rule | url` (the function receives no link id; url+rule is
+ * the caller-visible identity). The day segment guarantees stale entries are
+ * never served after midnight. Hard cap: wholesale reset beyond the bound
+ * (entries accumulate one per link per day on long-lived pages).
+ */
+const DYNAMIC_URL_CACHE_LIMIT = 500;
+const dynamicUrlCache = new Map<string, string>();
+
+/**
+ * Test-only observability (intentionally NOT re-exported from engine/index):
+ * counts real computations (cache misses).
+ */
+export const dynamicUrlCacheStats = { computeCount: 0 };
+
+export const clearDynamicUrlCache = (): void => {
+  dynamicUrlCache.clear();
+  dynamicUrlCacheStats.computeCount = 0;
+};
+
+export const resolveDynamicUrl = (rawUrl: string, dynamicRule?: string, date: Date = new Date()): string => {
+  const cacheKey = `${date.toDateString()}|${dynamicRule ?? ''}|${rawUrl}`;
+  const cached = dynamicUrlCache.get(cacheKey);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  dynamicUrlCacheStats.computeCount++;
+  const resolved = computeDynamicUrl(rawUrl, dynamicRule, date);
+
+  if (dynamicUrlCache.size >= DYNAMIC_URL_CACHE_LIMIT) {
+    dynamicUrlCache.clear();
+  }
+  dynamicUrlCache.set(cacheKey, resolved);
   return resolved;
 };

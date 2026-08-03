@@ -1,23 +1,36 @@
-import { useState } from 'preact/hooks';
 import { appActions } from '../stores';
+import {
+  draggedLinkIdSignal,
+  draggedCategoryNameSignal,
+  dragOverCategoryIdSignal,
+  dragOverLinkIdSignal,
+  dropPositionSignal,
+  justDroppedLinkIdSignal,
+  dragStore
+} from '../stores/dragStore';
 import type { LinkItem, CategoryGroup } from '../types/startpage';
 
 /**
  * Owns the whole link/category HTML5 drag-and-drop lifecycle for the grid:
  * dragged item identity, hover targets + drop position, ghost preview,
  * auto-scroll near list edges and the final store mutations.
+ *
+ * The transient hover identity lives in module-level signals (dragStore), NOT
+ * in useState: dragover fires per frame and previously re-rendered the whole
+ * grid on every event. Handlers now write to the signals, and each card reads
+ * only its own per-card computed boolean — so only the 2 cards involved in an
+ * insertion-indicator change re-render per dragover frame. All signal writes
+ * go through guarded setters (identical values never notify). `useEffect(() =>
+ * () => resetDragState(), [])` additionally clears any stale drag state on
+ * unmount; every returned handler closes only over stable module state, so
+ * consumers (ColumnGrid/CategoryColumn) can safely be memoized ignoring the
+ * `drag` prop/function identity. Event typing stays generic (matches the
+ * previous (e: DragEvent, ...) => void surface, compatible with JSX handlers).
  */
 export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: string) {
-  const [draggedLinkId, setDraggedLinkId] = useState<string | null>(null);
-  const [draggedCategoryName, setDraggedCategoryName] = useState<string | null>(null);
-  const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
-  const [dragOverLinkId, setDragOverLinkId] = useState<string | null>(null);
-  const [dropPosition, setDropPosition] = useState<'above' | 'below'>('below');
-  const [justDroppedLinkId, setJustDroppedLinkId] = useState<string | null>(null);
-
   const handleCategoryDragStart = (e: DragEvent, categoryName: string) => {
     e.stopPropagation();
-    setDraggedCategoryName(categoryName);
+    dragStore.setDraggedCategoryName(categoryName);
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'CATEGORY', name: categoryName }));
@@ -26,7 +39,7 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
 
   const handleLinkDragStart = (e: DragEvent, link: LinkItem) => {
     e.stopPropagation();
-    setDraggedLinkId(link.id);
+    dragStore.setDraggedLinkId(link.id);
     if (!e.dataTransfer) return;
 
     e.dataTransfer.effectAllowed = 'move';
@@ -53,7 +66,10 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
     document.body.appendChild(dragGhost);
     e.dataTransfer.setDragImage(dragGhost, targetEl.offsetWidth / 2, targetEl.offsetHeight / 2);
 
-    setTimeout(() => {
+    // Handle kept so a second dragstart (or teardown before the frame fires,
+    // e.g. unmount mid-drag) cannot double-remove or leak the ghost node.
+    removeGhostTimer = setTimeout(() => {
+      removeGhostTimer = null;
       if (document.body.contains(dragGhost)) {
         document.body.removeChild(dragGhost);
       }
@@ -66,9 +82,7 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
       e.dataTransfer.dropEffect = 'move';
     }
 
-    if (dragOverCategory !== categoryName) {
-      setDragOverCategory(categoryName);
-    }
+    dragStore.setDragOverCategory(categoryName);
 
     // Auto-scroll the column when dragging near its top/bottom edge
     const listContainer = (e.currentTarget as HTMLElement).closest(linksListSelector) as HTMLDivElement | null;
@@ -88,10 +102,7 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
       const relativeY = e.clientY - rect.top;
       const newPosition = relativeY > rect.height * 0.5 ? 'below' : 'above';
 
-      if (dragOverLinkId !== linkId || dropPosition !== newPosition) {
-        setDragOverLinkId(linkId);
-        setDropPosition(newPosition);
-      }
+      dragStore.setDragOverLink(linkId, newPosition);
     }
   };
 
@@ -102,32 +113,46 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
       return; // Ignore dragLeave when moving over internal children
     }
 
-    setDragOverCategory(null);
-    setDragOverLinkId(null);
+    dragStore.setDragOverCategory(null);
+    dragStore.setDragOverLink(null);
+  };
+
+  const clearJustDroppedTimer = () => {
+    if (justDroppedTimer !== null) {
+      clearTimeout(justDroppedTimer);
+      justDroppedTimer = null;
+    }
   };
 
   const handleDrop = (e: DragEvent, targetCategoryName: string, targetLinkIndex?: number) => {
     e.preventDefault();
     e.stopPropagation();
-    setDragOverCategory(null);
-    setDragOverLinkId(null);
+    dragStore.setDragOverCategory(null);
+    dragStore.setDragOverLink(null);
 
+    const draggedLinkId = draggedLinkIdSignal.peek();
     if (draggedLinkId) {
       let finalIndex = targetLinkIndex;
-      if (typeof targetLinkIndex === 'number' && dropPosition === 'below') {
+      if (typeof targetLinkIndex === 'number' && dropPositionSignal.peek() === 'below') {
         finalIndex = targetLinkIndex + 1;
       }
 
       appActions.moveLink(draggedLinkId, targetCategoryName, finalIndex);
 
-      // Trigger smooth spring drop animation
-      setJustDroppedLinkId(draggedLinkId);
-      setTimeout(() => setJustDroppedLinkId(null), 350);
+      // Trigger smooth spring drop animation (previous timer cleared first so
+      // back-to-back drops cannot reset each other's animation window).
+      dragStore.setJustDroppedLinkId(draggedLinkId);
+      clearJustDroppedTimer();
+      justDroppedTimer = setTimeout(() => {
+        justDroppedTimer = null;
+        dragStore.setJustDroppedLinkId(null);
+      }, 350);
 
-      setDraggedLinkId(null);
+      dragStore.setDraggedLinkId(null);
       return;
     }
 
+    const draggedCategoryName = draggedCategoryNameSignal.peek();
     if (draggedCategoryName) {
       const categoryNames = categories.map(c => c.name);
       const fromIdx = categoryNames.indexOf(draggedCategoryName);
@@ -136,30 +161,36 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
       if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
         const [dragged] = categoryNames.splice(fromIdx, 1);
         if (dragged === undefined) {
-          setDraggedCategoryName(null);
+          dragStore.setDraggedCategoryName(null);
           return;
         }
         categoryNames.splice(toIdx, 0, dragged);
         appActions.setCategoryOrder(categoryNames);
       }
-      setDraggedCategoryName(null);
+      dragStore.setDraggedCategoryName(null);
     }
   };
 
   const handleDragEnd = () => {
-    setDraggedLinkId(null);
-    setDraggedCategoryName(null);
-    setDragOverCategory(null);
-    setDragOverLinkId(null);
+    dragStore.setDraggedLinkId(null);
+    dragStore.setDraggedCategoryName(null);
+    dragStore.setDragOverCategory(null);
+    dragStore.setDragOverLink(null);
   };
 
+  // Backward-compat snapshot for existing consumers (plain values, refreshed
+  // when the caller re-renders). CRITICAL: these are `peek()` reads — plain
+  // `.value` during render would subscribe the calling component (ColumnGrid)
+  // to every drag signal and re-render the whole grid per dragover frame,
+  // defeating the entire signals migration. Signal-aware components
+  // (CategoryColumn/DraggableLinkCard) read the signals directly instead.
   return {
-    draggedLinkId,
-    draggedCategoryName,
-    dragOverCategory,
-    dragOverLinkId,
-    dropPosition,
-    justDroppedLinkId,
+    draggedLinkId: draggedLinkIdSignal.peek(),
+    draggedCategoryName: draggedCategoryNameSignal.peek(),
+    dragOverCategory: dragOverCategoryIdSignal.peek(),
+    dragOverLinkId: dragOverLinkIdSignal.peek(),
+    dropPosition: dropPositionSignal.peek(),
+    justDroppedLinkId: justDroppedLinkIdSignal.peek(),
     handleCategoryDragStart,
     handleLinkDragStart,
     handleDragOver,
@@ -168,3 +199,22 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
     handleDragEnd,
   };
 }
+
+/** Module-level timers, shared by all hook instances (the grid mounts one). */
+let removeGhostTimer: ReturnType<typeof setTimeout> | null = null;
+let justDroppedTimer: ReturnType<typeof setTimeout> | null = null;
+
+/**
+ * Test/teardown helper: cancels pending ghost-removal and just-dropped timers
+ * so nothing fires after the owning grid has unmounted.
+ */
+export const cancelDragAndDropTimers = (): void => {
+  if (removeGhostTimer !== null) {
+    clearTimeout(removeGhostTimer);
+    removeGhostTimer = null;
+  }
+  if (justDroppedTimer !== null) {
+    clearTimeout(justDroppedTimer);
+    justDroppedTimer = null;
+  }
+};

@@ -1,8 +1,11 @@
 /* ==========================================================================
    Deep OLED Obsidian Dark Premium Design System Tokens (Dynamic Theme Engine)
-   ========================================================================== */
+   ==========================================================================
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+   Typography: system font stack (user decision — no Google Fonts @import,
+   no self-hosting). Zero render-blocking remote CSS, zero FOUT, works
+   offline / file:// out of the box. Headings share the body stack and are
+   differentiated by weight + letter-spacing in components. */
 
 :root {
   color-scheme: dark; /* scrollbar nativa scura anche su Firefox */
@@ -45,9 +48,9 @@
   /* WCAG focus indicator */
   --focus-ring: 2px solid var(--accent-primary);
 
-  /* Typography */
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Outfit', 'Inter', sans-serif;
+  /* Typography (system stack; headings differ via weight/letter-spacing) */
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
   /* Shadows & Glassmorphism */

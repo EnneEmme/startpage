@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'preact/hooks';
+import { memo } from 'preact/compat';
+import { useComputed } from '@preact/signals';
 import type { CategoryGroup, LinkItem } from '../types/startpage';
 import { appActions } from '../stores';
+import { dragOverCategoryIdSignal, dragOverLinkIdSignal } from '../stores/dragStore';
 import { resolveDynamicUrl, isBookmarkletOrScript, categoryColumnId } from '../engine';
 import type { useDragAndDrop } from '../hooks/useDragAndDrop';
 import type { ScrollMask } from '../hooks/useColumnScrollMasks';
@@ -21,13 +24,21 @@ interface CategoryColumnProps {
   onCardTouchStart: (e: TouchEvent, link: LinkItem) => void;
   onCardTouchEnd: () => void;
   onCardClick: (e: MouseEvent, link: LinkItem) => void;
+  /** Optional: renders the empty-state CTA when the column has no links. */
+  onAddLink?: ((category: string) => void) | undefined;
 }
 
 /**
  * One category column: header with double-click inline rename + drag-to-reorder,
  * and the scroll-masked list of link cards.
+ *
+ * Memoized: the transient drag-hover classes come from signals (dragStore),
+ * not from `drag` snapshot props — `drag.draggedLinkId` & co. are intentionally
+ * NOT read here, so a dragover frame does NOT re-render this column. Only two
+ * column-level signal booleans are subscribed (isColumnDragOver); per-card
+ * drag classes are bound inside DraggableLinkCard itself.
  */
-export const CategoryColumn = ({
+export const CategoryColumn = memo(({
   cat,
   highlighted,
   showShortcuts,
@@ -38,11 +49,18 @@ export const CategoryColumn = ({
   onCardContextMenu,
   onCardTouchStart,
   onCardTouchEnd,
-  onCardClick
+  onCardClick,
+  onAddLink
 }: CategoryColumnProps) => {
   // Inline category header rename state (local: only this column re-renders)
   const [isRenaming, setIsRenaming] = useState<boolean>(false);
   const [renameValue, setRenameValue] = useState<string>('');
+
+  // Column-level drop highlight: signal-based, so writing a new hover target
+  // re-renders only the entering/leaving columns, never the whole grid.
+  const isDragOver = useComputed(
+    () => dragOverCategoryIdSignal.value === cat.name && !dragOverLinkIdSignal.value
+  ).value;
 
   // Stable ref: a fresh arrow each render would make Preact detach/attach on
   // every render, churning mask state into an infinite re-render loop.
@@ -50,8 +68,6 @@ export const CategoryColumn = ({
     (el: HTMLDivElement | null) => registerList(cat.name, el),
     [cat.name, registerList]
   );
-
-  const isDragOver = drag.dragOverCategory === cat.name && !drag.dragOverLinkId;
 
   // CSS-module classes are typed string|undefined by noUncheckedIndexedAccess;
   // the class names exist, and Preact's class prop tolerates undefined.
@@ -120,26 +136,27 @@ export const CategoryColumn = ({
         class={`${styles.linksList} ${fadeClass}`}
         onScroll={e => onListScroll(cat.name, e.currentTarget as HTMLDivElement)}
       >
-        {cat.links.map((link, linkIdx) => {
-          const displayUrl = resolveDynamicUrl(link.url, link.dynamicUrlRule);
-          const isScript = isBookmarkletOrScript(link);
-          const isItemDragOver = drag.dragOverLinkId === link.id;
-
-          let dragOverClass: string | undefined = '';
-          if (isItemDragOver) {
-            dragOverClass = drag.dropPosition === 'below' ? styles.dragOverBelow : styles.dragOverAbove;
-          }
-
-          return (
+        {cat.links.length === 0 ? (
+          <div class={styles.emptyState}>
+            <p class={styles.emptyStateText}>No links yet</p>
+            {onAddLink && (
+              <button
+                type="button"
+                class={styles.emptyStateAction}
+                onClick={() => onAddLink(cat.name)}
+              >
+                Add the first link
+              </button>
+            )}
+          </div>
+        ) : (
+          cat.links.map((link, linkIdx) => (
             <DraggableLinkCard
               key={link.id}
               link={link}
-              displayUrl={displayUrl}
-              isScript={isScript}
+              displayUrl={resolveDynamicUrl(link.url, link.dynamicUrlRule)}
+              isScript={isBookmarkletOrScript(link)}
               showShortcuts={showShortcuts}
-              dragOverClass={dragOverClass}
-              isBeingDragged={drag.draggedLinkId === link.id}
-              isJustDropped={drag.justDroppedLinkId === link.id}
               onDragStart={e => drag.handleLinkDragStart(e, link)}
               onDragOver={e => drag.handleDragOver(e, cat.name, link.id)}
               onDrop={e => drag.handleDrop(e, cat.name, linkIdx)}
@@ -151,9 +168,9 @@ export const CategoryColumn = ({
               onTouchEnd={onCardTouchEnd}
               onTouchMove={onCardTouchEnd}
             />
-          );
-        })}
+          ))
+        )}
       </div>
     </div>
   );
-};
+});
