@@ -13,7 +13,9 @@ export { BRAND_FAVICON_OVERRIDES, ICON_FALLBACK_URL, extractDomain, extractOrigi
 export type { ResolvedIcon } from './iconResolver';
 export { KeyboardManager, keyboardManager } from './keyboardManager';
 export type { KeyboardActionHandlers } from './keyboardManager';
-export { executeLink, extractScriptCode, isBookmarkletOrScript } from './linkExecutor';
+export { executeLink, extractScriptCode, isBookmarkletOrScript, setScriptConfirmHandler } from './linkExecutor';
+export type { ScriptConfirmHandler } from './linkExecutor';
 export { RankStorage, rankStorage } from './rankStorage';
+export { clearConsents, grantConsent, hasConsent, hashScriptIdentity } from './scriptConsent';
 export { ACCENT_COLORS, ThemeEngine, themeEngine } from './themeEngine';
 export type { AccentColorOption, ThemeConfig } from './themeEngine';

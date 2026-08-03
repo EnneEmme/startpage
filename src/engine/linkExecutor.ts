@@ -1,11 +1,17 @@
 /**
  * Link Execution & Bookmarklet Script Engine
  * Handles opening standard URLs, dynamic Unimib course/exam links, and executing custom JavaScript bookmarklets.
+ *
+ * Security: custom scripts run ONLY via `new Function` (never through a
+ * `javascript:` URL navigation fallback) and, when a UI confirm handler is
+ * registered, only after an explicit per-script-hash user consent
+ * (see scriptConsent.ts).
  */
 
 import type { LinkItem } from '../types/startpage';
 import { resolveDynamicUrl } from './dynamicEvaluator';
 import { rankStorage } from './rankStorage';
+import { grantConsent, hasConsent } from './scriptConsent';
 
 /**
  * Determines whether a link item is a custom JavaScript script or bookmarklet.
@@ -36,13 +42,49 @@ export const extractScriptCode = (link: LinkItem): string => {
 };
 
 /**
+ * UI-layer confirm gate for custom scripts (Promise-based, e.g. the themed
+ * ConfirmDialog). Registered once at app bootstrap (main.tsx). When absent
+ * (pure-engine contexts, e.g. unit tests) scripts execute directly: the
+ * consent gate is a UI concern by design, not an engine invariant
+ * (the engine API stays synchronous and UI-free).
+ */
+export type ScriptConfirmHandler = (link: LinkItem) => Promise<boolean>;
+let scriptConfirmHandler: ScriptConfirmHandler | null = null;
+export const setScriptConfirmHandler = (handler: ScriptConfirmHandler | null): void => {
+  scriptConfirmHandler = handler;
+};
+
+/**
+ * First-party default scripts shipped in DEFAULT_CONFIG (Unimib orari/esami):
+ * trusted code under our control → implicit consent, never prompted.
+ */
+const BUILTIN_SCRIPT_IDS = new Set(['unimib_orari', 'unimib_esami']);
+
+/**
+ * Runs the snippet exactly once. Returns false on error — there is NO
+ * `javascript:` URL navigation fallback (it would bypass the consent gate
+ * and double-execute code paths).
+ */
+const runScriptCode = (code: string): boolean => {
+  try {
+    const scriptFn = new Function(code);
+    scriptFn();
+    return true;
+  } catch (err) {
+    console.error('[LinkExecutor] Script execution error:', err);
+    return false;
+  }
+};
+
+/**
  * Central Link Executor:
  * Resolves dynamic URLs (Unimib orari/esami & dates), records usage ranking,
  * and either executes JS bookmarklets or navigates to standard web URLs.
  *
- * Returns `true` when the click was fully handled (navigation performed or
- * script executed) so the caller must `preventDefault()` on the anchor to
- * avoid double navigation. Returns `false` when there was nothing to do.
+ * Returns `true` when the click was fully handled (navigation performed,
+ * script executed, or script-consent flow started) so the caller must
+ * `preventDefault()` on the anchor to avoid double navigation.
+ * Returns `false` when there was nothing to do.
  */
 export const executeLink = (link: LinkItem, targetWindow: '_blank' | '_self' = '_self'): boolean => {
   if (!link) return false;
@@ -56,19 +98,24 @@ export const executeLink = (link: LinkItem, targetWindow: '_blank' | '_self' = '
   // 2. Check if script or bookmarklet
   if (isBookmarkletOrScript(link) || (targetUrl && targetUrl.trim().toLowerCase().startsWith('javascript:'))) {
     const code = extractScriptCode(link);
-    try {
-      // Execute custom JS snippet safely in active browser context
-      const scriptFn = new Function(code);
-      scriptFn();
-    } catch (err) {
-      console.error('[LinkExecutor] Script execution error:', err);
-      try {
-        window.location.href = `javascript:${encodeURI(code)}`;
-      } catch (fallbackErr) {
-        console.error('[LinkExecutor] Fallback script execution error:', fallbackErr);
-      }
+
+    // Consent gate (custom scripts only): without a persisted per-script-hash
+    // consent, ask through the registered UI handler. Fire-and-forget: the
+    // synchronous signature is preserved (callers rely on the boolean return)
+    // and execution resumes on approval, after persisting the consent.
+    if (!BUILTIN_SCRIPT_IDS.has(link.id) && !hasConsent(link) && scriptConfirmHandler) {
+      Promise.resolve(scriptConfirmHandler(link))
+        .then(ok => {
+          if (ok) {
+            grantConsent(link);
+            runScriptCode(code);
+          }
+        })
+        .catch(err => console.error('[LinkExecutor] Script confirm handler error:', err));
+      return true;
     }
-    return true;
+
+    return runScriptCode(code);
   }
 
   // 3. Standard / Dynamic Web URL navigation
