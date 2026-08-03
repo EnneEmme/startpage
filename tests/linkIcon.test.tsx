@@ -5,7 +5,7 @@ import { LinkIcon } from '../src/components/LinkIcon';
 const URL = 'https://github.com';
 
 /** Re-query the favicon <img> (preact updates it in place across state changes) */
-const faviconImg = (container: HTMLElement) =>
+const faviconImg = (container: ParentNode) =>
   container.querySelector<HTMLImageElement>('img')!;
 
 describe('LinkIcon', () => {
