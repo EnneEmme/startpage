@@ -100,7 +100,8 @@
   .menuContainer {
     left: 0.75rem !important;
     right: 0.75rem;
-    bottom: 1rem;
+    /* Bottom sheet: clear of the home-indicator safe area on touch devices */
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     top: auto !important;
     width: auto;
     padding: 0.6rem;

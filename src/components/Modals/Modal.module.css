@@ -113,6 +113,9 @@
     max-width: 100%;
     border-radius: 28px 28px 0 0;
     max-height: 90vh;
+    /* Bottom sheet: background covers the home-indicator zone, content
+       stays above it */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 
