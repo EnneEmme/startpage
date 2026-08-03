@@ -292,8 +292,8 @@
 - [x] 🟡 **Breakpoint incoerenti** — 599/600/601 e 1023/1024/1025 in file diversi: a 600px e 1024px due regimi coesistono.
   **Fix:** scala unica condivisa. ✅ Fatto (P7/R2): larghezze unificate in tutti i 9 CSS — mobile `(max-width: 599.98px)`, tablet `(min-width: 600px) and (max-width: 1023.98px)`, desktop `(min-width: 1024px)`, wide `(min-width: 1600px)` + companion `(max-width: 1599.98px)`: nessun pixel appartiene a due regimi; `max-height: 480px` (landscape modal) e pointer/hover queries invariati.
 
-- [ ] 🟡 **Densità griglia: 3 fonti di verità divergenti** — themeEngine ('normal' = `2.5rem 1.25rem`) vs ColumnGrid.module.css:4 (`5rem`) vs media query hardcoded → flash al primo paint.
-  **Fix:** unica fonte (engine via CSS var).
+- [x] 🟡 **Densità griglia: 3 fonti di verità divergenti** — themeEngine ('normal' = `2.5rem 1.25rem`) vs ColumnGrid.module.css:4 (`5rem`) vs media query hardcoded → flash al primo paint.
+  **Fix:** unica fonte (engine via CSS var). ✅ Fatto (P7/R2): ColumnGrid consuma `var(--grid-gap, 2.5rem 1.25rem)` e `var(--grid-col-min-width, 185px)` (fallback = density 'normal' dell'engine, zero flash); rimossi i gap hardcoded 3.5/4.5/5/5.5rem e i min-width 175/190px dai 4 tier; blocchi media ridotti ai soli override residui (padding); su <600px resta il floor fisico `minmax(150px, 1fr)` (il min engine ≥155px forzerebbe 1 colonna su phone) — gap già engine-driven.
 
 - [x] 🟡 **`100vh` mobile + colonne forzate a schermo pieno** — ColumnGrid.module.css:18-39 con `!important`; ignora barre dinamiche iOS; ogni colonna ≥ una schermata anche con 2 link.
   **Fix:** `100dvh` con fallback, rimuovere `!important`, min-height adattiva. ✅ Fatto (P7/R2): coppie vh→dvh in global.css (html/body, #app) e ColumnGrid (linksList ×3); `!important` ×4 rimossi; `.columnCard` min-height ora solo in `@media (min-width: 1024px)` (Row 2 sotto il fold preservato su desktop, commento mantenuto), mobile/tablet adattivi al contenuto; Modal.module.css già aveva la coppia 100vh/100dvh.
