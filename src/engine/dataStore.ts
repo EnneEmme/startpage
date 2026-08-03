@@ -348,6 +348,23 @@ export class DataStore {
     this.save();
   }
 
+  /**
+   * Registers a brand-new category at the end of the user-defined order so
+   * getCategories() does not relegate it to the "unknown" tail. Idempotent.
+   * When no explicit order exists yet (fresh/default profile), the implicit
+   * config-defined order is seeded first so the new category lands LAST.
+   */
+  public addCategory(name: string): void {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (this.categoryOrder.length === 0) {
+      this.categoryOrder = this.getCategories().map(c => c.name);
+    }
+    if (this.categoryOrder.includes(trimmed)) return;
+    this.categoryOrder.push(trimmed);
+    this.save();
+  }
+
   public renameCategory(oldName: string, newName: string): void {
     const trimmedNew = newName.trim();
     if (!trimmedNew || oldName === trimmedNew) return;

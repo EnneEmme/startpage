@@ -30,6 +30,9 @@ export const appActions = {
 
   setCategoryOrder: (order: string[]): void => dataStore.setCategoryOrder(order),
 
+  /** Registers a new category in the user-defined order (idempotent). */
+  addCategory: (name: string): void => dataStore.addCategory(name),
+
   /** Re-insert a previously removed link at its original position (undo). */
   restoreLink: (link: LinkItem, categoryIndex: number): void => {
     dataStore.addLink(link);
