@@ -5,6 +5,7 @@ export { categorySlug, categoryColumnId, scrollToCategory, scrollToTop, prefersR
 export { BASE_CHEATSHEET_SHORTCUTS, CHEATSHEET_SHORTCUTS, getDynamicCheatsheetShortcuts } from './cheatsheetData';
 export type { ShortcutGroup } from './cheatsheetData';
 export { copyTextToClipboard } from './clipboard';
+export { CATEGORY_SCROLL_OFFSET, FUSE_WEIGHT_ALIASES, FUSE_WEIGHT_CATEGORY, FUSE_WEIGHT_TITLE, FUSE_WEIGHT_URL, HIGHLIGHT_DURATION_MS, IMPORT_COPIED_FEEDBACK_MS, PAGE_CHEVRON_OVERFLOW_PX, PAGE_CHEVRON_SCROLL_OFFSET_PX, PAGE_CHEVRON_UNSCROLLED_PX, RANK_BOOST_FACTOR } from './constants';
 export { DEFAULT_CONFIG, UNIMIB_ESAMI_BASE_URL, UNIMIB_ORARI_BASE_URL, DataStore, dataStore, sanitizeLinkItem } from './dataStore';
 export type { ImportResult } from './dataStore';
 export { getAcademicYearStart, getUnimibEsamiUrl, getUnimibOrariUrl, parseDateFormatted, parseDateISO, resolveDynamicUrl } from './dynamicEvaluator';

@@ -304,8 +304,8 @@
 - [ ] 🟡 **Meta mobile mancanti** — index.html: no `viewport-fit=cover`, no safe-area (`bottom: 1.25rem` fisso sulla pill → fluttua su iPhone), no `theme-color`, no apple-touch-icon/manifest, no `color-scheme: dark` (scrollbar chiare Firefox).
   **Fix:** meta completo + `calc(... + env(safe-area-inset-bottom))`.
 
-- [ ] ⚪ **Magic numbers diffusi** — 1400ms highlight, -85 offset, 120/80px scroll, 35/12px auto-scroll, 190/220 clamp, pesi Fuse 0.45/0.35, rank factor 0.15, tabelle rem tema hardcoded.
-  **Fix:** costanti nominate in `engine/constants.ts`.
+- [x] ⚪ **Magic numbers diffusi** — 1400ms highlight, -85 offset, 120/80px scroll, 35/12px auto-scroll, 190/220 clamp, pesi Fuse 0.45/0.35, rank factor 0.15, tabelle rem tema hardcoded.
+  **Fix:** costanti nominate in `engine/constants.ts`. ✅ Fatto (P7/R3): `engine/constants.ts` (11 costanti: HIGHLIGHT_DURATION_MS, CATEGORY_SCROLL_OFFSET, PAGE_CHEVRON_*×3, FUSE_WEIGHT_*×4, RANK_BOOST_FACTOR, IMPORT_COPIED_FEEDBACK_MS) wired in app.tsx/categoryScroll/fuzzySearch/ColumnGrid/ImportExportModal; clamp 190/220 già eliminati in P1 (menu ora misurato via ref), auto-scroll DnD 35/12 in `src/hooks/useDragAndDrop.ts` (read-only in R3, non migrati — nota in report).
 
 - [x] ⚪ **Catch silenziosi ovunque** — dataStore.ts:241,371,381; rankStorage.ts:28,49,98; themeEngine.ts:222-233; `importJson` ritorna solo false.
   **Fix:** `console.warn` con contesto (restano in dev; drop_console li toglie in prod) + errori strutturati `{ok, error}` da importJson. ✅ Fatto (P7/R3): 18 catch silenti → `console.warn('[Modulo] contesto', err)` (fallback invariati); nuovo `dataStore.importJsonDetailed(): {ok:true}|{ok:false,error}` con motivi leggibili (Invalid JSON / missing "commands" array / No valid links), `importJson` boolean mantenuto come compat wrapper (appStore.ts read-only, annotazione `: boolean`), ImportExportModal mostra il motivo via toast; 5 test engine + 2 test modal nuovi/adattati.

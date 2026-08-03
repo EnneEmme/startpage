@@ -32,6 +32,7 @@ startpage/
 │   │
 │   ├── engine/                # Decoupled Data & Business Logic Engine
 │   │   ├── index.ts           # Explicit barrel (named exports only)
+│   │   ├── constants.ts        # Shared tunables (highlight timing, scroll geometry, search weights)
 │   │   ├── dataStore.ts       # Links, categories, dynamic ordering & LocalStorage persistence
 │   │   ├── dynamicEvaluator.ts# Dynamic URL date/time interpolation (Unimib exam/lesson URLs)
 │   │   ├── linkExecutor.ts    # Link execution engine (custom JS bookmarklets & dynamic rules)

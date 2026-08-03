@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import { ChevronDown } from 'lucide-preact';
 import type { LinkItem, CategoryGroup } from '../types/startpage';
-import { executeLink, scrollBehavior } from '../engine';
+import { executeLink, scrollBehavior, PAGE_CHEVRON_OVERFLOW_PX, PAGE_CHEVRON_SCROLL_OFFSET_PX, PAGE_CHEVRON_UNSCROLLED_PX } from '../engine';
 import { appActions, linksSignal, showToast } from '../stores';
 import { useDragAndDrop, useContextMenu, useColumnScrollMasks } from '../hooks';
 import { CategoryColumn } from './CategoryColumn';
@@ -44,9 +44,9 @@ export const ColumnGrid = ({
       const viewportHeight = window.innerHeight;
       const currentScroll = window.scrollY || document.documentElement.scrollTop;
 
-      // Show indicator if content extends > 80px below fold and user hasn't scrolled near bottom
-      const isUnscrolledPage = currentScroll < 120;
-      const hasMorePageContent = totalHeight > viewportHeight + 80;
+      // Show indicator if content extends below the fold and user hasn't scrolled near bottom
+      const isUnscrolledPage = currentScroll < PAGE_CHEVRON_UNSCROLLED_PX;
+      const hasMorePageContent = totalHeight > viewportHeight + PAGE_CHEVRON_OVERFLOW_PX;
 
       setHasPageScrollDown(prev => {
         const next = isUnscrolledPage && hasMorePageContent;
@@ -66,7 +66,7 @@ export const ColumnGrid = ({
   // Scroll smooth to bottom of page when clicking floating chevron indicator
   const scrollToNextPageRow = () => {
     window.scrollTo({
-      top: window.innerHeight - 100,
+      top: window.innerHeight - PAGE_CHEVRON_SCROLL_OFFSET_PX,
       behavior: scrollBehavior()
     });
   };

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
-import { copyTextToClipboard, dataStore } from '../engine';
+import { copyTextToClipboard, dataStore, IMPORT_COPIED_FEEDBACK_MS } from '../engine';
 import { appActions, confirmDialog, showToast } from '../stores';
 import { Modal } from './Modals/Modal';
 import styles from './ImportExportModal.module.css';
@@ -46,7 +46,7 @@ export const ImportExportModal = ({
       copiedTimerRef.current = window.setTimeout(() => {
         copiedTimerRef.current = null;
         setCopied(false);
-      }, 2000);
+      }, IMPORT_COPIED_FEEDBACK_MS);
     } else {
       setStatusMsg({ text: 'Clipboard unavailable here: use Download File instead.', type: 'error' });
     }

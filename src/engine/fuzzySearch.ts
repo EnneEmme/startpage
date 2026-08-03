@@ -7,6 +7,7 @@
 import Fuse from 'fuse.js';
 import type { LinkItem, SearchResult, CommandPrefixRule } from '../types/startpage';
 import { rankStorage } from './rankStorage';
+import { FUSE_WEIGHT_ALIASES, FUSE_WEIGHT_CATEGORY, FUSE_WEIGHT_TITLE, FUSE_WEIGHT_URL, RANK_BOOST_FACTOR } from './constants';
 
 export const DEFAULT_PREFIX_RULES: CommandPrefixRule[] = [
   { key: 'g', name: 'Google Search', searchUrlTemplate: 'https://www.google.com/search?q={q}' },
@@ -69,10 +70,10 @@ export class FuzzySearchEngine {
     );
     this.fuse = new Fuse(links, {
       keys: [
-        { name: 'aliases', weight: 0.45 },
-        { name: 'title', weight: 0.35 },
-        { name: 'category', weight: 0.12 },
-        { name: 'url', weight: 0.08 }
+        { name: 'aliases', weight: FUSE_WEIGHT_ALIASES },
+        { name: 'title', weight: FUSE_WEIGHT_TITLE },
+        { name: 'category', weight: FUSE_WEIGHT_CATEGORY },
+        { name: 'url', weight: FUSE_WEIGHT_URL }
       ],
       threshold: 0.35, // Balanced typo tolerance without noise
       distance: 100,
@@ -186,7 +187,7 @@ export class FuzzySearchEngine {
           item,
           score: fuseScore,
           rankBonus,
-          finalScore: fuseScore - rankBonus * 0.15,
+          finalScore: fuseScore - rankBonus * RANK_BOOST_FACTOR,
           matchedAlias
         });
       }
@@ -240,7 +241,7 @@ export class FuzzySearchEngine {
       if (isMatch) {
         const existing = resultMap.get(item.id);
         const currentFuseScore = existing?.score ?? 0.2;
-        const computedScore = priorityScore + currentFuseScore - rankBonus * 0.15;
+        const computedScore = priorityScore + currentFuseScore - rankBonus * RANK_BOOST_FACTOR;
 
         resultMap.set(item.id, {
           item,

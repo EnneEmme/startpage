@@ -4,6 +4,8 @@
  * to a category column (shared by App, JumpBar and ColumnGrid).
  */
 
+import { CATEGORY_SCROLL_OFFSET } from './constants';
+
 /** Deterministic slug for a category name (safe for DOM ids/anchors) */
 export const categorySlug = (categoryName: string): string =>
   categoryName.toLowerCase().replace(/[^a-z0-9]/g, '_');
@@ -21,14 +23,11 @@ export const prefersReducedMotion = (): boolean =>
 export const scrollBehavior = (): ScrollBehavior =>
   prefersReducedMotion() ? 'auto' : 'smooth';
 
-/** Vertical offset (px) accounting for the fixed header when aligning a column */
-const HEADER_SCROLL_OFFSET = -85;
-
 /** Smooth-scroll the page so the category column sits below the fixed header */
 export const scrollToCategory = (categoryName: string): void => {
   const targetEl = document.getElementById(categoryColumnId(categoryName));
   if (!targetEl) return;
-  const y = targetEl.getBoundingClientRect().top + window.scrollY + HEADER_SCROLL_OFFSET;
+  const y = targetEl.getBoundingClientRect().top + window.scrollY + CATEGORY_SCROLL_OFFSET;
   window.scrollTo({ top: y, behavior: scrollBehavior() });
 };
 
