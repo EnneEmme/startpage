@@ -25,6 +25,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* Wheel/touch overscroll inside the dialog must never move the page behind */
+  overscroll-behavior: contain;
 }
 
 .modalHeader {

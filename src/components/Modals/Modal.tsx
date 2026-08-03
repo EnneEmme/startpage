@@ -50,7 +50,18 @@ export const Modal = ({
     const appRoot = document.getElementById('app');
     appRoot?.setAttribute('inert', '');
 
+    // Measure the scrollbar gap BEFORE locking, then lock the document at
+    // both html and body level. Setting only `body` overflow leaves
+    // documentElement scrollable on several engines, so the background
+    // could still move (and drift) behind the dialog.
+    const prevScrollY = window.scrollY || document.documentElement.scrollTop;
     const scrollbarGap = window.innerWidth - document.documentElement.clientWidth;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
+    const prevPaddingRight = document.body.style.paddingRight;
+
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
     if (scrollbarGap > 0) {
@@ -59,10 +70,18 @@ export const Modal = ({
 
     return () => {
       appRoot?.removeAttribute('inert');
-      document.body.style.overflow = '';
-      document.body.style.touchAction = '';
-      document.body.style.paddingRight = '';
-      restoreFocusRef.current?.focus?.();
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      document.body.style.touchAction = prevTouchAction;
+      document.body.style.paddingRight = prevPaddingRight;
+      // Put the page back exactly where it was, then restore focus without
+      // triggering a scroll — no jump, no "shifted" background on close.
+      try {
+        window.scrollTo({ top: prevScrollY, left: 0, behavior: 'auto' });
+      } catch {
+        // jsdom lacks scrollTo; harmless in tests
+      }
+      restoreFocusRef.current?.focus?.({ preventScroll: true });
       restoreFocusRef.current = null;
     };
   }, [isOpen]);

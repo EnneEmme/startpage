@@ -145,14 +145,14 @@ button:focus-visible,
   outline-offset: 2px;
 }
 
-/* Text fields: soft accent glow instead of a hard rectangle outline.
-   box-shadow follows border-radius (an outline offset does not), so the
-   indicator matches the rounded glass inputs; contrast vs dark bg stays >3:1. */
+/* Text fields: subtle inner glow instead of a box outline. No outer ring /
+   colored border — inputs blend with the dialog background (user request),
+   focus is signalled by a faint 1px inner highlight only. */
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--accent-glow);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 /* Keyframes */

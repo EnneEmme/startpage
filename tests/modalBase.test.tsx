@@ -2,6 +2,36 @@ import { render, screen, fireEvent } from '@testing-library/preact';
 import { expect, test, vi } from 'vitest';
 import { Modal } from '../src/components/Modals/Modal';
 
+// Scroll lock is applied at both html and body level and must be fully
+// released on close — otherwise the background page can move behind a dialog
+// and stay "shifted" on exit.
+test('locks scroll on html+body while open and restores position on close', () => {
+  const handleClose = vi.fn();
+  const scrollToSpy = vi.fn();
+  Object.defineProperty(window, 'scrollY', { value: 420, configurable: true });
+  window.scrollTo = scrollToSpy;
+
+  const { rerender } = render(
+    <Modal isOpen={true} onClose={handleClose} title="Scroll Modal">
+      <div>Content</div>
+    </Modal>,
+  );
+
+  expect(document.documentElement.style.overflow).toBe('hidden');
+  expect(document.body.style.overflow).toBe('hidden');
+
+  // Close → teardown must release html+body lock and restore the scroll offset
+  rerender(
+    <Modal isOpen={false} onClose={handleClose} title="Scroll Modal">
+      <div>Content</div>
+    </Modal>,
+  );
+
+  expect(document.documentElement.style.overflow).toBe('');
+  expect(document.body.style.overflow).toBe('');
+  expect(scrollToSpy).toHaveBeenCalled();
+});
+
 test('renders Modal component correctly when open', () => {
   render(
     <Modal isOpen={true} onClose={() => {}} title="Test Modal">
