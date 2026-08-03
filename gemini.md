@@ -18,7 +18,7 @@ This document specifies the operational rules, coding standards, git workflow, a
 
 3. **Decoupled Data Architecture**:
    - Link configurations, categories, icons, and aliases MUST remain completely decoupled from the UI layer.
-   - Any modifications to the UI layout or styling MUST NOT break the underlying data schema or local storage keys (`startpage_links`, `startpage_ranks`, `startpage_settings`).
+   - Any modifications to the UI layout or styling MUST NOT break the underlying data schema or local storage keys (real keys used by the code, see §5 Trust Model: `startpage_custom_links`, `startpage_category_order`, `startpage_theme_settings`, `startpage_ranks`, `startpage_script_consents`).
 
 4. **Clean Code & Extensibility**:
    - Use TypeScript strict mode.
@@ -94,3 +94,17 @@ This document specifies the operational rules, coding standards, git workflow, a
 - **Performance**: Instant load time (< 100ms), zero lag during typing in fuzzy search.
 - **Lazy Loading**: Non-visible icons or heavy assets must use lazy loading or async fetch with fallback placeholders.
 - **Design System**: Dark premium aesthetic, clean typography, smooth transitions, responsive grid layout.
+
+---
+
+## 5. Trust Model & Security (by design)
+
+This is a client-side **single-file** app (one `index.html`, no server). Several properties are inherent to that architecture and MUST be documented, not "fixed":
+
+- **No Content-Security-Policy (CSP)**: a single bundled HTML file cannot meaningfully declare `script-src`; security relies on sanitizing all external input and gatekeeping execution. There is **no network trust boundary** — the browser is the sandbox.
+- **Custom JavaScript / bookmarklets** (`javascript:` URLs and `isScript`/`scriptContent` links) are a first-class feature. Execution policy:
+  - Every non-builtin script requires an explicit **per-hash user consent** before the first run (`startpage_script_consents`); consent is invalidated automatically if the script content changes. Confirmation flow goes through the themed confirm dialog (`confirmStore`).
+  - Scripts defined by the built-in default links (Unimib Orari/Esami) are dynamic URL rules, **not** script code — see dataStore/dynamicEvaluator.
+- **Import is untrusted input**: JSON imports are sanitized per-item; `isScript`/`scriptContent`/`javascript:` payloads are stripped from imported items (they cannot inject a persistent bookmarklet). `load()` from local storage remains permissive (first-party data).
+- **Remote favicon providers** (privacy): icons may be resolved against third-party providers (Google s2, icon.horse, DuckDuckGo). This leaks visited domains to those providers — intrinsic to the feature.
+- **Icon `data:` URLs** are restricted to whitelisted image MIME types only (`data:image/(png|jpe?g|gif|webp|svg+xml|x-icon|vnd.microsoft.icon)`).
