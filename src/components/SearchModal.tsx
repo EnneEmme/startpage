@@ -17,6 +17,10 @@ interface SearchModalProps {
 
 const MAX_SEARCH_RESULTS = 10;
 
+/** Stable ids keep aria-activedescendant valid across re-renders */
+const optionId = (linkId: string) => `search-opt-${linkId}`;
+const LISTBOX_ID = 'search-results-listbox';
+
 interface SearchResultRowProps {
   result: SearchResult;
   index: number;
@@ -32,6 +36,9 @@ const SearchResultRow = memo(({ result, index, selected, onSelect, onHover }: Se
 
   return (
     <div
+      id={optionId(item.id)}
+      role="option"
+      aria-selected={selected}
       class={`${styles.resultRow} ${selected ? styles.selected : ''}`}
       onClick={() => onSelect(item)}
       onMouseEnter={() => onHover(index)}
@@ -72,6 +79,7 @@ export const SearchModal = ({
   const [query, setQuery] = useState<string>(initialQuery);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fuzzySearchEngine.setLinks(links);
@@ -123,7 +131,28 @@ export const SearchModal = ({
   const getFallback = (rawQuery: string) =>
     getEngineFallback(themeConfigSignal.value.defaultSearchEngine || 'g', rawQuery.trim());
 
+  // Keep the active option visible while navigating with ArrowUp/ArrowDown.
+  // Feature-detected: jsdom does not implement scrollIntoView.
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = listRef.current?.querySelector<HTMLElement>('[aria-selected="true"]');
+    if (el && typeof el.scrollIntoView === 'function') {
+      el.scrollIntoView({ block: 'nearest' });
+    }
+  }, [isOpen, selectedIndex, searchResults]);
+
   if (!isOpen) return null;
+
+  // ARIA combobox wiring: the input owns the popup listbox and points at the
+  // active option via aria-activedescendant (focus stays on the input).
+  const isListboxOpen = !parsedPrefix.isPrefixCommand && searchResults.length > 0;
+  const selectedResult = searchResults[selectedIndex];
+  const activeOptionId = isListboxOpen && selectedResult ? optionId(selectedResult.item.id) : undefined;
+  const liveAnnouncement = parsedPrefix.isPrefixCommand
+    ? ''
+    : searchResults.length > 0
+      ? `${searchResults.length} result${searchResults.length === 1 ? '' : 's'} available.`
+      : (query.trim() ? 'No results found.' : '');
 
   const handleExecuteCommandPrefix = () => {
     if (parsedPrefix.redirectUrl) {
@@ -141,10 +170,12 @@ export const SearchModal = ({
     }
 
     if (e.key === 'Tab') {
-      e.preventDefault();
-      if (!parsedPrefix.isPrefixCommand && searchResults.length > 0 && searchResults[selectedIndex]) {
-        const item = searchResults[selectedIndex].item;
-        setQuery(item.title);
+      // Trap Tab only when a real completion can be applied; otherwise let it
+      // propagate so the clear button stays reachable from the keyboard.
+      const candidate = !parsedPrefix.isPrefixCommand ? searchResults[selectedIndex]?.item : undefined;
+      if (candidate && candidate.title !== query) {
+        e.preventDefault();
+        setQuery(candidate.title);
       }
       return;
     }
@@ -220,12 +251,22 @@ export const SearchModal = ({
       maxWidth="660px"
     >
       <div class={styles.searchModalInner}>
+        {/* Polite live region: announces the result count as the query changes */}
+        <div class={styles.srOnly} role="status" aria-live="polite">
+          {liveAnnouncement}
+        </div>
         <div class={styles.inputWrapper}>
           <Search size={20} class={styles.searchIcon} />
           <input
             ref={inputRef}
             type="text"
             name="search-query"
+            role="combobox"
+            aria-expanded={isListboxOpen}
+            aria-controls={LISTBOX_ID}
+            aria-activedescendant={activeOptionId}
+            aria-autocomplete="list"
+            aria-label="Search links, aliases, or commands"
             autoFocus={true}
             autoComplete="off"
             autoCorrect="off"
@@ -250,6 +291,7 @@ export const SearchModal = ({
                 if (inputRef.current) inputRef.current.focus();
               }}
               title="Clear search"
+              aria-label="Clear search"
             >
               <X size={16} />
             </button>
@@ -281,7 +323,7 @@ export const SearchModal = ({
 
         {/* Fuzzy Search Results List (capped at MAX_SEARCH_RESULTS) */}
         {!parsedPrefix.isPrefixCommand && searchResults.length > 0 && (
-          <div class={styles.resultsList}>
+          <div class={styles.resultsList} role="listbox" id={LISTBOX_ID} aria-label="Search results" ref={listRef}>
             {searchResults.map((res, index) => (
               <SearchResultRow
                 key={res.item.id}
