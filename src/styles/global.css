@@ -10,9 +10,11 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-body);
@@ -42,7 +44,7 @@ svg {
 /* Keep text selection enabled inside input & textarea fields */
 input,
 textarea,
-[contenteditable="true"] {
+[contenteditable='true'] {
   user-select: text !important;
   -webkit-user-select: text !important;
   -moz-user-select: text !important;
@@ -71,6 +73,7 @@ textarea,
 /* Tighter Layout Container with Harmonized Outer Side Padding */
 #app {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,7 +119,8 @@ button {
   color: inherit;
 }
 
-input, textarea {
+input,
+textarea {
   font-family: inherit;
   color: inherit;
   outline: none;

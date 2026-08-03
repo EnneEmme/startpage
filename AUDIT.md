@@ -295,8 +295,8 @@
 - [ ] 🟡 **Densità griglia: 3 fonti di verità divergenti** — themeEngine ('normal' = `2.5rem 1.25rem`) vs ColumnGrid.module.css:4 (`5rem`) vs media query hardcoded → flash al primo paint.
   **Fix:** unica fonte (engine via CSS var).
 
-- [ ] 🟡 **`100vh` mobile + colonne forzate a schermo pieno** — ColumnGrid.module.css:18-39 con `!important`; ignora barre dinamiche iOS; ogni colonna ≥ una schermata anche con 2 link.
-  **Fix:** `100dvh` con fallback, rimuovere `!important`, min-height adattiva.
+- [x] 🟡 **`100vh` mobile + colonne forzate a schermo pieno** — ColumnGrid.module.css:18-39 con `!important`; ignora barre dinamiche iOS; ogni colonna ≥ una schermata anche con 2 link.
+  **Fix:** `100dvh` con fallback, rimuovere `!important`, min-height adattiva. ✅ Fatto (P7/R2): coppie vh→dvh in global.css (html/body, #app) e ColumnGrid (linksList ×3); `!important` ×4 rimossi; `.columnCard` min-height ora solo in `@media (min-width: 1024px)` (Row 2 sotto il fold preservato su desktop, commento mantenuto), mobile/tablet adattivi al contenuto; Modal.module.css già aveva la coppia 100vh/100dvh.
 
 - [ ] 🟡 **Glassmorphism senza controllo costi** — 19 `backdrop-filter` in 13 file (overlay blur(16px) + header saturate + nav blur(20px)) = repaint continui; `-webkit-` prefix incoerente (manca in 7 file → effetto assente Safari <18); nessun fallback `@supports`.
   **Fix:** ridurre livelli, prefix uniformi, fallback opaco.
