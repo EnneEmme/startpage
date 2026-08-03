@@ -52,6 +52,11 @@ textarea,
 }
 
 /* Base Scrollbar */
+/* Firefox: same dark theme as the -webkit rules below */
+html {
+  scrollbar-color: rgba(255, 255, 255, 0.12) var(--bg-primary);
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;

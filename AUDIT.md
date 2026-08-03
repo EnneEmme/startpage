@@ -316,10 +316,10 @@
 
 - [x] ⚪ **i18n misto IT/EN** — centralizzare stringhe se si vuole coerenza.
 
-- [ ] ⚪ **Scrollbar solo `-webkit`** — global.css:51-67: Firefox mostra scrollbar nativa chiara; manca `scrollbar-color`.
+- [x] ⚪ **Scrollbar solo `-webkit`** — global.css:51-67: Firefox mostra scrollbar nativa chiara; manca `scrollbar-color`. ✅ Fatto (P7/R2): aggiunto `scrollbar-color: rgba(255, 255, 255, 0.12) var(--bg-primary)` su `html` in global.css (stessi colori thumb/track delle regole `-webkit-scrollbar`; `color-scheme: dark` in :root già forzava lo schema scuro).
 
-- [ ] ⚪ **`.linkRow:hover translateX(2px)` jitter + `transition` su `display`** — ColumnGrid.module.css:328-331: traslazione hover può jitterare su colonne strette; :373-375 transition su proprietà non animabile.
-  **Fix:** hover solo su background/shadow; rimuovere transition inutile.
+- [x] ⚪ **`.linkRow:hover translateX(2px)` jitter + `transition` su `display`** — ColumnGrid.module.css:328-331: traslazione hover può jitterare su colonne strette; :373-375 transition su proprietà non animabile.
+  **Fix:** hover solo su background/shadow; rimuovere transition inutile. ✅ Fatto (P7/R2): `.linkRow:hover` ora cambia solo background + `box-shadow: var(--shadow-sm)` (transform rimosso → zero jitter su colonne strette); verifica grep: **nessuna** `transition` elenca `display` in ColumnGrid.module.css (il flag display dei badge alias arriva dalla var dell'engine in modo discreto; la transition copre solo proprietà animabili: opacity/background/border-color/color/font-size).
 
 - [x] ⚪ **LazyWidget: `requestIdleCallback`/timeout non cancellati nel cleanup** — LazyWidget.tsx:16-35: setState possibile su componente smontato. (Nota: componente attualmente dead code — se eliminato, item chiuso; se integrato, fixare.)
 
