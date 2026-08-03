@@ -49,6 +49,7 @@ export const ReorderModal = ({
                   onClick={() => handleMove(idx, 'up')}
                   class={styles.moveBtn}
                   title="Move Up / Left"
+                  aria-label={`Move ${cat} up`}
                 >
                   <ArrowUp size={16} />
                 </button>
@@ -57,6 +58,7 @@ export const ReorderModal = ({
                   onClick={() => handleMove(idx, 'down')}
                   class={styles.moveBtn}
                   title="Move Down / Right"
+                  aria-label={`Move ${cat} down`}
                 >
                   <ArrowDown size={16} />
                 </button>

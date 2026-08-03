@@ -1,10 +1,20 @@
 import { useState, useRef, useEffect } from 'preact/hooks';
 import type { LinkItem } from '../types/startpage';
+import { linksSignal } from '../stores';
 
 export interface ContextMenuState {
   x: number;
   y: number;
   link: LinkItem;
+}
+
+/** Custom event name dispatched by link cards (e.g. Shift+F10 / context-menu key) */
+export const OPEN_CONTEXT_MENU_EVENT = 'startpage:open-context-menu';
+
+interface OpenContextMenuDetail {
+  linkId?: string;
+  clientX?: number;
+  clientY?: number;
 }
 
 /**
@@ -57,6 +67,23 @@ export function useContextMenu(longPressMs = 500) {
 
   // Cleanup any pending long-press timer on unmount
   useEffect(() => cancelLongPress, []);
+
+  // Keyboard path: link cards (and any other trigger) can request the menu by
+  // dispatching a CustomEvent with the target link id and pointer coordinates.
+  // The link is resolved against the current store, never trusted by value.
+  useEffect(() => {
+    const handleOpenRequest = (e: Event) => {
+      const detail = (e as CustomEvent<OpenContextMenuDetail>).detail;
+      if (!detail || typeof detail.linkId !== 'string') return;
+      const link = linksSignal.value.find(l => l.id === detail.linkId);
+      if (!link) return;
+      const x = typeof detail.clientX === 'number' ? detail.clientX : window.innerWidth / 2;
+      const y = typeof detail.clientY === 'number' ? detail.clientY : window.innerHeight / 2;
+      openMenu(x, y, link);
+    };
+    window.addEventListener(OPEN_CONTEXT_MENU_EVENT, handleOpenRequest);
+    return () => window.removeEventListener(OPEN_CONTEXT_MENU_EVENT, handleOpenRequest);
+  }, []);
 
   return {
     menu,

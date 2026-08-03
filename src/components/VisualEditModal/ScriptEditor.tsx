@@ -7,8 +7,9 @@ interface ScriptEditorProps {
 
 export const ScriptEditor = ({ scriptSnippet, setScriptSnippet }: ScriptEditorProps) => (
   <div class={styles.fieldGroup}>
-    <label class={styles.label}>JavaScript Code / Bookmarklet</label>
+    <label class={styles.label} for="vem-script">JavaScript Code / Bookmarklet</label>
     <textarea
+      id="vem-script"
       class={styles.input}
       style={{ minHeight: '105px', fontFamily: 'var(--font-mono)', fontSize: '0.84rem' }}
       placeholder="e.g. (function() { const targetUrl = 'https://...'; window.location.href = targetUrl; })();"

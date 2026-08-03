@@ -188,6 +188,13 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+/* role=tabpanel wrapper: keeps the form's vertical rhythm intact */
+.tabPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
 .fieldGroup {
   display: flex;
   flex-direction: column;

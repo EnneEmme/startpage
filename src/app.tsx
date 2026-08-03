@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState, useRef, useEffect } from 'preact/hooks';
 import {
   ActionToolbar,
   JumpBar,
@@ -26,6 +26,17 @@ export const App = () => {
   const categories = categoriesSignal.value;
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string | null>(null);
   const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null);
+  const highlightTimerRef = useRef<number | null>(null);
+
+  // Any pending highlight timeout is released on unmount (no leaks)
+  useEffect(
+    () => () => {
+      if (highlightTimerRef.current !== null) {
+        window.clearTimeout(highlightTimerRef.current);
+      }
+    },
+    []
+  );
 
   const {
     isAnyModalOpen,
@@ -41,9 +52,17 @@ export const App = () => {
 
   const handleSelectCategory = (catName: string | null) => {
     setActiveCategoryFilter(catName);
+    // A new selection always supersedes the pending highlight reset
+    if (highlightTimerRef.current !== null) {
+      window.clearTimeout(highlightTimerRef.current);
+      highlightTimerRef.current = null;
+    }
     if (catName) {
       setHighlightedCategory(catName);
-      setTimeout(() => setHighlightedCategory(null), 1400);
+      highlightTimerRef.current = window.setTimeout(() => {
+        highlightTimerRef.current = null;
+        setHighlightedCategory(null);
+      }, 1400);
       scrollToCategory(catName);
     } else {
       setHighlightedCategory(null);
@@ -79,6 +98,10 @@ export const App = () => {
 
   return (
     <>
+      {/* Keyboard/sr aids: skip-link + visually hidden top-level heading */}
+      <a href="#main-grid" class="skipLink">Skip to content</a>
+      <h1 class="sr-only">Startpage — link launcher and fuzzy search</h1>
+
       {/* Unified Header */}
       <header class="unifiedHeader">
         <JumpBar
@@ -97,7 +120,7 @@ export const App = () => {
         />
       </header>
 
-      <main style={{ width: '100%' }}>
+      <main id="main-grid" style={{ width: '100%' }}>
         <ColumnGrid
           categories={categories}
           highlightedCategory={highlightedCategory}
@@ -135,6 +158,7 @@ export const App = () => {
       />
 
       <VisualEditModal
+        key={editTargetLink?.id ?? 'new'}
         isOpen={isModalOpen('visualEdit')}
         initialEditLink={editTargetLink}
         onClose={closeModal}

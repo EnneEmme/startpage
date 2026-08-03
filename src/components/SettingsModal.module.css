@@ -91,6 +91,25 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Long-press gesture hint: only shown on devices without hover (touch),
+   where title tooltips — the desktop discovery path — do not exist */
+.touchHint {
+  display: none;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  line-height: 1.5;
+}
+
+@media (hover: none) {
+  .touchHint {
+    display: block;
+  }
+}
+
 /* Live Interactive Preview Card Box */
 .previewBox {
   background: rgba(0, 0, 0, 0.25);

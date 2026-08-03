@@ -168,3 +168,39 @@ select:focus-visible,
     scroll-behavior: auto !important;
   }
 }
+
+/* Visually hidden, still exposed to assistive technology */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard skip-link: off-canvas until focused, then slides in above all
+   layers (tokenized z-scale, no magic numbers) */
+.skipLink {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: var(--z-toast);
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transform: translateY(-300%);
+  transition: transform var(--transition-fast);
+}
+
+.skipLink:focus-visible {
+  transform: translateY(0);
+}

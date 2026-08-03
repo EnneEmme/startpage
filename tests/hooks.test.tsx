@@ -43,6 +43,46 @@ describe('Custom Hooks', () => {
     expect(result.menu).toBe(null);
   });
 
+  it('useContextMenu opens via the startpage:open-context-menu custom event', () => {
+    let result: any;
+    const TestComponent = () => {
+      result = useContextMenu();
+      return null;
+    };
+    render(<TestComponent />);
+    expect(result.menu).toBe(null);
+
+    // Known link id resolves against the store at the given coordinates
+    act(() => {
+      window.dispatchEvent(new CustomEvent('startpage:open-context-menu', {
+        detail: { linkId: 'github', clientX: 33, clientY: 44 }
+      }));
+    });
+    expect(result.menu?.link?.id).toBe('github');
+    expect(result.menu?.x).toBe(33);
+    expect(result.menu?.y).toBe(44);
+
+    // Unknown id is ignored (menu state untouched)
+    act(() => {
+      window.dispatchEvent(new CustomEvent('startpage:open-context-menu', {
+        detail: { linkId: 'no-such-link' }
+      }));
+    });
+    expect(result.menu?.link?.id).toBe('github');
+
+    act(() => result.closeMenu());
+
+    // Missing coordinates fall back to the viewport center
+    act(() => {
+      window.dispatchEvent(new CustomEvent('startpage:open-context-menu', {
+        detail: { linkId: 'github' }
+      }));
+    });
+    expect(result.menu?.link?.id).toBe('github');
+    expect(result.menu?.x).toBe(Math.floor(window.innerWidth / 2));
+    expect(result.menu?.y).toBe(Math.floor(window.innerHeight / 2));
+  });
+
   it('useDragAndDrop tracks dragged link state', () => {
     let result: any;
     const TestComponent = () => {

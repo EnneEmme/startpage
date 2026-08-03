@@ -1,9 +1,9 @@
 import type { h } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useEffect, useMemo } from 'preact/hooks';
 import { Plus, Sliders, Globe, Zap, Search } from 'lucide-preact';
 import type { LinkItem } from '../../types/startpage';
 import { resolveDynamicUrl } from '../../engine';
-import { appActions, categoriesSignal } from '../../stores';
+import { appActions, categoriesSignal, confirmDialog } from '../../stores';
 import styles from '../VisualEditModal.module.css';
 import { searchLucideIcons } from '../iconRegistry';
 
@@ -57,6 +57,14 @@ export const VisualEditModal = ({
   const [iconSearchQuery, setIconSearchQuery] = useState('');
 
   useEffect(() => {
+    // Accessory UI state always returns to neutral on close/reopen; the form
+    // fields are re-derived from the target link (or blanked for add-new).
+    setIsCreatingNewCategory(false);
+    setNewCategoryName('');
+    setIsCategoryPickerOpen(false);
+    setIsIconDropdownOpen(false);
+    setIconSearchQuery('');
+
     if (targetLink) {
       setTitle(targetLink.title || '');
       setUrl(targetLink.url || resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) || '');
@@ -84,10 +92,49 @@ export const VisualEditModal = ({
       setScriptSnippet('');
       setSearchTemplate('');
     }
-  }, [targetLink]);
+  }, [isOpen, targetLink]);
+
+  // Snapshot of the pristine form, used to detect unsaved ("dirty") edits.
+  const baseline = useMemo(() => ({
+    title: targetLink?.title || '',
+    url: targetLink ? (targetLink.url || resolveDynamicUrl(targetLink.url, targetLink.dynamicUrlRule) || '') : '',
+    aliases: targetLink?.aliases ? targetLink.aliases.join(', ') : '',
+    icon: targetLink?.icon || '',
+    category: targetLink?.category || 'General',
+    activeTab: initialMode,
+    scriptSnippet: targetLink?.scriptContent || (targetLink?.url?.toLowerCase().startsWith('javascript:') ? targetLink.url : ''),
+    searchTemplate: targetLink?.searchTemplate || targetLink?.searchPath || ''
+    // initialMode is fully derived from targetLink — same dependency
+  }), [targetLink]);
 
   // Rules of hooks: the guard below must stay after every hook declaration.
   if (!isOpen) return null;
+
+  const isDirty =
+    title !== baseline.title ||
+    url !== baseline.url ||
+    aliases !== baseline.aliases ||
+    icon !== baseline.icon ||
+    category !== baseline.category ||
+    activeTab !== baseline.activeTab ||
+    scriptSnippet !== baseline.scriptSnippet ||
+    searchTemplate !== baseline.searchTemplate;
+
+  /** Closing a dirty form (overlay, X, Esc, Cancel) asks for confirmation first */
+  const handleRequestClose = () => {
+    if (!isDirty) {
+      onClose();
+      return;
+    }
+    void confirmDialog({
+      title: 'Discard changes?',
+      message: 'This link form has unsaved changes. Discard them?',
+      confirmLabel: 'Discard',
+      danger: true
+    }).then(ok => {
+      if (ok) onClose();
+    });
+  };
 
   const categories = categoriesSignal.value.map(c => c.name);
 
@@ -144,6 +191,12 @@ export const VisualEditModal = ({
       searchTemplate: isSearchMode && searchTemplate.trim() ? searchTemplate.trim() : undefined
     };
 
+    // A user-created category must be registered in the column order,
+    // otherwise the link lands in an unrendered category.
+    if (updatedLink.category && !categories.includes(updatedLink.category)) {
+      appActions.addCategory(updatedLink.category);
+    }
+
     // Edit must preserve position in column; only true additions go to the end
     if (isEditing) {
       appActions.updateLink(updatedLink);
@@ -154,13 +207,32 @@ export const VisualEditModal = ({
     onClose();
   };
 
+  const TAB_ORDER = ['web', 'script', 'search'] as const;
+
+  // ARIA tabs keyboard support: ←/→ move across modes (automatic activation)
+  const handleTablistKeyDown = (e: KeyboardEvent) => {
+    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    const idx = TAB_ORDER.indexOf(activeTab);
+    let nextIdx = idx;
+    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % TAB_ORDER.length;
+    if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + TAB_ORDER.length) % TAB_ORDER.length;
+    if (e.key === 'Home') nextIdx = 0;
+    if (e.key === 'End') nextIdx = TAB_ORDER.length - 1;
+    const next = TAB_ORDER[nextIdx];
+    if (!next) return;
+    setActiveTab(next);
+    // All three tabs are always rendered: focusing works pre-rerender
+    document.getElementById(`vem-tab-${next}`)?.focus();
+  };
+
   const filteredIcons = searchLucideIcons(iconSearchQuery, 120);
   const firstAlias = aliases.split(',')[0]?.trim() ?? '';
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleRequestClose}
       title={isEditing ? 'Edit Link' : 'Add New Link'}
       subtitle="Configure links, JS scripts and search engines"
       icon={isEditing ? <Sliders size={18} /> : <Plus size={18} />}
@@ -177,9 +249,14 @@ export const VisualEditModal = ({
           />
 
           {/* Mode Tab Switcher Segmented Control */}
-          <div class={styles.segmentedTabsWrapper}>
+          <div class={styles.segmentedTabsWrapper} role="tablist" aria-label="Link type" onKeyDown={handleTablistKeyDown}>
             <button
               type="button"
+              role="tab"
+              id="vem-tab-web"
+              aria-selected={activeTab === 'web'}
+              aria-controls="vem-panel-web"
+              tabIndex={activeTab === 'web' ? 0 : -1}
               class={`${styles.tabSegment} ${activeTab === 'web' ? styles.activeTabSegment : ''}`}
               onClick={() => setActiveTab('web')}
             >
@@ -188,6 +265,11 @@ export const VisualEditModal = ({
             </button>
             <button
               type="button"
+              role="tab"
+              id="vem-tab-script"
+              aria-selected={activeTab === 'script'}
+              aria-controls="vem-panel-script"
+              tabIndex={activeTab === 'script' ? 0 : -1}
               class={`${styles.tabSegment} ${activeTab === 'script' ? styles.activeTabSegment : ''}`}
               onClick={() => setActiveTab('script')}
             >
@@ -196,6 +278,11 @@ export const VisualEditModal = ({
             </button>
             <button
               type="button"
+              role="tab"
+              id="vem-tab-search"
+              aria-selected={activeTab === 'search'}
+              aria-controls="vem-panel-search"
+              tabIndex={activeTab === 'search' ? 0 : -1}
               class={`${styles.tabSegment} ${activeTab === 'search' ? styles.activeTabSegment : ''}`}
               onClick={() => setActiveTab('search')}
             >
@@ -204,21 +291,24 @@ export const VisualEditModal = ({
             </button>
           </div>
 
-          <FormFields
-            activeTab={activeTab}
-            title={title} setTitle={setTitle}
-            url={url} setUrl={setUrl}
-            searchTemplate={searchTemplate} setSearchTemplate={setSearchTemplate}
-            aliases={aliases} setAliases={setAliases}
-            icon={icon} setIcon={setIcon}
-            isIconDropdownOpen={isIconDropdownOpen} setIsIconDropdownOpen={setIsIconDropdownOpen}
-            iconSearchQuery={iconSearchQuery} setIconSearchQuery={setIconSearchQuery}
-            filteredIcons={filteredIcons}
-          />
+          {/* Mode-dependent fields (panel labelled by the active tab) */}
+          <div role="tabpanel" class={styles.tabPanel} id={`vem-panel-${activeTab}`} aria-labelledby={`vem-tab-${activeTab}`}>
+            <FormFields
+              activeTab={activeTab}
+              title={title} setTitle={setTitle}
+              url={url} setUrl={setUrl}
+              searchTemplate={searchTemplate} setSearchTemplate={setSearchTemplate}
+              aliases={aliases} setAliases={setAliases}
+              icon={icon} setIcon={setIcon}
+              isIconDropdownOpen={isIconDropdownOpen} setIsIconDropdownOpen={setIsIconDropdownOpen}
+              iconSearchQuery={iconSearchQuery} setIconSearchQuery={setIconSearchQuery}
+              filteredIcons={filteredIcons}
+            />
 
-          {activeTab === 'script' && (
-            <ScriptEditor scriptSnippet={scriptSnippet} setScriptSnippet={setScriptSnippet} />
-          )}
+            {activeTab === 'script' && (
+              <ScriptEditor scriptSnippet={scriptSnippet} setScriptSnippet={setScriptSnippet} />
+            )}
+          </div>
 
           <CategoryPicker
             categories={categories}
@@ -235,7 +325,7 @@ export const VisualEditModal = ({
 
           {/* Actions */}
           <div class={styles.modalFooter}>
-            <button type="button" class={styles.cancelBtn} onClick={onClose}>
+            <button type="button" class={styles.cancelBtn} onClick={handleRequestClose}>
               Cancel
             </button>
             <button type="submit" class={styles.saveBtn}>

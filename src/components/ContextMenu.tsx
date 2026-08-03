@@ -33,6 +33,16 @@ export const ContextMenu = ({
   const [position, setPosition] = useState<{ left: number; top: number }>({ left: x, top: y });
   const [submenuOpensLeft, setSubmenuOpensLeft] = useState<boolean>(false);
 
+  // ARIA menu pattern: on open the focus enters the first menuitem; on close
+  // it returns to the element that invoked the menu.
+  useEffect(() => {
+    const invoker = document.activeElement as HTMLElement | null;
+    menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+    return () => {
+      invoker?.focus?.();
+    };
+  }, []);
+
   // Measure the real rendered size (no magic 190/220 clamps) and keep the
   // menu fully inside the viewport before paint.
   useLayoutEffect(() => {
@@ -62,6 +72,30 @@ export const ContextMenu = ({
   }, [onClose]);
 
   const categories = categoriesSignal.value.map(c => c.name);
+
+  // Roving focus: ArrowUp/ArrowDown walk the visible menuitems (including an
+  // open submenu, in DOM order), Home/End jump to the first/last item.
+  const handleMenuKeyDown = (e: KeyboardEvent) => {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
+    const items = Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
+    if (items.length === 0) return;
+    e.preventDefault();
+    const currentIdx = items.indexOf(document.activeElement as HTMLElement);
+    switch (e.key) {
+      case 'ArrowDown':
+        (items[currentIdx < 0 ? 0 : (currentIdx + 1) % items.length])?.focus();
+        break;
+      case 'ArrowUp':
+        (items[currentIdx < 0 ? items.length - 1 : (currentIdx - 1 + items.length) % items.length])?.focus();
+        break;
+      case 'Home':
+        items[0]?.focus();
+        break;
+      case 'End':
+        items[items.length - 1]?.focus();
+        break;
+    }
+  };
 
   const handleEditClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -122,26 +156,33 @@ export const ContextMenu = ({
       />
       <div
         ref={menuRef}
+        role="menu"
+        aria-label={`Actions for ${link.title}`}
         class={`${styles.menuContainer} fade-in`}
         style={{ left: `${position.left}px`, top: `${position.top}px` }}
         onClick={e => e.stopPropagation()}
+        onKeyDown={handleMenuKeyDown}
       >
       <div class={styles.menuHeader}>{link.title}</div>
 
-      <button class={styles.menuItem} onClick={handleEditClick}>
+      <button role="menuitem" tabIndex={0} class={styles.menuItem} onClick={handleEditClick}>
         <Edit3 size={15} /> Edit Link
       </button>
 
-      <button class={styles.menuItem} onClick={e => handleMoveLinkDirection(e, 'up')}>
+      <button role="menuitem" tabIndex={-1} class={styles.menuItem} onClick={e => handleMoveLinkDirection(e, 'up')}>
         <ArrowUp size={15} /> Move Up
       </button>
 
-      <button class={styles.menuItem} onClick={e => handleMoveLinkDirection(e, 'down')}>
+      <button role="menuitem" tabIndex={-1} class={styles.menuItem} onClick={e => handleMoveLinkDirection(e, 'down')}>
         <ArrowDown size={15} /> Move Down
       </button>
 
       <div class={styles.submenuWrapper}>
         <button
+          role="menuitem"
+          tabIndex={-1}
+          aria-haspopup="menu"
+          aria-expanded={showCategorySubmenu}
           class={styles.menuItem}
           onClick={e => {
             e.stopPropagation();
@@ -152,10 +193,16 @@ export const ContextMenu = ({
         </button>
 
         {showCategorySubmenu && (
-          <div class={`${styles.categorySubmenu} ${submenuOpensLeft ? styles.flipLeft : ''}`}>
+          <div
+            role="menu"
+            aria-label="Move to category"
+            class={`${styles.categorySubmenu} ${submenuOpensLeft ? styles.flipLeft : ''}`}
+          >
             {categories.map(cat => (
               <button
                 key={cat}
+                role="menuitem"
+                tabIndex={-1}
                 class={`${styles.submenuItem} ${cat === link.category ? styles.active : ''}`}
                 onClick={e => handleMoveToCategory(e, cat)}
               >
@@ -170,6 +217,8 @@ export const ContextMenu = ({
         <>
           <div class={styles.divider} />
           <button
+            role="menuitem"
+            tabIndex={-1}
             class={styles.menuItem}
             onClick={e => {
               e.stopPropagation();
@@ -184,7 +233,7 @@ export const ContextMenu = ({
 
       <div class={styles.divider} />
 
-      <button class={`${styles.menuItem} ${styles.danger}`} onClick={handleRemoveClick}>
+      <button role="menuitem" tabIndex={-1} class={`${styles.menuItem} ${styles.danger}`} onClick={handleRemoveClick}>
         <Trash2 size={15} /> Remove Link
       </button>
       </div>

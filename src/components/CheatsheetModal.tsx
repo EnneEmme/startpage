@@ -42,7 +42,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
       icon={<Keyboard size={18} class={styles.keyboardIcon} />}
       footer={
         <span class={styles.footerHint}>
-          💡 Premi <kbd class={styles.miniKbd}>?</kbd> in qualsiasi momento per aprire/chiudere questa guida
+          💡 Press <kbd class={styles.miniKbd}>?</kbd> at any time to open/close this guide
         </span>
       }
     >
@@ -53,6 +53,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
           type="text"
           class={styles.searchInput}
           placeholder="Filter shortcuts (e.g. Alt, numbers, search, delete)..."
+          aria-label="Filter shortcuts"
           value={searchQuery}
           onInput={e => setSearchQuery((e.target as HTMLInputElement).value)}
           autoFocus
@@ -62,6 +63,8 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
             type="button"
             class={styles.clearSearchBtn}
             onClick={() => setSearchQuery('')}
+            title="Clear search"
+            aria-label="Clear search"
           >
             <X size={13} />
           </button>

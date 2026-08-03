@@ -34,8 +34,9 @@ export const FormFields = ({
     <>
       {/* Title Input */}
       <div class={styles.fieldGroup}>
-        <label class={styles.label}>Link Title</label>
+        <label class={styles.label} for="vem-title">Link Title</label>
         <input
+          id="vem-title"
           type="text"
           class={styles.input}
           placeholder="e.g. GitHub, ChatGPT, Mail..."
@@ -48,8 +49,9 @@ export const FormFields = ({
       {/* Dynamic Field Based on Selected Mode */}
       {activeTab === 'web' && (
         <div class={styles.fieldGroup}>
-          <label class={styles.label}>Website URL</label>
+          <label class={styles.label} for="vem-url">Website URL</label>
           <input
+            id="vem-url"
             type="text"
             class={styles.input}
             placeholder="e.g. https://www.youtube.com"
@@ -63,8 +65,9 @@ export const FormFields = ({
       {activeTab === 'search' && (
         <>
           <div class={styles.fieldGroup}>
-            <label class={styles.label}>Site Base URL</label>
+            <label class={styles.label} for="vem-search-base-url">Site Base URL</label>
             <input
+              id="vem-search-base-url"
               type="text"
               class={styles.input}
               placeholder="e.g. https://www.youtube.com"
@@ -75,8 +78,9 @@ export const FormFields = ({
           </div>
 
           <div class={styles.fieldGroup}>
-            <label class={styles.label}>Search Parameter (Query Template)</label>
+            <label class={styles.label} for="vem-search-template">Search Parameter (Query Template)</label>
             <input
+              id="vem-search-template"
               type="text"
               class={styles.input}
               placeholder="e.g. /results?search_query={q}  or  /search?q={q}"
@@ -93,8 +97,9 @@ export const FormFields = ({
 
       {/* Aliases */}
       <div class={styles.fieldGroup}>
-        <label class={styles.label}>Keyboard Shortcuts / Aliases (comma separated)</label>
+        <label class={styles.label} for="vem-aliases">Keyboard Shortcuts / Aliases (comma separated)</label>
         <input
+          id="vem-aliases"
           type="text"
           class={styles.input}
           placeholder="e.g. g, gh, github, yt"
@@ -105,7 +110,7 @@ export const FormFields = ({
 
       {/* Icon Picker Dropdown */}
       <div class={styles.fieldGroup}>
-        <label class={styles.label}>Custom Icon</label>
+        <label class={styles.label} for="vem-icon">Custom Icon</label>
         <div class={styles.iconDropdownWrapper}>
           <div class={styles.iconInputTriggerRow}>
             <div class={styles.iconLiveBadge}>
@@ -117,6 +122,7 @@ export const FormFields = ({
               />
             </div>
             <input
+              id="vem-icon"
               type="text"
               class={styles.input}
               placeholder="Lucide, Image URL or SVG Code <svg>..."
@@ -127,6 +133,8 @@ export const FormFields = ({
               type="button"
               class={styles.iconPickerToggleBtn}
               onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}
+              aria-expanded={isIconDropdownOpen}
+              aria-haspopup="listbox"
             >
               Pick ({ICON_LIST.length} Lucide) ▼
             </button>
@@ -139,6 +147,7 @@ export const FormFields = ({
                   type="text"
                   class={styles.iconSearchInput}
                   placeholder={`Search ${ICON_LIST.length} Lucide icons (e.g. Coffee, Rocket, Shield)...`}
+                  aria-label="Search Lucide icons"
                   value={iconSearchQuery}
                   onInput={e => setIconSearchQuery((e.target as HTMLInputElement).value)}
                   autoFocus
@@ -174,7 +183,7 @@ export const FormFields = ({
                   )
                 ) : (
                   <div style={{ gridColumn: '1 / -1', padding: '1.25rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.6' }}>
-                    🔍 Type in the field above to search <strong>{ICON_LIST.length} icone Lucide</strong> (e.g. <em>coffee, rocket, mail, shield, code, music</em>). Site icons are resolved automatically via favicon.
+                    🔍 Type in the field above to search <strong>{ICON_LIST.length} Lucide icons</strong> (e.g. <em>coffee, rocket, mail, shield, code, music</em>). Site icons are resolved automatically via favicon.
                   </div>
                 )}
               </div>

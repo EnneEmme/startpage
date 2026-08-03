@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState, useEffect, useRef } from 'preact/hooks';
 import { Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
 import { copyTextToClipboard } from '../engine';
 import { appActions, confirmDialog, showToast } from '../stores';
@@ -17,6 +17,17 @@ export const ImportExportModal = ({
   const [jsonText, setJsonText] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
   const [statusMsg, setStatusMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const copiedTimerRef = useRef<number | null>(null);
+
+  // Release any pending "Copied!" reset on unmount
+  useEffect(
+    () => () => {
+      if (copiedTimerRef.current !== null) {
+        window.clearTimeout(copiedTimerRef.current);
+      }
+    },
+    []
+  );
 
   const handleExport = () => {
     const jsonStr = appActions.exportJson();
@@ -29,7 +40,13 @@ export const ImportExportModal = ({
     const ok = await copyTextToClipboard(jsonStr);
     if (ok) {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copiedTimerRef.current !== null) {
+        window.clearTimeout(copiedTimerRef.current);
+      }
+      copiedTimerRef.current = window.setTimeout(() => {
+        copiedTimerRef.current = null;
+        setCopied(false);
+      }, 2000);
     } else {
       setStatusMsg({ text: 'Clipboard unavailable here: use Download File instead.', type: 'error' });
     }

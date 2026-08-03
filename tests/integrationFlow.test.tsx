@@ -19,6 +19,17 @@ describe('App End-to-End Integration Flow', () => {
     expect(container.textContent).toContain('All');
   });
 
+  it('exposes a skip link to the main landmark plus a visually hidden h1', () => {
+    const { container } = render(<App />);
+
+    const skipLink = container.querySelector('a.skipLink[href="#main-grid"]');
+    expect(skipLink).not.toBeNull();
+    expect(skipLink!.textContent).toContain('Skip to content');
+
+    expect(container.querySelector('main#main-grid')).not.toBeNull();
+    expect(container.querySelector('h1.sr-only')!.textContent).toContain('Startpage');
+  });
+
   it('filters columns when clicking category tab in JumpBar', () => {
     const { container, getAllByText } = render(<App />);
     const socialTab = getAllByText('Social')[0]!;
