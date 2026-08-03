@@ -53,6 +53,11 @@ describe('SearchModal Component', () => {
     expect(input.value).toBe('GitHub');
   });
 
+  it('focuses the search input on open (single autofocus strategy via Modal)', () => {
+    render(<SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />);
+    expect(document.activeElement).toBe(screen.getByRole('combobox'));
+  });
+
   it('triggers onClose when Escape is pressed', () => {
     const onClose = vi.fn();
     const { getByPlaceholderText } = render(

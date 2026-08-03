@@ -86,24 +86,15 @@ export const SearchModal = ({
   }, [links]);
 
   useEffect(() => {
-    if (isOpen) {
-      setQuery(initialQuery);
-      setSelectedIndex(0);
+    if (!isOpen) return;
+    setQuery(initialQuery);
+    setSelectedIndex(0);
 
-      // Synchronous focus to trigger mobile OS virtual keyboard immediately on tap
-      if (inputRef.current) {
-        inputRef.current.focus();
-        if (initialQuery) {
-          inputRef.current.setSelectionRange(initialQuery.length, initialQuery.length);
-        }
-      }
-
-      // Secondary requestAnimationFrame for smooth modal animation entry focus
-      requestAnimationFrame(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      });
+    // Single autofocus strategy: Modal.tsx focuses the input via its
+    // [autofocus] attribute — no manual focus() here. We only move the
+    // caret to the end of a pre-filled query so typing continues naturally.
+    if (initialQuery && inputRef.current) {
+      inputRef.current.setSelectionRange(initialQuery.length, initialQuery.length);
     }
   }, [isOpen, initialQuery]);
 
