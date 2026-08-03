@@ -86,7 +86,8 @@ startpage/
 │   │   ├── appStore.ts        # links/categories signals synced with dataStore + appActions mutations
 │   │   ├── settingsStore.ts   # theme config signal synced with themeEngine + settingsActions
 │   │   ├── toastStore.ts      # Transient toast/snackbar queue signal
-│   │   └── confirmStore.ts    # Promise-based confirm dialog signal
+│   │   ├── confirmStore.ts    # Promise-based confirm dialog signal
+│   │   └── dragStore.ts       # Drag hover signals (per-card computed; no grid-wide dragover re-render)
 │   │
 │   ├── types/                 # TypeScript Type Definitions
 │   │   └── startpage.ts       # Interfaces for LinkItem, CategoryGroup, SearchResult, ThemeConfig, etc.
@@ -114,7 +115,8 @@ startpage/
     ├── modalBase.test.tsx
     ├── modalHooksGuard.test.tsx
     ├── accessibility.test.tsx
-    ├── dragDrop.test.ts
+    ├── dragDrop.test.tsx
+    ├── dynamicUrlCache.test.ts
     ├── reorderModal.test.tsx
     ├── categoryScroll.test.ts
     ├── productionBuild.test.ts

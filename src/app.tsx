@@ -127,6 +127,7 @@ export const App = () => {
           showShortcuts={showShortcuts}
           onEditLink={handleEditLinkFromContext}
           onOpenReorder={() => openModal('reorder')}
+          onAddLink={() => openVisualEdit(null)}
         />
       </main>
 

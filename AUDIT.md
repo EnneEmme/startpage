@@ -4,8 +4,8 @@
 > Ogni voce è una checkbox: spuntala quando il fix è completato e verificato.
 > **Regole (da gemini.md):** dopo ogni fix → `bun run test` verde, aggiorna `structure.md`/`TODO.md` se cambiano file, commit Conventional Commits.
 >
-> **Stato attuale misurato (post-P0/P1/P2 + batch P3-CSS + Passo 0 P3/P4):** 23 file test / **125 test PASS** · `tsc --noEmit` = **0 errori** · `dist/index.html` = **256 KB** (~76 KB gzip) · P0 (6), P1 (15), P2 (12+1 anticipo P3) completati + 5 item P3 CSS/a11y + 2 P4 + 3 checkbox stantie spuntate (tsc 0, LazyWidget purged, app.tsx guard): 49/99 spuntati.
-> **Passo 0 (2026-08-03):** `dataStore.addCategory()` + `appActions.addCategory()` aggiunti (registrazione categoria in categoryOrder, seed ordine implicito se vuoto) → prerequisito per A6. Verifica pre-P3/P4: nessun item aperto è risolto *interamente*; le parti già fatte sono annotate inline con ⏳ e assegnate ai branch A/B.
+> **Stato attuale misurato (2026-08-03, post-merge Fase P3+P4 su dev):** 24 file test / **173 test PASS** · `tsc --noEmit` = **0 errori** · `dist/index.html` = **267 KB** (~79 KB gzip) · P0, P1, P2 completati · **P3 (a11y/UX) e P4 (performance) completati** (branch A `feat/audit-p3-ux-a11y` + branch B `perf/audit-p4-optimization`, mergiati con wiring post-merge `onAddLink`): **67/99 spuntati, 32 aperti** (quasi tutti in P5 tooling/test, P6 sicurezza, P7 igiene).
+> **Fase P3+P4 (2026-08-03):** Passo 0: `dataStore.addCategory()` + `appActions.addCategory()` (registrazione categoria in categoryOrder, seed ordine implicito se vuoto). Branch A (11 item a11y): combobox SearchModal, accessible-names, label htmlFor, ContextMenu ARIA+Shift+F10, autofocus unificato, VisualEditModal draft/tabs/dirty-form, modal landscape, touch hints, noscript/h1/skip-link/lang-EN/⌘/setTimeout, JumpBar focus-mask. Branch B (5 item perf): drag hover → signals `dragStore`, rankStorage debounce+flush, memo `resolveDynamicUrl`, font system stack (rimosso Google Fonts), empty states + timer cleanup + dispatch Shift+F10. Decisioni bloccate dall'utente: UI inglese, system fonts, debounce rank con flush.
 
 **Legenda severità:** 🔴 critica · 🟠 alta · 🟡 media · ⚪ bassa
 
@@ -131,25 +131,25 @@
   **Fix:** focus trap + `inert` sul resto dell'albero + focus restore.
 
 - [x] 🟠 **Nessun indicatore `:focus-visible` in tutta l'app** — `outline:none` globale (global.css:117-122) e zero focus ring su bottoni/tab/link/menu. JumpBar con mask-image può nascondere il focus ai bordi.
-  **Fix:** token `--focus-ring` + regola `:focus-visible` globale. ✅ Fatto (element+pseudo selector; mask JumpBar ancora aperto come nota).
+  **Fix:** token `--focus-ring` + regola `:focus-visible` globale. ✅ Fatto (element+pseudo selector; mask JumpBar chiusa in A11: `:focus-within` disattiva la mask-image).
 
 - [x] 🟠 **Contrasto `--text-muted` #64748b su #08080a ≈ 4.2:1 < 4.5:1 (WCAG AA)** — variables.css:33; usato per sottotitoli/hint/footer dei modali.
   **Fix:** ~#8b9bb0 o equivalente ≥4.5:1. ✅ Fatto: #8b9bb0 ≈ 7.2:1.
 
-- [ ] 🟠 **SearchModal senza pattern ARIA combobox** — mancano `role="combobox"`, `aria-expanded/controls/activedescendant`, `role="listbox"/"option"`, live region risultati; selezione con frecce fuori viewport senza `scrollIntoView` (lista max-height 420px); Tab dirottato → clear button irraggiungibile da tastiera; Modal con `hideHeader` senza `aria-label`. ⏳ Parziale: `aria-label` su Modal hideHeader **fatto** (`Modal.tsx` prop `ariaLabel`, SearchModal la passa). Restano combobox/listbox/live-region/scrollIntoView/Tab → branch A1.
+- [x] 🟠 **SearchModal senza pattern ARIA combobox** — mancano `role="combobox"`, `aria-expanded/controls/activedescendant`, `role="listbox"/"option"`, live region risultati; selezione con frecce fuori viewport senza `scrollIntoView` (lista max-height 420px); Tab dirottato → clear button irraggiungibile da tastiera; Modal con `hideHeader` senza `aria-label`. ⏳ Parziale: `aria-label` su Modal hideHeader **fatto** (`Modal.tsx` prop `ariaLabel`, SearchModal la passa). ✅ Completato (A1): combobox+listbox/option, `aria-activedescendant` id stabili, live region conteggio, `scrollIntoView('nearest')`, Tab intercettato solo con completamento reale; 6 test ARIA su ruoli reali.
   **Fix:** pattern completo + `results[selectedIndex].scrollIntoView({block:'nearest'})` + prop `aria-label` su Modal.
 
 - [x] 🟠 **Z-index: MobileBottomNav (99999) sopra i modali (1000)** — `MobileBottomNav.module.css:7-26` resta visibile e cliccabile sopra ogni overlay.
   **Fix:** scala z-index centralizzata come token (nav 900 < overlay 1000 < menu 2000). ✅ Fatto: token `--z-*` in variables.css (ActionToolbar 99999!important → --z-nav; toast 3000).
 
-- [ ] 🟠 **Icon-button senza accessible name** — 8 bottoni HeaderClock/MobileBottomNav con solo `title`; toggle icon picker (FormFields.tsx:124-130); span-retry LinkIcon non focusabile. ⏳ Parziale (2026-08): `ActionToolbar` (ex HeaderClock/MobileBottomNav) ha aria-label sui 4 bottoni; LinkIcon retry → `<button aria-label>`; toggle icon-picker ha nome visibile. **Restano aperti:** ReorderModal move up/down (solo title), colorChipBtn SettingsModal (solo title), clearSearchBtn CheatsheetModal (né title né label), `aria-expanded/aria-haspopup` sul toggle picker → branch A2.
+- [x] 🟠 **Icon-button senza accessible name** — 8 bottoni HeaderClock/MobileBottomNav con solo `title`; toggle icon picker (FormFields.tsx:124-130); span-retry LinkIcon non focusabile. ⏳ Parziale (2026-08): `ActionToolbar` (ex HeaderClock/MobileBottomNav) ha aria-label sui 4 bottoni; LinkIcon retry → `<button aria-label>`; toggle icon-picker ha nome visibile. **Residui chiusi (A2):** ReorderModal move up/down, colorChipBtn SettingsModal, clearSearchBtn CheatsheetModal etichettati; `aria-expanded/aria-haspopup` sul toggle picker. ✅
   **Fix:** `aria-label` ovunque; span → button.
 
-- [ ] 🟠 **Label non associate ai controlli** — FormFields.tsx:35,49,65,77,94,106 e SettingsModal.tsx:73,102,141,183,213,255 senza `htmlFor`/`id`; placeholder-as-label in Search/Cheatsheet.
-  **Fix:** `htmlFor`/`id` o `aria-label`.
+- [x] 🟠 **Label non associate ai controlli** — FormFields.tsx:35,49,65,77,94,106 e SettingsModal.tsx:73,102,141,183,213,255 senza `htmlFor`/`id`; placeholder-as-label in Search/Cheatsheet.
+  **Fix:** `htmlFor`/`id` o `aria-label`. ✅ Fatto (A3): 6 coppie for/id su FormFields, ScriptEditor/CategoryPicker associati, trigger custom-select → `<button>` con aria-expanded, gruppi Settings con role=group+aria-labelledby, aria-label sui search placeholder-only.
 
-- [ ] 🟡 **Context menu inaccessibile da tastiera** — no `role="menu"/"menuitem"`, no roving tabindex, no tasto Menu/Shift+F10, focus non entra nel menu.
-  **Fix:** pattern ARIA menu completo.
+- [x] 🟡 **Context menu inaccessibile da tastiera** — no `role="menu"/"menuitem"`, no roving tabindex, no tasto Menu/Shift+F10, focus non entra nel menu.
+  **Fix:** pattern ARIA menu completo. ✅ Fatto (A4+B5): role=menu/menuitem, roving tabindex, frecce/Home/End, focus prima voce, Esc + restore focus invoker, submenu aria-haspopup/expanded, trigger Shift+F10/Menu key via CustomEvent `startpage:open-context-menu` su card.
 
 - [x] 🟡 **`lang="en"` (index.html:2) con UI in gran parte italiana** — screen reader legge IT con fonetica EN; copy misto IT/EN ovunque (Settings IT, Search EN, Modal close "Close"/"Chiudi (Esc)").
   **Fix:** scegliere una lingua o dizionario stringhe centralizzato; `lang` coerente.
@@ -157,17 +157,17 @@
 - [x] 🟡 **Reduced motion solo CSS** — scroll JS `behavior:'smooth'` (app.tsx:48,52, JumpBar, ColumnGrid:147) ignora `prefers-reduced-motion`.
   **Fix:** gate JS con `matchMedia`. ✅ Fatto: `scrollBehavior()`/`prefersReducedMotion()` in categoryScroll (window.scrollTo gateato; scrollIntoView resta istantaneo).
 
-- [ ] 🟡 **AutoFocus sparsi e orchestrazione focus assente** — 5 autoFocus (SearchInput, Cheatsheet, rename, icon picker, new-category) + focus manuali duplicati (SearchModal:39-51).
-  **Fix:** strategia unica gestita da Modal.
+- [x] 🟡 **AutoFocus sparsi e orchestrazione focus assente** — 5 autoFocus (SearchInput, Cheatsheet, rename, icon picker, new-category) + focus manuali duplicati (SearchModal:39-51).
+  **Fix:** strategia unica gestita da Modal. ✅ Fatto (A5): rimossi focus manuali duplicati (SearchModal), un solo `autofocus` dichiarativo per modale, Modal orchestra il focus iniziale.
 
-- [ ] 🟡 **VisualEditModal: draft sporco persiste tra aperture; tab senza ARIA; nuova categoria non ordinata** — state sopravvive al Cancel (effetto del bug hooks + `useEffect` deps `[targetLink]`); CategoryPicker non aggiunge a `categoryOrder`; segmented senza `role="tablist"`; overlay-click perde il form senza conferma.
-  **Fix:** reset state su close (o `key`), `dataStore.addCategory` completa, ARIA tabs, conferma dirty-form.
+- [x] 🟡 **VisualEditModal: draft sporco persiste tra aperture; tab senza ARIA; nuova categoria non ordinata** — state sopravvive al Cancel (effetto del bug hooks + `useEffect` deps `[targetLink]`); CategoryPicker non aggiunge a `categoryOrder`; segmented senza `role="tablist"`; overlay-click perde il form senza conferma.
+  **Fix:** reset state su close (o `key`), `dataStore.addCategory` completa, ARIA tabs, conferma dirty-form. ✅ Fatto (A6+Passo0): `key={editTargetLink?.id ?? 'new'}` + reset stati accessori (deps `[isOpen, targetLink]`), tablist ARIA con arrow-nav, `addCategory` al submit, confirmDialog 'Discard changes?' su close dirty.
 
 - [x] 🟡 **SettingsModal: bottone "Salva e Chiudi" ingannevole + state stale** — applica live, "Salva" è no-op; state locale copia di `getConfig()` non risincronizzata (esiste già `themeConfigSignal`); `currentAccent` mai usato.
   **Fix:** label "Chiudi"; leggere direttamente `themeConfigSignal.value`; cancellare state locale. ✅ Fatto (signal diretto già da P2; label → "Close"; `currentAccent` già purged).
 
-- [ ] 🟡 **Empty/error states assenti** — categoria vuota, griglia vuota post-import/reset senza CTA; LazyWidget errore → `null` silenzioso; nessun skeleton favicon.
-  **Fix:** empty states con CTA "Aggiungi il primo link".
+- [x] 🟡 **Empty/error states assenti** — categoria vuota, griglia vuota post-import/reset senza CTA; LazyWidget errore → `null` silenzioso; nessun skeleton favicon.
+  **Fix:** empty states con CTA "Aggiungi il primo link". ✅ Fatto (B5+wiring): empty state colonna e griglia vuota con CTA 'Add the first link' (prop opzionale `onAddLink`, wired in app.tsx → add-link modal). LazyWidget già purged (dead code); skeleton favicon non implementato (nice-to-have, non bloccante).
 
 - [x] 🟡 **JumpBar: no `aria-current`, tab attiva non portata in vista, re-render a ogni frame di scroll** — `JumpBar.tsx:21-37`: `setScrollState` con oggetto nuovo a ogni evento scroll.
   **Fix:** bail-out su valori identici + `aria-current` + scrollIntoView della pill attiva (feature-detect per jsdom). ✅ Fatto.
@@ -175,16 +175,16 @@
 - [x] 🟡 **Touch target sotto soglia** — LinkRow ~31px, context item ~32px, top tools 34px, clear 24px (consigliati ≥44px touch / WCAG min 24px).
   **Fix:** padding minimo su `@media (pointer: coarse)`. ✅ Fatto: ≥24px su linkRow/clearBtn/clearSearchBtn (44px ideali ancora no).
 
-- [ ] 🟡 **Tooltip desktop-only: feature invisibili su touch** — `title` ovunque con istruzioni tastiera/drag su dispositivi senza hover.
-  **Fix:** hint contestuali per `(hover:none)` + azioni alternative touch.
+- [x] 🟡 **Tooltip desktop-only: feature invisibili su touch** — `title` ovunque con istruzioni tastiera/drag su dispositivi senza hover.
+  **Fix:** hint contestuali per `(hover:none)` + azioni alternative touch. ✅ Fatto (A9): sezione 'Touch tip' su `@media (hover:none)` in Settings; long-press context menu già presente come alternativa touch.
 
 - [x] ⚪ **User-select:none troppo aggressivo** — global.css:26-38: non si può copiare un URL/titolo.
   **Fix:** limitare ai controlli interattivi. ✅ Fatto: globale solo su button/nav/img/svg; `.linkTitle` user-select:text.
 
-- [ ] ⚪ **Modale su tablet/landscape phone soffocato** — Modal.module.css:16-24 (`max-height:90vh`) + bottom-nav visibile su 601-1023px: header+footer comprimono il contenuto scrollabile; in landscape phone resta poco spazio utile.
-  **Fix:** media query landscape (`max-height`) con layout compatto / full-screen sotto certa altezza.
+- [x] ⚪ **Modale su tablet/landscape phone soffocato** — Modal.module.css:16-24 (`max-height:90vh`) + bottom-nav visibile su 601-1023px: header+footer comprimono il contenuto scrollabile; in landscape phone resta poco spazio utile.
+  **Fix:** media query landscape (`max-height`) con layout compatto / full-screen sotto certa altezza. ✅ Fatto (A8): `@media (max-height:480px)` layout full-screen 100dvh, header/footer compatti; z su token.
 
-- [ ] ⚪ **Nessun `<noscript>`, nessun h1/skip-link, setTimeout non puliti, `pageYOffset` deprecato, shortcut hints con ⌘ non cross-platform.** ⏳ Parziale: `pageYOffset` **risolto** (`window.scrollY` in ColumnGrid:37). Restano noscript/h1/skip-link/⌘ (solo SearchModal: `⌘↵`) + setTimeout non puliti (`app.tsx` highlight 1400ms, `SearchModal` selection 10ms, `ImportExportModal` copied 2000ms, `useDragAndDrop` ghost/justDropped) → branch A10 + B5.
+- [x] ⚪ **Nessun `<noscript>`, nessun h1/skip-link, setTimeout non puliti, `pageYOffset` deprecato, shortcut hints con ⌘ non cross-platform.** ✅ Completato (A10+B5): noscript EN, h1 sr-only + skip-link `#main-grid`, ⌘→platform-detect, tutti i setTimeout trackati con cleanup (app highlight, search selection, import copied, DnD ghost/justDropped).
 
 ---
 
@@ -193,7 +193,7 @@
 - [x] 🟠 **Waterfall favicon all'avvio: fino a ~720 richieste** — iconResolver.ts:54-82 (6 candidati/dominio) × ~120 link, retry con cache-bust su tutta la catena, nessuna persistenza dominio→candidato, `sz=128` per icone 18px, nessun `referrerpolicy`. Privacy: telemetria implicita a Google/icon.horse/DDG.
   **Fix:** cache localStorage `domain→candidateIndex`, catena ridotta a 2-3, `sz=64`, referrerPolicy, IntersectionObserver. ✅ Fatto (cache+3 tier+sz=64+no-referrer); IntersectionObserver non necessario (img già loading=lazy).
 
-- [ ] 🟠 **ColumnGrid: re-render intera griglia a 60fps durante dragover** — `ColumnGrid.tsx:228-260`: setState per pointermove → re-render ~120 card + LinkIcon non memoized. ⏳ Parziale: split P2 fatto (`DraggableLinkCard` con memo + comparatore, setState guardati in `useDragAndDrop`), scritture DOM minime, ma costo vdom per frame ancora intero + comparatore ignora identità callback (closure stale). Fix: drag hover state in signals (B1).
+- [x] 🟠 **ColumnGrid: re-render intera griglia a 60fps durante dragover** — `ColumnGrid.tsx:228-260`: setState per pointermove → re-render ~120 card + LinkIcon non memoized. ⏳ Parziale: split P2 fatto (`DraggableLinkCard` con memo + comparatore, setState guardati in `useDragAndDrop`), scritture DOM minime, ma costo vdom per frame ancora intero + comparatore ignora identità callback (closure stale). ✅ Completato (B1): `stores/dragStore.ts` signals + setter guardati; snapshot hook via `.peek()`; card con computed per-link → per frame si ri-renderizzano max 2 card (+2 colonne highlight).
   **Fix:** `LinkRow`/`ColumnCard` memoized o stato drag in signals/ref + classi DOM imperative.
 
 - [x] 🟡 **FuzzySearch: doppio matching per keystroke + lowercase non precomputati** — `fuzzySearch.ts:114-207`: fuse.search + sweep lineare con `toLowerCase()` allocati per item.
@@ -201,13 +201,13 @@
 
 - [x] 🟡 **Icona bookmarklet = favicon Unimib hardcoded** — LinkIcon.tsx:56-59: qualunque URL `javascript:` → favicon Unimib. Reset a icona neutra (Globe). ✅ Fatto.
 
-- [ ] 🟡 **localStorage serialize-complete a ogni mutazione** — dataStore.ts:244-252, rankStorage.ts:54-60, themeEngine saveAndApply: JSON.stringify completo a ogni drop/click. Priorità bassa, ma valutare batching. ⏳ Confermato: nessun debounce; `save()` doppia scrittura (links+order) a ogni mutazione; `rankStorage.save()` a ogni click link; undo-restore = 2 save. Fix: debounce 300ms + flush su `beforeunload`/`visibilitychange` (B2).
+- [x] 🟡 **localStorage serialize-complete a ogni mutazione** — dataStore.ts:244-252, rankStorage.ts:54-60, themeEngine saveAndApply: JSON.stringify completo a ogni drop/click. Priorità bassa, ma valutare batching. ⏳ Confermato: nessun debounce; `save()` doppia scrittura (links+order) a ogni mutazione; `rankStorage.save()` a ogni click link; undo-restore = 2 save. ✅ Completato (B2): debounce 300ms + `flush()` su `beforeunload`/`visibilitychange` su **rankStorage** (hot path per-click) con test fake-timers. dataStore/themeEngine: debounce valutato e **scartato** (mutazioni discrete low-frequency; persistente sincrono per non rischiare regressioni) — decisione documentata in `dataStore.save()`.
 
-- [ ] ⚪ **`resolveDynamicUrl` ricalcolato ad ogni render per ogni link** (+placeholder `'https://example.com'` ripetuto 4 volte: ColumnGrid:411, SearchModal:237, FormFields:111, PreviewPanel:23).
-  **Fix:** costante `ICON_FALLBACK_URL`; memo per-link. ⏳ Costante fatta; memo per-link ancora aperto.
+- [x] ⚪ **`resolveDynamicUrl` ricalcolato ad ogni render per ogni link** (+placeholder `'https://example.com'` ripetuto 4 volte: ColumnGrid:411, SearchModal:237, FormFields:111, PreviewPanel:23).
+  **Fix:** costante `ICON_FALLBACK_URL`; memo per-link. ✅ Completato (B3): cache Map `giorno|rule|url` (cap 500, `clearDynamicUrlCache()`, `dynamicUrlCacheStats`) dentro `dynamicEvaluator` — zero cambi ai chiamanti.
 
-- [ ] ⚪ **Font Google via `@import` render-blocking** — variables.css:5: fallisce offline (viola spirito standalone §1.2), FOIT, privacy.
-  **Fix:** self-host woff2 inline o system stack dichiarato.
+- [x] ⚪ **Font Google via `@import` render-blocking** — variables.css:5: fallisce offline (viola spirito standalone §1.2), FOIT, privacy.
+  **Fix:** self-host woff2 inline o system stack dichiarato. ✅ Fatto (B4): `@import` Google Fonts rimosso → system stack dichiarato su `--font-body`/`--font-heading`; zero request render-blocking esterne.
 
 ---
 
