@@ -36,6 +36,32 @@ describe('UI Components Unit Tests', () => {
     expect(onOpenSettings).toHaveBeenCalledTimes(1);
   });
 
+  it('space does NOT activate a toolbar button (Enter still does)', () => {
+    const onOpenSettings = vi.fn();
+    const { getByRole } = render(
+      <ActionToolbar
+        variant="header"
+        onOpenSearch={vi.fn()}
+        onOpenCheatsheet={vi.fn()}
+        onOpenVisualEdit={vi.fn()}
+        onOpenSettings={onOpenSettings}
+      />,
+    );
+    const settingsBtn = getByRole('button', { name: 'Settings & Themes' });
+
+    // Space is swallowed (preventDefault): an accidental scroll never opens
+    // the modal and the button never flashes an active/selected state.
+    const spaceEvent = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+    settingsBtn.dispatchEvent(spaceEvent);
+    expect(spaceEvent.defaultPrevented).toBe(true);
+    expect(onOpenSettings).not.toHaveBeenCalled();
+
+    // Enter is preserved as the deliberate activation key (not prevented)
+    const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    settingsBtn.dispatchEvent(enterEvent);
+    expect(enterEvent.defaultPrevented).toBe(false);
+  });
+
   it('renders JumpBar categories and triggers click handler', () => {
     const onSelect = vi.fn();
     const categories = ['Social', 'Dev', 'AI'];

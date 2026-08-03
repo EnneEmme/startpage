@@ -32,6 +32,37 @@ test('locks scroll on html+body while open and restores position on close', () =
   expect(scrollToSpy).toHaveBeenCalled();
 });
 
+// Returning focus to the page container (not the trigger button) so a
+// floating toolbar trigger never keeps a selection ring / Space activation
+// after the dialog closes.
+test('close returns focus to #app container, not the trigger button', () => {
+  const handleClose = vi.fn();
+  document.body.innerHTML = '<div id="app" tabindex="-1"></div>';
+
+  const trigger = document.createElement('button');
+  trigger.tabIndex = 0;
+  trigger.textContent = 'Open';
+  document.body.appendChild(trigger);
+  trigger.focus();
+
+  const { rerender } = render(
+    <Modal isOpen={true} onClose={handleClose} title="Focus Modal">
+      <div>Content</div>
+    </Modal>,
+  );
+
+  rerender(
+    <Modal isOpen={false} onClose={handleClose} title="Focus Modal">
+      <div>Content</div>
+    </Modal>,
+  );
+
+  expect(document.activeElement).not.toBe(trigger);
+  const appRoot = document.getElementById('app');
+  expect(appRoot).not.toBeNull();
+  expect(document.activeElement).toBe(appRoot);
+});
+
 test('renders Modal component correctly when open', () => {
   render(
     <Modal isOpen={true} onClose={() => {}} title="Test Modal">

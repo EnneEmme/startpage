@@ -41,6 +41,12 @@ export const ActionToolbar = ({
       type="button"
       class={styles.iconBtn}
       onClick={onClick}
+      // Space must not activate these modal-trigger buttons (Enter still
+      // works): a focused toolbar button should never fire on an accidental
+      // Space scroll, and it should not flash a "selected" (active) state.
+      onKeyDown={e => {
+        if (e.key === ' ') e.preventDefault();
+      }}
       title={label}
       aria-label={label}
     >

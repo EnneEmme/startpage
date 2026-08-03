@@ -38,14 +38,11 @@ export const Modal = ({
   ariaLabel,
 }: ModalProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const restoreFocusRef = useRef<HTMLElement | null>(null);
 
-  // Open/close lifecycle: remember trigger, lock page scroll (with scrollbar
-  // compensation), make the app tree inert, restore focus on close.
+  // Open/close lifecycle: lock page scroll (with scrollbar compensation),
+  // make the app tree inert, and return focus to the page on close.
   useEffect(() => {
     if (!isOpen) return;
-
-    restoreFocusRef.current = document.activeElement as HTMLElement | null;
 
     const appRoot = document.getElementById('app');
     appRoot?.setAttribute('inert', '');
@@ -74,15 +71,18 @@ export const Modal = ({
       document.body.style.overflow = prevBodyOverflow;
       document.body.style.touchAction = prevTouchAction;
       document.body.style.paddingRight = prevPaddingRight;
-      // Put the page back exactly where it was, then restore focus without
-      // triggering a scroll — no jump, no "shifted" background on close.
+      // Put the page back exactly where it was — no jump, no "shifted"
+      // background on close.
       try {
         window.scrollTo({ top: prevScrollY, left: 0, behavior: 'auto' });
       } catch {
         // jsdom lacks scrollTo; harmless in tests
       }
-      restoreFocusRef.current?.focus?.({ preventScroll: true });
-      restoreFocusRef.current = null;
+      // Return focus to the page container (not the trigger button): the
+      // trigger (e.g. a floating toolbar button) must not keep a selection
+      // ring or react to the next Space press. #app is tabindex="-1" so it
+      // is programmatically focusable but out of the tab order.
+      appRoot?.focus?.({ preventScroll: true });
     };
   }, [isOpen]);
 
