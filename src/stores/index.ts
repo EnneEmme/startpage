@@ -6,3 +6,13 @@ export { toastSignal, showToast, dismissToast } from './toastStore';
 export type { ToastPayload } from './toastStore';
 export { confirmSignal, confirmDialog, settleConfirm } from './confirmStore';
 export type { ConfirmRequest } from './confirmStore';
+export {
+  draggedLinkIdSignal,
+  draggedCategoryNameSignal,
+  dragOverCategoryIdSignal,
+  dragOverLinkIdSignal,
+  dropPositionSignal,
+  justDroppedLinkIdSignal,
+  dragStore
+} from './dragStore';
+export type { DropPosition } from './dragStore';
