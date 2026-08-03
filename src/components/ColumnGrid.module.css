@@ -217,8 +217,9 @@
   width: 32px;
   height: 32px;
   border-radius: var(--radius-full);
-  background: var(--bg-glass, rgba(16, 16, 18, 0.88));
-  backdrop-filter: blur(12px);
+  /* No backdrop-filter here: the cue is a small decorative element that
+     would cost a full repaint layer; a near-opaque bg keeps the glass look */
+  background: var(--bg-secondary, rgba(16, 16, 18, 0.95));
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
   color: var(--accent-highlight);
   box-shadow:
