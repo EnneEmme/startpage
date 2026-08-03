@@ -12,7 +12,7 @@ const silenceNavigation = () => {
 
 describe('ColumnGrid Component', () => {
   beforeEach(() => {
-    localStorage.clear();
+    // localStorage reset lives in the global tests/setup.ts
     dataStore.resetToDefault();
     rankStorage.clear();
     silenceNavigation();

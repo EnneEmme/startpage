@@ -6,7 +6,7 @@ import { rankStorage } from '../src/engine/rankStorage';
 
 describe('App End-to-End Integration Flow', () => {
   beforeEach(() => {
-    localStorage.clear();
+    // localStorage reset lives in the global tests/setup.ts
     dataStore.resetToDefault();
     rankStorage.clear();
     window.scrollTo = vi.fn();
