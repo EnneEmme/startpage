@@ -229,6 +229,11 @@ export const SettingsModal = ({
             </div>
           </div>
 
+          {/* Touch-only gesture hint (no hover tooltips on coarse pointers) */}
+          <p class={styles.touchHint} role="note">
+            👆 Touch tip: long-press a link card to open its action menu (edit, move, remove).
+          </p>
+
           {/* Backup & Import/Export Section */}
           <div class={styles.sectionGroup}>
             <div class={styles.sectionHeaderRow}>
