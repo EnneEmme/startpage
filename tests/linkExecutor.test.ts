@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { executeLink, isBookmarkletOrScript, extractScriptCode, setScriptConfirmHandler } from '../src/engine/linkExecutor';
+import { DEFAULT_CONFIG } from '../src/engine/dataStore';
 import { clearConsents, hasConsent } from '../src/engine/scriptConsent';
 import type { LinkItem } from '../src/types/startpage';
 
@@ -178,19 +179,28 @@ describe('LinkExecutor Engine', () => {
       expect(ran).toBe(3);
     });
 
-    it('builtin default scripts (unimib_orari/esami) run with implicit consent', () => {
-      let ran = 0;
-      (globalThis as Record<string, unknown>).__secBuiltinRun = () => { ran++; };
+    it('default Unimib links are dynamic-only (no script) and navigate via rule', () => {
+      const windowSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
       const handler = vi.fn(() => Promise.resolve(true));
       setScriptConfirmHandler(handler);
-      const builtin: LinkItem = {
-        id: 'unimib_orari', title: 'Orari', url: '', isScript: true,
-        scriptContent: 'globalThis.__secBuiltinRun()', aliases: [], category: 'School'
-      };
+      const orari = DEFAULT_CONFIG.commands.find(l => l.id === 'unimib_orari')!;
 
-      expect(executeLink(builtin)).toBe(true);
-      expect(ran).toBe(1);
+      // Shipped defaults carry no script machinery at all
+      expect(orari.isScript).toBeUndefined();
+      expect(orari.scriptContent).toBeUndefined();
+      expect(isBookmarkletOrScript(orari)).toBe(false);
+
+      expect(executeLink(orari, '_blank')).toBe(true);
+      expect(windowSpy).toHaveBeenCalledWith(
+        expect.stringContaining('view=easycourse'),
+        '_blank',
+        'noopener,noreferrer'
+      );
+      const navigatedUrl = windowSpy.mock.calls[0]![0] as string;
+      expect(navigatedUrl).not.toContain('javascript:');
+      expect(navigatedUrl).toMatch(/anno=\d{4}/);
       expect(handler).not.toHaveBeenCalled();
+      windowSpy.mockRestore();
     });
 
     it('confirm handler rejection fails closed (no execution, no crash)', async () => {

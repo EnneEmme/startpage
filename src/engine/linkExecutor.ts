@@ -55,12 +55,6 @@ export const setScriptConfirmHandler = (handler: ScriptConfirmHandler | null): v
 };
 
 /**
- * First-party default scripts shipped in DEFAULT_CONFIG (Unimib orari/esami):
- * trusted code under our control → implicit consent, never prompted.
- */
-const BUILTIN_SCRIPT_IDS = new Set(['unimib_orari', 'unimib_esami']);
-
-/**
  * Runs the snippet exactly once. Returns false on error — there is NO
  * `javascript:` URL navigation fallback (it would bypass the consent gate
  * and double-execute code paths).
@@ -99,11 +93,11 @@ export const executeLink = (link: LinkItem, targetWindow: '_blank' | '_self' = '
   if (isBookmarkletOrScript(link) || (targetUrl && targetUrl.trim().toLowerCase().startsWith('javascript:'))) {
     const code = extractScriptCode(link);
 
-    // Consent gate (custom scripts only): without a persisted per-script-hash
-    // consent, ask through the registered UI handler. Fire-and-forget: the
-    // synchronous signature is preserved (callers rely on the boolean return)
-    // and execution resumes on approval, after persisting the consent.
-    if (!BUILTIN_SCRIPT_IDS.has(link.id) && !hasConsent(link) && scriptConfirmHandler) {
+    // Consent gate: without a persisted per-script-hash consent, ask through
+    // the registered UI handler. Fire-and-forget: the synchronous signature
+    // is preserved (callers rely on the boolean return) and execution
+    // resumes on approval, after persisting the consent.
+    if (!hasConsent(link) && scriptConfirmHandler) {
       Promise.resolve(scriptConfirmHandler(link))
         .then(ok => {
           if (ok) {

@@ -17,9 +17,20 @@ export const parseDateISO = (date: Date): string => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
+/**
+ * The Unimib timetable portal's `anno` parameter is the year the CURRENT
+ * academic year started (e.g. 2025 for 2025/26). Academic years begin in
+ * September: months September..December (getMonth() >= 8) map to the current
+ * calendar year, January..August to the previous one.
+ * (E.g. 3 Aug 2026 → anno=2025 → academic year 2025/26.)
+ */
+export const getAcademicYearStart = (date: Date): number =>
+  date.getMonth() >= 8 ? date.getFullYear() : date.getFullYear() - 1;
+
 export const getUnimibOrariUrl = (currentDate: Date = new Date()): string => {
   const today = parseDateFormatted(currentDate);
-  return `https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easycourse&form-type=corso&include=corso&txtcurr=1+-+PERCORSO+COMUNE&anno=2025&scuola=&corso=F1802Q&anno2%5B%5D=GGG%7C1&visualizzazione_orario=cal&date=${today}&periodo_didattico=&_lang=it&list=&week_grid_type=-1&ar_codes_=EC508261%7CEC512923%7CEC508282%7CEC512924%7CEC509735&ar_select_=true%7Ctrue%7Ctrue%7Ctrue%7Cfalse&col_cells=0&empty_box=0&only_grid=0&highlighted_date=0&all_events=0#`;
+  const anno = getAcademicYearStart(currentDate);
+  return `https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easycourse&form-type=corso&include=corso&txtcurr=1+-+PERCORSO+COMUNE&anno=${anno}&scuola=&corso=F1802Q&anno2%5B%5D=GGG%7C1&visualizzazione_orario=cal&date=${today}&periodo_didattico=&_lang=it&list=&week_grid_type=-1&ar_codes_=EC508261%7CEC512923%7CEC508282%7CEC512924%7CEC509735&ar_select_=true%7Ctrue%7Ctrue%7Ctrue%7Cfalse&col_cells=0&empty_box=0&only_grid=0&highlighted_date=0&all_events=0#`;
 };
 
 export const getUnimibEsamiUrl = (currentDate: Date = new Date()): string => {

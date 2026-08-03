@@ -5,8 +5,8 @@ export { categorySlug, categoryColumnId, scrollToCategory, scrollToTop, prefersR
 export { BASE_CHEATSHEET_SHORTCUTS, CHEATSHEET_SHORTCUTS, getDynamicCheatsheetShortcuts } from './cheatsheetData';
 export type { ShortcutGroup } from './cheatsheetData';
 export { copyTextToClipboard } from './clipboard';
-export { DEFAULT_CONFIG, ESAMI_SCRIPT, ORARI_SCRIPT, DataStore, dataStore, sanitizeLinkItem } from './dataStore';
-export { getUnimibEsamiUrl, getUnimibOrariUrl, parseDateFormatted, parseDateISO, resolveDynamicUrl } from './dynamicEvaluator';
+export { DEFAULT_CONFIG, UNIMIB_ESAMI_BASE_URL, UNIMIB_ORARI_BASE_URL, DataStore, dataStore, sanitizeLinkItem } from './dataStore';
+export { getAcademicYearStart, getUnimibEsamiUrl, getUnimibOrariUrl, parseDateFormatted, parseDateISO, resolveDynamicUrl } from './dynamicEvaluator';
 export { DEFAULT_PREFIX_RULES, FuzzySearchEngine, fuzzySearchEngine, getEngineFallback } from './fuzzySearch';
 export type { ParsedCommand } from './fuzzySearch';
 export { BRAND_FAVICON_OVERRIDES, ICON_FALLBACK_URL, extractDomain, extractOrigin, formatSvgToDataUrl, getCachedFaviconIndex, getFaviconCandidates, getFaviconUrl, getGoogleFaviconUrl, resolveIcon, setCachedFaviconIndex } from './iconResolver';

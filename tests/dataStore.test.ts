@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { DataStore, DEFAULT_CONFIG, sanitizeLinkItem } from '../src/engine/dataStore';
+import { DataStore, DEFAULT_CONFIG, sanitizeLinkItem, UNIMIB_ESAMI_BASE_URL, UNIMIB_ORARI_BASE_URL } from '../src/engine/dataStore';
 import { rankStorage } from '../src/engine/rankStorage';
 import type { LinkItem } from '../src/types/startpage';
 
@@ -112,6 +112,79 @@ describe('DataStore Engine & Edge Cases', () => {
     localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: links }));
     const secondLoad = new DataStore();
     expect(secondLoad.getLinks()[0]!.category).toBe('LLMs 2');
+  });
+
+  it('ships a default config with no script machinery at all (D3)', () => {
+    for (const link of DEFAULT_CONFIG.commands) {
+      expect(link.isScript).toBeUndefined();
+      expect(link.scriptContent).toBeUndefined();
+      expect(link.url.toLowerCase().startsWith('javascript:')).toBe(false);
+    }
+    const orari = DEFAULT_CONFIG.commands.find(l => l.id === 'unimib_orari')!;
+    expect(orari.url).toBe(UNIMIB_ORARI_BASE_URL);
+    expect(orari.dynamicUrlRule).toBe('unimib_orari');
+  });
+
+  it('migration v3 converts stored Unimib script links to dynamic-only (D3, idempotent)', () => {
+    // Pre-v3 profile: v2 done, Unimib links still in script form
+    localStorage.clear();
+    localStorage.setItem('startpage_migrations', JSON.stringify({ v2_legacy_normalization: true }));
+    const legacyCommands = [
+      {
+        // user-renamed + customized: only the machinery must go
+        id: 'unimib_orari', title: 'Lezioni mie', url: 'javascript:updateOrari()',
+        aliases: ['orari'], category: 'ScuolaCustom', icon: 'https://example.com/icon.png',
+        dynamicUrlRule: 'unimib_orari', isScript: true, scriptContent: 'globalThis.__v3Old = 1'
+      },
+      {
+        // legacy shape without dynamicUrlRule: matched by id/title, rule ensured
+        id: 'esami', title: 'Esami', url: 'javascript:updateEsami()',
+        aliases: ['esami'], category: 'School', isScript: true, scriptContent: 'alert(1)'
+      },
+      {
+        // untouched: an unrelated custom bookmarklet stays as-is (user data)
+        id: 'mybm', title: 'My Bookmarklet', url: 'javascript:alert(1)',
+        aliases: [], category: 'Tools', isScript: true, scriptContent: 'alert(1)'
+      }
+    ];
+    localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: legacyCommands }));
+
+    const migrated = new DataStore();
+    const links = migrated.getLinks();
+
+    const orari = links.find(l => l.id === 'unimib_orari')!;
+    expect(orari.isScript).toBeUndefined();
+    expect(orari.scriptContent).toBeUndefined();
+    expect(orari.url).toBe(UNIMIB_ORARI_BASE_URL);
+    expect(orari.dynamicUrlRule).toBe('unimib_orari');
+    // rename/custom icons/category survive
+    expect(orari.title).toBe('Lezioni mie');
+    expect(orari.icon).toBe('https://example.com/icon.png');
+    expect(orari.category).toBe('ScuolaCustom');
+
+    const esami = links.find(l => l.id === 'esami')!;
+    expect(esami.isScript).toBeUndefined();
+    expect(esami.scriptContent).toBeUndefined();
+    expect(esami.url).toBe(UNIMIB_ESAMI_BASE_URL);
+    expect(esami.dynamicUrlRule).toBe('unimib_esami');
+
+    // unrelated user scripts are NOT touched by the Unimib migration
+    const bm = links.find(l => l.id === 'mybm')!;
+    expect(bm.isScript).toBe(true);
+
+    // flag persisted + migrated items persisted script-free (the unrelated
+    // user bookmarklet legitimately keeps its own scriptContent)
+    expect(localStorage.getItem('startpage_migrations')).toContain('migrated_v3_unimib_dynamic');
+    const persisted = JSON.parse(localStorage.getItem('startpage_custom_links')!) as { commands: LinkItem[] };
+    const persistedUnimib = persisted.commands.filter(l => l.id === 'unimib_orari' || l.id === 'esami');
+    for (const item of persistedUnimib) {
+      expect(item.scriptContent).toBeUndefined();
+      expect(item.isScript).toBeUndefined();
+    }
+
+    // idempotent: a reload leaves everything identical
+    const second = new DataStore();
+    expect(second.getLinks()).toEqual(links);
   });
 
   it('edits a link in place preserving its position in the category column', () => {
@@ -286,7 +359,11 @@ describe('DataStore Engine & Edge Cases', () => {
 
       expect(dataStore.importJson(hostile)).toBe(true);
       const orari = dataStore.getLinks().find(l => l.id === 'unimib_orari')!;
-      expect(orari.scriptContent).not.toContain('__d2Tampered');
+      // Unimib links are dynamic-only: the normalizer drops machinery entirely
+      expect(orari.scriptContent).toBeUndefined();
+      expect(orari.isScript).toBeUndefined();
+      expect(orari.url).toBe(UNIMIB_ORARI_BASE_URL);
+      expect(orari.dynamicUrlRule).toBe('unimib_orari');
       expect((globalThis as Record<string, unknown>).__d2Tampered).toBeUndefined();
     });
   });
