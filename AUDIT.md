@@ -247,7 +247,7 @@
   **Fix:** workflow minimo: `bun install --frozen-lockfile` → typecheck → test → build su PR/push dev. ✅ **Decisione utente:** niente CI (config-only). Item chiuso per scelta esplicita.
 
 - [x] ⚪ **`package.json` version `1.0.0` vs policy SemVer pre-release 0.x (gemini.md §2.7) e ultima release v0.3.0.** — Riallineare. ✅ Fatto (P5): bump `0.4.0`.
-- [ ] ⚪ **ActiveModal UX minore: doppio Escape (Modal + keyboardManager), terner drop_console rimuove i warn di produzione, README main con screenshot `assets/` non committato → immagine rotta** (viola §2.3).
+- [x] ⚪ **ActiveModal UX minore: doppio Escape (Modal + keyboardManager), terner drop_console rimuove i warn di produzione, README main con screenshot `assets/` non committato → immagine rotta** (viola §2.3). ✅ Verificato (P7/R3): **doppio Escape NON presente** — keyboardManager non gestisce affatto Escape (contratto esplicito, commento in keyboardManager.ts:50-51 + early-return modalActive); l'unica close-path è il listener di Modal (stopPropagation), mentre il keydown input di SearchModal chiama stopPropagation al target → tests/searchModal.test.tsx prova onClose chiamato esattamente 1 volta; aggiunto guard test in keyboardManager.test.ts (Esc con modal attiva → zero handler/preventDefault). Nessun refactor (codice già corretto da P2). **Terser confermato**: vite.config.ts `drop_console: ['log','debug','info']` → `console.warn`/`console.error` SOPRAVVIVONO in prod (verificato su dist build: `[ScriptConsent]`/`[ErrorBoundary]` warn presenti nel bundle). **README/screenshot main: ESCLUSO dal mio scope (fase release).**
 
 ---
 
