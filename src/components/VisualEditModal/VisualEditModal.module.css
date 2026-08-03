@@ -435,7 +435,7 @@
   transform: translateY(-1px);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599.98px) {
   .segmentedTabsWrapper {
     flex-direction: column;
   }

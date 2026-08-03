@@ -63,7 +63,7 @@
 }
 
 /* Keep the toast above the mobile bottom-nav pill */
-@media (max-width: 1023px) {
+@media (max-width: 1023.98px) {
   .toastHost {
     bottom: 5.5rem;
   }

@@ -289,8 +289,8 @@
 - [ ] 🟡 **Design tokens incompleti** — no spacing scale/elevation/semantic colors (success/danger hardcoded `#4ade80/#f87171`); token definiti e mai usati (`--bg-navbar`, `--accent-primary-hover`, `--accent-amber` — ambra hardcoded inline `#f59e0b` in ColumnGrid:421 e PreviewPanel:34); `--accent-gradient` statica slate non aggiornata da themeEngine → badge/bottoni restano indigo a prescindere dall'accento; radius hardcoded ovunque.
   **Fix:** completare tokenizzazione; themeEngine emette tutti i derivati.
 
-- [ ] 🟡 **Breakpoint incoerenti** — 599/600/601 e 1023/1024/1025 in file diversi: a 600px e 1024px due regimi coesistono.
-  **Fix:** scala unica condivisa.
+- [x] 🟡 **Breakpoint incoerenti** — 599/600/601 e 1023/1024/1025 in file diversi: a 600px e 1024px due regimi coesistono.
+  **Fix:** scala unica condivisa. ✅ Fatto (P7/R2): larghezze unificate in tutti i 9 CSS — mobile `(max-width: 599.98px)`, tablet `(min-width: 600px) and (max-width: 1023.98px)`, desktop `(min-width: 1024px)`, wide `(min-width: 1600px)` + companion `(max-width: 1599.98px)`: nessun pixel appartiene a due regimi; `max-height: 480px` (landscape modal) e pointer/hover queries invariati.
 
 - [ ] 🟡 **Densità griglia: 3 fonti di verità divergenti** — themeEngine ('normal' = `2.5rem 1.25rem`) vs ColumnGrid.module.css:4 (`5rem`) vs media query hardcoded → flash al primo paint.
   **Fix:** unica fonte (engine via CSS var).

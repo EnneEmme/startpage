@@ -7,7 +7,7 @@
 }
 
 /* Mobile Screens (< 600px): 1-2 columns */
-@media (max-width: 599px) {
+@media (max-width: 599.98px) {
   .gridContainer {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 3.5rem 0.75rem;
@@ -20,8 +20,8 @@
   }
 }
 
-/* Medium Screens / Tablets (600px - 1024px): 2-4 columns */
-@media (min-width: 600px) and (max-width: 1024px) {
+/* Medium Screens / Tablets (600px - 1023.98px): 2-4 columns */
+@media (min-width: 600px) and (max-width: 1023.98px) {
   .gridContainer {
     grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 175px), 1fr));
     gap: var(--grid-gap, 4.5rem 1.1rem);
@@ -34,8 +34,8 @@
   }
 }
 
-/* Laptop / Standard Desktop (1025px - 1599px): 4-6 columns */
-@media (min-width: 1025px) and (max-width: 1599px) {
+/* Laptop / Standard Desktop (1024px - 1599.98px): 4-6 columns */
+@media (min-width: 1024px) and (max-width: 1599.98px) {
   .gridContainer {
     grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 185px), 1fr));
     gap: var(--grid-gap, 5rem 1.25rem);
@@ -43,7 +43,7 @@
   }
 }
 
-/* Large Monitors & Ultrawide (> 1600px): 6-9 columns */
+/* Large Monitors & Ultrawide (>= 1600px): 6-9 columns */
 @media (min-width: 1600px) {
   .gridContainer {
     grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-width, 190px), 1fr));
@@ -235,7 +235,7 @@
 }
 
 /* Hide Scroll Down Cue on Tablet & Mobile when Floating Bottom Nav is present (< 1024px) */
-@media (max-width: 1023px) {
+@media (max-width: 1023.98px) {
   .pageScrollDownIndicator {
     display: none !important;
   }
