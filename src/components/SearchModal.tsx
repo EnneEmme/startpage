@@ -250,8 +250,6 @@ export const SearchModal = ({
       onClose={onClose}
       hideHeader={true}
       ariaLabel="Search links and commands"
-      className="fade-in-scale"
-      contentClassName={styles.searchContentOverrides}
       maxWidth="660px"
     >
       <div class={styles.searchModalInner}>

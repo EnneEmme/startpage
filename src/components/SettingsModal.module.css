@@ -1,94 +1,5 @@
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-modal-overlay, rgba(0, 0, 0, 0.7));
-  backdrop-filter: blur(16px);
-  z-index: var(--z-overlay);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1.5rem;
-}
-
-.modalContainer {
-  width: 100%;
-  max-width: 620px;
-  max-height: 88vh;
-  background: var(--bg-secondary, rgba(16, 16, 18, 0.95));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.modalHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.2rem 1.6rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.headerTitleGroup {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.headerIconBadge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--accent-highlight);
-}
-
 .headerIcon {
   color: var(--accent-highlight);
-}
-
-.modalTitle {
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.2;
-}
-
-.modalSubtitle {
-  font-size: 0.76rem;
-  color: var(--text-muted);
-}
-
-.closeBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  color: var(--text-muted);
-  transition: all var(--transition-fast);
-}
-
-.closeBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-}
-
-.modalContent {
-  padding: 1.5rem 1.6rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1.4rem;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Long-press gesture hint: only shown on devices without hover (touch),
@@ -108,94 +19,6 @@
   .touchHint {
     display: block;
   }
-}
-
-/* Live Interactive Preview Card Box */
-.previewBox {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 0.85rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.previewHeader {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.previewIcon {
-  color: var(--accent-highlight);
-}
-
-.previewTag {
-  margin-left: auto;
-  font-size: 0.72rem;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  padding: 0.1rem 0.45rem;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.previewCardBody {
-  width: 100%;
-}
-
-.previewColumnCard {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 0.6rem 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.previewColumnHeader {
-  font-family: var(--font-heading);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-bottom: 0.25rem;
-}
-
-.previewLinkRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.5rem;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-}
-
-.previewIconBox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.previewLinkTitle {
-  font-size: 0.84rem;
-  color: var(--text-primary);
-}
-
-.previewBadge {
-  margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 0.1rem 0.35rem;
-  border-radius: 6px;
-  border: 1px solid transparent;
 }
 
 /* Section Groups */
@@ -323,15 +146,6 @@
   transform: translateY(-1px);
 }
 
-.modalFooter {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 1rem 1.6rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(0, 0, 0, 0.2);
-}
-
 .saveBtn {
   padding: 0.6rem 1.35rem;
   border-radius: 12px;
@@ -349,17 +163,6 @@
 }
 
 @media (max-width: 600px) {
-  .overlay {
-    align-items: flex-end;
-    padding: 0;
-  }
-
-  .modalContainer {
-    max-width: 100%;
-    border-radius: 28px 28px 0 0;
-    max-height: 90vh;
-  }
-
   .colorPaletteGrid {
     grid-template-columns: repeat(3, 1fr);
   }
