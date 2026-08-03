@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DataStore, DEFAULT_CONFIG, sanitizeLinkItem } from '../src/engine/dataStore';
 import { rankStorage } from '../src/engine/rankStorage';
 import type { LinkItem } from '../src/types/startpage';
@@ -171,5 +171,123 @@ describe('DataStore Engine & Edge Cases', () => {
     expect(rankStorage.getRankData()['mail']!.clicks).toBe(2);
 
     rankStorage.clear();
+  });
+
+  describe('import hardening against stored-XSS scripts (D2)', () => {
+    it('strips isScript/scriptContent from imported items but keeps the web url', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      (globalThis as Record<string, unknown>).__d2Pwned = undefined;
+      const hostile = JSON.stringify({
+        commands: [{
+          id: 'evil1', title: 'Evil Blog', url: 'https://evil.example.com',
+          aliases: ['evil'], category: 'Dev',
+          isScript: true, scriptContent: 'globalThis.__d2Pwned = 1'
+        }]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      const imported = dataStore.getLinks().find(l => l.id === 'evil1');
+      expect(imported).toBeDefined();
+      expect(imported!.url).toBe('https://evil.example.com');
+      expect(imported!.isScript).toBeUndefined();
+      expect(imported!.scriptContent).toBeUndefined();
+      // No script machinery survived → nothing to execute (stored-XSS disarmed)
+      expect((globalThis as Record<string, unknown>).__d2Pwned).toBeUndefined();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Evil Blog'));
+      warnSpy.mockRestore();
+    });
+
+    it('discards imported items whose url is a javascript: bookmarklet', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const hostile = JSON.stringify({
+        commands: [
+          { id: 'evil2', title: 'AlertBomb', url: 'javascript:alert(1)', aliases: [], category: 'Tools' },
+          { id: 'good1', title: 'Good', url: 'https://good.example.com', aliases: [], category: 'Tools' }
+        ]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      const ids = dataStore.getLinks().map(l => l.id);
+      expect(ids).toContain('good1');
+      expect(ids).not.toContain('evil2');
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('AlertBomb'));
+      warnSpy.mockRestore();
+    });
+
+    it('handles mixed good/neutralizable/discardable payloads per-item', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const hostile = JSON.stringify({
+        commands: [
+          { id: 'good1', title: 'Good One', url: 'https://good.example.com', aliases: [], category: 'Tools' },
+          { id: 'good2', title: 'Good Two', url: 'https://good2.example.com', aliases: [], category: 'Tools' },
+          { id: 'strip1', title: 'StripMe', url: 'https://strip.example.com', aliases: [], category: 'Tools', scriptContent: 'alert(1)' },
+          { id: 'drop1', title: 'DropMe', url: 'javascript:alert(document.cookie)', aliases: [], category: 'Tools', isScript: true }
+        ]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      const links = dataStore.getLinks();
+      expect(links.map(l => l.id)).toEqual(['good1', 'good2', 'strip1']);
+      const stripped = links.find(l => l.id === 'strip1')!;
+      expect(stripped.scriptContent).toBeUndefined();
+      expect(stripped.url).toBe('https://strip.example.com');
+      warnSpy.mockRestore();
+    });
+
+    it('discards scripted items whose remaining url is not web-navigable', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const hostile = JSON.stringify({
+        commands: [{
+          id: 'evil3', title: 'FtpScript', url: 'ftp://files.example.com/x',
+          aliases: [], category: 'Tools', isScript: true, scriptContent: 'alert(1)'
+        }]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      expect(dataStore.getLinks().some(l => l.id === 'evil3')).toBe(false);
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('FtpScript'));
+      warnSpy.mockRestore();
+    });
+
+    it('load() from own localStorage stays permissive (trusted profile data)', () => {
+      localStorage.clear();
+      localStorage.setItem('startpage_custom_links', JSON.stringify({
+        commands: [{
+          id: 'my_bookmarklet', title: 'My Bookmarklet', url: 'javascript:alert(1)',
+          aliases: [], category: 'Tools', isScript: true, scriptContent: 'alert(1)'
+        }]
+      }));
+      localStorage.setItem('startpage_migrations', JSON.stringify({ v2_legacy_normalization: true }));
+
+      const store = new DataStore();
+      const kept = store.getLinks().find(l => l.id === 'my_bookmarklet');
+      expect(kept).toBeDefined();
+      expect(kept!.isScript).toBe(true);
+      expect(kept!.scriptContent).toBe('alert(1)');
+    });
+
+    it('export→import round-trip of the default profile keeps the Unimib links', () => {
+      const exported = dataStore.exportJson();
+      expect(dataStore.importJson(exported)).toBe(true);
+      const links = dataStore.getLinks();
+      expect(links.some(l => l.id === 'unimib_orari')).toBe(true);
+      expect(links.some(l => l.id === 'unimib_esami')).toBe(true);
+    });
+
+    it('a tampered Unimib-shaped item is re-canonicalized on import', () => {
+      const hostile = JSON.stringify({
+        commands: [{
+          id: 'unimib_orari', title: 'Orari', url: 'javascript:evil()',
+          aliases: ['orari'], category: 'School',
+          dynamicUrlRule: 'unimib_orari', isScript: true,
+          scriptContent: 'globalThis.__d2Tampered = 1'
+        }]
+      });
+
+      expect(dataStore.importJson(hostile)).toBe(true);
+      const orari = dataStore.getLinks().find(l => l.id === 'unimib_orari')!;
+      expect(orari.scriptContent).not.toContain('__d2Tampered');
+      expect((globalThis as Record<string, unknown>).__d2Tampered).toBeUndefined();
+    });
   });
 });

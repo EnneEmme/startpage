@@ -215,6 +215,79 @@ const sanitizeCommands = (raw: unknown, source: string): LinkItem[] => {
 };
 
 /**
+ * Import hardening (SECURITY): imported JSON is UNTRUSTED data — backups can
+ * come from anywhere. Script machinery is stripped from every imported item:
+ * `isScript`/`scriptContent` are removed, and an item whose url is a
+ * `javascript:` bookmarklet is discarded entirely (a scriptless javascript:
+ * url has no legitimate purpose and would re-arm stored XSS). An item
+ * survives only if its remaining url is web-navigable (http(s):// or
+ * root-relative "/").
+ *
+ * load() from localStorage stays permissive BY DESIGN: that is the profile's
+ * OWN trusted data, written by this same app.
+ */
+const isWebNavigableUrl = (url: string): boolean => /^https?:\/\//i.test(url.trim()) || url.trim().startsWith('/');
+
+/**
+ * Temporary exemption: the two built-in Unimib links are still shipped as
+ * first-party scripts (same identifiers as normalizeLegacyItem) — exempting
+ * them keeps export→import round-trips of the DEFAULT profile lossless, and
+ * is safe because normalizeLegacyItem (run on every import, before this
+ * neutralizer) force-restores the canonical script over any tampered body.
+ * Removed once the Unimib defaults become dynamic-only links (v3 migration).
+ */
+const isBuiltinUnimibScriptItem = (item: LinkItem): boolean => {
+  if (item.dynamicUrlRule === 'unimib_orari') {
+    return item.id === 'unimib_orari' || item.id === 'orari' || item.title === 'Orari';
+  }
+  if (item.dynamicUrlRule === 'unimib_esami') {
+    return item.id === 'unimib_esami' || item.id === 'esami' || item.title === 'Esami';
+  }
+  return false;
+};
+
+const neutralizeImportedScript = (item: LinkItem): LinkItem | null => {
+  if (isBuiltinUnimibScriptItem(item)) return item;
+
+  const hasScriptFlag = item.isScript === true;
+  const hasScriptContent = typeof item.scriptContent === 'string' && item.scriptContent.trim().length > 0;
+  const hasJavascriptUrl = item.url.trim().toLowerCase().startsWith('javascript:');
+  if (!hasScriptFlag && !hasScriptContent && !hasJavascriptUrl) return item;
+
+  if (!isWebNavigableUrl(item.url)) {
+    console.warn(`[DataStore] Import: discarded scripted link "${item.title}" (no navigable url left after stripping javascript:)`);
+    return null;
+  }
+
+  const cleaned: LinkItem = { ...item };
+  delete cleaned.isScript;
+  delete cleaned.scriptContent;
+  console.warn(`[DataStore] Import: neutralized scripted link "${item.title}" (script machinery stripped, url kept)`);
+  return cleaned;
+};
+
+/**
+ * importJson pipeline step (runs AFTER normalizeLegacyItem): strips script
+ * machinery from the untrusted payload, counting and logging discards.
+ */
+const neutralizeImportedCommands = (items: LinkItem[]): LinkItem[] => {
+  const clean: LinkItem[] = [];
+  let discarded = 0;
+  for (const item of items) {
+    const neutralized = neutralizeImportedScript(item);
+    if (neutralized) {
+      clean.push(neutralized);
+    } else {
+      discarded++;
+    }
+  }
+  if (discarded > 0) {
+    console.warn(`[DataStore] Discarded ${discarded} scripted link(s) from import`);
+  }
+  return clean;
+};
+
+/**
  * One-shot legacy normalization (migration v2):
  * - merges the old 'LLMs 2'/'LLMs' categories into 'AI & LLMs'
  * - normalizes the built-in Unimib script links (legacy items identified by
@@ -498,12 +571,15 @@ export class DataStore {
         this.config = { commands: sanitizeCommands(parsed.commands, 'import') };
         // Old backups may contain legacy categories/scripts: normalize on import
         this.config.commands.forEach(normalizeLegacyItem);
+        // Untrusted payload: strip script machinery (store-XSS hardening)
+        this.config.commands = neutralizeImportedCommands(this.config.commands);
         applyRanks(parsed.ranks);
         this.save();
         return true;
       } else if (parsed && parsed.config && Array.isArray(parsed.config.commands)) {
         this.config = { commands: sanitizeCommands(parsed.config.commands, 'import') };
         this.config.commands.forEach(normalizeLegacyItem);
+        this.config.commands = neutralizeImportedCommands(this.config.commands);
         if (Array.isArray(parsed.categoryOrder)) {
           this.categoryOrder = parsed.categoryOrder.filter((c: unknown): c is string => typeof c === 'string');
         }
