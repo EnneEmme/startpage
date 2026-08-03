@@ -12,7 +12,7 @@ const silenceNavigation = () => {
 
 describe('ColumnGrid Component', () => {
   beforeEach(() => {
-    localStorage.clear();
+    // localStorage reset lives in the global tests/setup.ts
     dataStore.resetToDefault();
     rankStorage.clear();
     silenceNavigation();
@@ -62,6 +62,24 @@ describe('ColumnGrid Component', () => {
 
     expect(dataStore.getCategories().some(c => c.name === 'Social Networks')).toBe(true);
     expect(queryByDisplayValue('Social Networks')).toBeNull();
+  });
+
+  it('double-click rename: Escape cancels without touching the dataStore', () => {
+    const { getByText, getByDisplayValue, queryByDisplayValue } = render(
+      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />
+    );
+
+    const header = getByText('Social').closest('div') as HTMLElement;
+    fireEvent(header, createEvent.dblClick(header));
+
+    const input = getByDisplayValue('Social');
+    fireEvent.input(input, { target: { value: 'Discarded Name' } });
+    fireEvent.keyDown(input, { key: 'Escape' });
+
+    // input unmounted, store unchanged
+    expect(queryByDisplayValue('Discarded Name')).toBeNull();
+    expect(dataStore.getCategories().some(c => c.name === 'Social')).toBe(true);
+    expect(dataStore.getCategories().some(c => c.name === 'Discarded Name')).toBe(false);
   });
 
   it('right-click on a card opens the context menu for that link', () => {

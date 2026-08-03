@@ -31,7 +31,8 @@ test('calls onClose when close button is clicked', () => {
     </Modal>
   );
 
-  const closeButton = screen.getByTitle('Close (Esc)');
+  // Selezione per nome accessibile (aria-label="Close"), non per title copy
+  const closeButton = screen.getByRole('button', { name: 'Close' });
   fireEvent.click(closeButton);
 
   expect(handleClose).toHaveBeenCalledTimes(1);

@@ -17,7 +17,7 @@ const sampleLink: LinkItem = {
 
 describe('Custom Hooks', () => {
   it('useModals works', () => {
-    let result: any;
+    let result!: ReturnType<typeof useModals>;
     const TestComponent = () => {
       result = useModals();
       return null;
@@ -28,7 +28,7 @@ describe('Custom Hooks', () => {
   });
 
   it('useContextMenu opens/closes with x/y/link payload', () => {
-    let result: any;
+    let result!: ReturnType<typeof useContextMenu>;
     const TestComponent = () => {
       result = useContextMenu();
       return null;
@@ -44,7 +44,7 @@ describe('Custom Hooks', () => {
   });
 
   it('useContextMenu opens via the startpage:open-context-menu custom event', () => {
-    let result: any;
+    let result!: ReturnType<typeof useContextMenu>;
     const TestComponent = () => {
       result = useContextMenu();
       return null;
@@ -84,7 +84,7 @@ describe('Custom Hooks', () => {
   });
 
   it('useDragAndDrop tracks dragged link state', () => {
-    let result: any;
+    let result!: ReturnType<typeof useDragAndDrop>;
     const TestComponent = () => {
       result = useDragAndDrop([], '.linksList');
       return null;
@@ -96,7 +96,7 @@ describe('Custom Hooks', () => {
   });
 
   it('useColumnScrollMasks starts with empty masks', () => {
-    let result: any;
+    let result!: ReturnType<typeof useColumnScrollMasks>;
     const TestComponent = () => {
       result = useColumnScrollMasks(0);
       return null;
@@ -106,7 +106,7 @@ describe('Custom Hooks', () => {
   });
 
   it('useColumnScrollMasks registerList is idempotent (no infinite re-render loop)', () => {
-    let result: any;
+    let result!: ReturnType<typeof useColumnScrollMasks>;
     const el = document.createElement('div');
     const TestComponent = () => {
       result = useColumnScrollMasks(1);
@@ -124,7 +124,7 @@ describe('Custom Hooks', () => {
   });
 
   it('useKeyboardShortcuts works', () => {
-    let result: any;
+    let result!: ReturnType<typeof useKeyboardShortcuts>;
     const handlers = { onOpenSearch: vi.fn() };
     const TestComponent = () => {
       result = useKeyboardShortcuts(handlers);

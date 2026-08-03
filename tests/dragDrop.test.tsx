@@ -14,7 +14,8 @@ import { useDragAndDrop, cancelDragAndDropTimers } from '../src/hooks/useDragAnd
 
 describe('Drag and Drop & Category Data Helpers', () => {
   beforeEach(() => {
-    localStorage.clear();
+    // localStorage is already reset by the global tests/setup.ts; here we only
+    // reset the engine singleton state.
     dataStore.resetToDefault();
   });
 
@@ -133,7 +134,8 @@ describe('dragStore signals (hover state outside component state)', () => {
 
   it('hook drop flow: moves the link, clears hover, auto-clears justDropped after 350ms', () => {
     vi.useFakeTimers();
-    localStorage.clear();
+    // localStorage is already reset by the global tests/setup.ts; here we only
+    // reset the engine singleton state.
     dataStore.resetToDefault();
 
     let result: ReturnType<typeof useDragAndDrop> | undefined;
@@ -165,7 +167,8 @@ describe('dragStore signals (hover state outside component state)', () => {
 
   it('hook drop flow: a second drop resets the pending justDropped timer (no early clear)', () => {
     vi.useFakeTimers();
-    localStorage.clear();
+    // localStorage is already reset by the global tests/setup.ts; here we only
+    // reset the engine singleton state.
     dataStore.resetToDefault();
 
     let result: ReturnType<typeof useDragAndDrop> | undefined;
@@ -199,7 +202,8 @@ describe('dragStore signals (hover state outside component state)', () => {
 
   it('cancelDragAndDropTimers prevents late justDropped reset after teardown', () => {
     vi.useFakeTimers();
-    localStorage.clear();
+    // localStorage is already reset by the global tests/setup.ts; here we only
+    // reset the engine singleton state.
     dataStore.resetToDefault();
 
     let result: ReturnType<typeof useDragAndDrop> | undefined;

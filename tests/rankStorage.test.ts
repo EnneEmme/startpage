@@ -5,7 +5,7 @@ describe('RankStorage Engine & Edge Cases', () => {
   let rankStorage: RankStorage;
 
   beforeEach(() => {
-    localStorage.clear();
+    // localStorage reset lives in the global tests/setup.ts
     rankStorage = new RankStorage();
     rankStorage.clear();
   });

@@ -29,11 +29,12 @@ describe('SearchModal Component', () => {
   });
 
   it('renders input, results, and footer hints when open', () => {
-    const { getByPlaceholderText, getByText } = render(
+    const { getByText } = render(
       <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
     );
 
-    const input = getByPlaceholderText(/Type link name/i);
+    // Combobox has a stable accessible name: never select by placeholder copy
+    const input = screen.getByRole('combobox', { name: 'Search links, aliases, or commands' });
     expect(input).not.toBeNull();
     expect(getByText('navigate')).not.toBeNull();
     expect(getByText('complete')).not.toBeNull();
@@ -42,11 +43,11 @@ describe('SearchModal Component', () => {
   });
 
   it('filters results and triggers Tab completion', () => {
-    const { getByPlaceholderText, getByText } = render(
+    const { getByText } = render(
       <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
     );
 
-    const input = getByPlaceholderText(/Type link name/i) as HTMLInputElement;
+    const input = screen.getByRole('combobox') as HTMLInputElement;
     fireEvent.input(input, { target: { value: 'Git' } });
 
     expect(getByText('GitHub')).not.toBeNull();
@@ -62,36 +63,37 @@ describe('SearchModal Component', () => {
 
   it('triggers onClose when Escape is pressed', () => {
     const onClose = vi.fn();
-    const { getByPlaceholderText } = render(
+    render(
       <SearchModal isOpen={true} links={mockLinks} onClose={onClose} />
     );
 
-    const input = getByPlaceholderText(/Type link name/i);
+    const input = screen.getByRole('combobox');
     fireEvent.keyDown(input, { key: 'Escape' });
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('shows command palette badge for engine prefixes', () => {
-    const { getByPlaceholderText, getAllByText } = render(
+    const { getAllByText } = render(
       <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
     );
 
-    const input = getByPlaceholderText(/Type link name/i);
+    const input = screen.getByRole('combobox');
     fireEvent.input(input, { target: { value: 'g test query' } });
 
     expect(getAllByText(/Google Search/i)[0]).not.toBeNull();
   });
 
   it('renders clear button when query is present and clears text on click', () => {
-    const { getByPlaceholderText, getByTitle } = render(
+    render(
       <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
     );
 
-    const input = getByPlaceholderText(/Type link name/i) as HTMLInputElement;
+    const input = screen.getByRole('combobox') as HTMLInputElement;
     fireEvent.input(input, { target: { value: 'Test' } });
 
-    const clearBtn = getByTitle('Clear search');
+    // Accessible name comes from aria-label, not the tooltip
+    const clearBtn = screen.getByRole('button', { name: 'Clear search' });
     expect(clearBtn).not.toBeNull();
 
     fireEvent.click(clearBtn);
@@ -99,11 +101,11 @@ describe('SearchModal Component', () => {
   });
 
   it('switches to site search mode when Cmd+Enter is pressed on a result row', () => {
-    const { getByPlaceholderText, getByText } = render(
+    const { getByText } = render(
       <SearchModal isOpen={true} links={mockLinks} onClose={vi.fn()} />
     );
 
-    const input = getByPlaceholderText(/Type link name/i) as HTMLInputElement;
+    const input = screen.getByRole('combobox') as HTMLInputElement;
     fireEvent.input(input, { target: { value: 'YouTube' } });
 
     expect(getByText('YouTube')).not.toBeNull();

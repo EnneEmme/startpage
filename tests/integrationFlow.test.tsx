@@ -6,7 +6,7 @@ import { rankStorage } from '../src/engine/rankStorage';
 
 describe('App End-to-End Integration Flow', () => {
   beforeEach(() => {
-    localStorage.clear();
+    // localStorage reset lives in the global tests/setup.ts
     dataStore.resetToDefault();
     rankStorage.clear();
     window.scrollTo = vi.fn();
@@ -39,17 +39,19 @@ describe('App End-to-End Integration Flow', () => {
   });
 
   it('opens search overlay when clicking search button in header', () => {
-    const { getAllByTitle, getByPlaceholderText } = render(<App />);
-    const searchBtn = getAllByTitle('Fuzzy Search (Press any key)')[0]!;
+    const { getAllByRole, getByRole } = render(<App />);
+    // Header ActionToolbar is the first of the two toolbar instances;
+    // selection is by accessible name (aria-label), not by title copy.
+    const searchBtn = getAllByRole('button', { name: 'Fuzzy Search (Press any key)' })[0]!;
     fireEvent.click(searchBtn);
 
-    const input = getByPlaceholderText('Type link name, alias, or command (e.g. g meteo)...');
+    const input = getByRole('combobox', { name: 'Search links, aliases, or commands' });
     expect(input).not.toBeNull();
   });
 
   it('opens keyboard cheatsheet modal when clicking help button', () => {
-    const { baseElement, getAllByTitle } = render(<App />);
-    const helpBtn = getAllByTitle('Shortcuts Cheatsheet (? or F1)')[0]!;
+    const { baseElement, getAllByRole } = render(<App />);
+    const helpBtn = getAllByRole('button', { name: 'Shortcuts Cheatsheet (? or F1)' })[0]!;
     fireEvent.click(helpBtn);
 
     // Modals portal to document.body (baseElement)
@@ -57,14 +59,15 @@ describe('App End-to-End Integration Flow', () => {
   });
 
   it('opens visual edit modal and adds a new link successfully', () => {
-    const { baseElement, getAllByTitle, getByPlaceholderText, getByText } = render(<App />);
-    const editBtn = getAllByTitle('Add or Edit Links (Shift+N)')[0]!;
+    const { baseElement, getAllByRole, getByLabelText, getByText } = render(<App />);
+    const editBtn = getAllByRole('button', { name: 'Add or Edit Links (Shift+N)' })[0]!;
     fireEvent.click(editBtn);
 
     expect(baseElement.textContent).toContain('Add New Link');
 
-    const titleInput = getByPlaceholderText(/e.g. GitHub/i);
-    const urlInput = getByPlaceholderText('e.g. https://www.youtube.com');
+    // Fields expose real <label> elements: select by label, never by placeholder
+    const titleInput = getByLabelText('Link Title');
+    const urlInput = getByLabelText('Website URL');
 
     fireEvent.input(titleInput, { target: { value: 'My Test Link' } });
     fireEvent.input(urlInput, { target: { value: 'https://testlink.com' } });
