@@ -4,7 +4,7 @@
 > Ogni voce è una checkbox: spuntala quando il fix è completato e verificato.
 > **Regole (da gemini.md):** dopo ogni fix → `bun run test` verde, aggiorna `structure.md`/`TODO.md` se cambiano file, commit Conventional Commits.
 >
-> **Stato attuale misurato (2026-08-03, post-merge Fase P3+P4 su dev):** 24 file test / **173 test PASS** · `tsc --noEmit` = **0 errori** · `dist/index.html` = **267 KB** (~79 KB gzip) · P0, P1, P2 completati · **P3 (a11y/UX) e P4 (performance) completati** (branch A `feat/audit-p3-ux-a11y` + branch B `perf/audit-p4-optimization`, mergiati con wiring post-merge `onAddLink`): **67/99 spuntati, 32 aperti** (quasi tutti in P5 tooling/test, P6 sicurezza, P7 igiene).
+> **Stato attuale misurato (2026-08-03, post-merge Fase P3+P4+P5+P6 su dev):** 29 file test / **231 test PASS** · `tsc --noEmit` = **0 errori** · `bun run lint` = 0 · `dist/index.html` = **268.58 KB** (~79.85 KB gzip) · budget build 350 KB attivo in `productionBuild.test.ts` · P0-P4 completati · **P5 (build/tooling/test) e P6 (sicurezza) completati** (branch `chore/audit-p5-tooling` + `sec/audit-p6-security`, mergiati su dev): **spuntati P0-P6, aperti gli item P7 (igiene repo) + performance residuali in P4.**
 > **Fase P3+P4 (2026-08-03):** Passo 0: `dataStore.addCategory()` + `appActions.addCategory()` (registrazione categoria in categoryOrder, seed ordine implicito se vuoto). Branch A (11 item a11y): combobox SearchModal, accessible-names, label htmlFor, ContextMenu ARIA+Shift+F10, autofocus unificato, VisualEditModal draft/tabs/dirty-form, modal landscape, touch hints, noscript/h1/skip-link/lang-EN/⌘/setTimeout, JumpBar focus-mask. Branch B (5 item perf): drag hover → signals `dragStore`, rankStorage debounce+flush, memo `resolveDynamicUrl`, font system stack (rimosso Google Fonts), empty states + timer cleanup + dispatch Shift+F10. Decisioni bloccate dall'utente: UI inglese, system fonts, debounce rank con flush.
 
 **Legenda severità:** 🔴 critica · 🟠 alta · 🟡 media · ⚪ bassa
@@ -209,6 +209,9 @@
 - [x] ⚪ **Font Google via `@import` render-blocking** — variables.css:5: fallisce offline (viola spirito standalone §1.2), FOIT, privacy.
   **Fix:** self-host woff2 inline o system stack dichiarato. ✅ Fatto (B4): `@import` Google Fonts rimosso → system stack dichiarato su `--font-body`/`--font-heading`; zero request render-blocking esterne.
 
+- [ ] 🟠 **Bundle: lucide-preact ancora dominante (123 KB raw / 75.4 KB gz)** — dal visualizer `dist/stats.html` (misurato 2026-08-03 su dev post-P6): `src` 190 KB raw / 54.9 KB gz, **lucide 123 KB raw / 75.4 KB gz**, node_modules(altri) 57.2 KB raw / 15.7 KB gz, preact 21 KB raw / 8.8 KB gz. Il primo fix P0 (registry statico con named import) ha abbassato il bundle a ~268 KB, ma lucide resta il peso maggiore dopo `src` — segnale di codice duplicato nei componenti importati e/o import non tree-shaken. Dist totale 268.58 KB (79.85 KB gz) vs budget 350 KB: margine ~82 KB.
+  **Fix (DA FARE, non ancora implementato):** rivedere il registry icone → import named per singola icona (niente `import *` residuo), verificare `sideEffects:false`/`exports` di lucide-preact nel bundler, valutare sostituzione con componenti SVG inline generati o `unplugin-icons`. Verifica: rebuild → `dist/stats.html` → atteso lucide ≪ 75 KB gz. Target complessivo: ~200-250 KB raw. (*Registrato come item di follow-up — NON implementato in questa fase, come richiesto dall'utente.*)
+
 ---
 
 ## P5 — BUILD, TOOLING & TEST
@@ -219,47 +222,47 @@
 - [x] 🟠 **Script `test` fragile** — `package.json:10`: path hardcoded `./node_modules/vitest/vitest.mjs`. Mancano script `typecheck`, `coverage`, `lint`.
   **Fix:** `"test": "bun run vitest run"` + script mancanti.
 
-- [ ] 🟠 **Nessun ESLint/Prettier/Husky** — TODO.md lo dichiara "✅ Completato": falso.
-  **Fix:** configurare (o de-flaggare TODO) + nello stesso passo cancellare i ~20 `import { h }` morti e uniformare stile import.
+- [x] 🟠 **Nessun ESLint/Prettier/Husky** — TODO.md lo dichiara "✅ Completato": falso.
+  **Fix:** configurare (o de-flaggare TODO) + nello stesso passo cancellare i ~20 `import { h }` morti e uniformare stile import. ✅ Fatto (P5): ESLint 9 flat config (`eslint.config.mjs`, typescript-eslint) + Prettier (`.prettierrc`/`.prettierignore`), script `lint` in package.json; import `{ h }` morti rimossi. **Decisione utente:** niente Husky né CI (config-only).
 
-- [ ] 🟠 **Coverage test: buchi su feature che mutano dati** — zero test per: themeEngine, SettingsModal, ImportExportModal, LinkIcon (catena fallback), ColumnGrid (card/rename/context), HeaderClock/MobileBottomNav handler, DnD reale (dragDrop.test.ts testa solo dataStore!). I test istanziano modali solo con `isOpen=true` (bug hooks invisibile).
-  **Fix:** suite dedicate in ordine: themeEngine → ImportExportModal → click card ColumnGrid → DnD con fireEvent → toggle modali.
+- [x] 🟠 **Coverage test: buchi su feature che mutano dati** — zero test per: themeEngine, SettingsModal, ImportExportModal, LinkIcon (catena fallback), ColumnGrid (card/rename/context), HeaderClock/MobileBottomNav handler, DnD reale (dragDrop.test.ts testa solo dataStore!). I test istanziano modali solo con `isOpen=true` (bug hooks invisibile).
+  **Fix:** suite dedicate in ordine: themeEngine → ImportExportModal → click card ColumnGrid → DnD con fireEvent → toggle modali. ✅ Fatto (P5): nuove suite `themeEngine`, `settingsModal`, `importExportModal`, `linkIcon` (catena fallback provider), decoupling selectors in UI/integrationFlow/searchModal/modalBase, setup globale `tests/setup.ts`; 231 test totali.
 
-- [ ] 🟡 **`productionBuild.test.ts` rompe checkout fresco** — legge `dist/index.html` (gitignored) → rosso finché non buildi; soglia 1MB inutile (13× il budget); check `console.log` tautologico con drop_console.
-  **Fix:** `it.skipIf(!fs.existsSync(...))` o build nel test; budget realistico (~350 KB post-fix lucide).
+- [x] 🟡 **`productionBuild.test.ts` rompe checkout fresco** — legge `dist/index.html` (gitignored) → rosso finché non buildi; soglia 1MB inutile (13× il budget); check `console.log` tautologico con drop_console.
+  **Fix:** `it.skipIf(!fs.existsSync(...))` o build nel test; budget realistico (~350 KB post-fix lucide). ✅ Fatto (P5): `skipIf` senza build+fs, budget 350 KB.
 
-- [ ] 🟡 **`vite.config.ts`: base non impostata + warning soppressi** — manca `base: './'` (contratto file://+GitHub Pages §1.2/§2.6 fragile per risorse future); `chunkSizeWarningLimit: 100000000` e `assetsInlineLimit: 100000000` hanno nascosto la regressione bundle.
-  **Fix:** `base: './'`; rimuovere assetsInlineLimit; chunk warning a 300 KB.
+- [x] 🟡 **`vite.config.ts`: base non impostata + warning soppressi** — manca `base: './'` (contratto file://+GitHub Pages §1.2/§2.6 fragile per risorse future); `chunkSizeWarningLimit: 100000000` e `assetsInlineLimit: 100000000` hanno nascosto la regressione bundle.
+  **Fix:** `base: './'`; rimuovere assetsInlineLimit; chunk warning a 300 KB. ✅ Fatto (P5): `base:'./'`, terser `drop_console:['log','debug','info']`, chunk warning rimosso.
 
-- [ ] 🟡 **`stats.html` (981 KB) tracciato in git, rigenerato a ogni build; visualizer apre browser; gzipSize assente nel report.**
-  **Fix:** `visualizer({ filename:'dist/stats.html', gzipSize:true, open:false })` + `.gitignore`.
+- [x] 🟡 **`stats.html` (981 KB) tracciato in git, rigenerato a ogni build; visualizer apre browser; gzipSize assente nel report.**
+  **Fix:** `visualizer({ filename:'dist/stats.html', gzipSize:true, open:false })` + `.gitignore`. ✅ Fatto (P5): visualizer gzipSize+open:false su `dist/stats.html`, aggiunto a `.gitignore`.
 
 - [ ] 🟡 **Confusione root `index.html` dev vs artifact produzione** — `structure.md:11` documenta la root `index.html` come "production bundle", ma su `dev` è il template Vite con `<script src="/src/main.tsx">`. L'artifact vero vive solo in `dist/` (gitignored) e su `main` squashed. Rischio deploy accidentale del file dev.
-  **Fix:** chiarire in structure.md il doppio ruolo; artifact solo su main.
+  **Fix:** chiarire in structure.md il doppio ruolo; artifact solo su main. ⏳ Parziale: l'artifact vive solo in `dist/` da `base:'./'` (P5); il chiarimento testuale in structure.md resta in P7.
 
-- [ ] 🟡 **Test fragili/illusionistici** — `accessibility.test.tsx` legge stringhe CSS da disco (nessun comportamento); `reorderModal.test.tsx:39-44` con `if(length>1)` = falso positivo garantito; assert sul copy EN (`getByTitle(...)`) in uiComponents/integrationFlow; `confirm` mock con restore manuale (contextMenu.test.tsx:60); singleton engine non resettati uniformemente.
-  **Fix:** test su ruoli/ARIA reali (ruolo dialog di Modal esiste), asserzioni incondizionate, `within()`, setupFiles con reset globale.
+- [x] 🟡 **Test fragili/illusionistici** — `accessibility.test.tsx` legge stringhe CSS da disco (nessun comportamento); `reorderModal.test.tsx:39-44` con `if(length>1)` = falso positivo garantito; assert sul copy EN (`getByTitle(...)`) in uiComponents/integrationFlow; `confirm` mock con restore manuale (contextMenu.test.tsx:60); singleton engine non resettati uniformemente.
+  **Fix:** test su ruoli/ARIA reali (ruolo dialog di Modal esiste), asserzioni incondizionate, `within()`, setupFiles con reset globale. ✅ Fatto (P5): riscrittura `accessibility.test.tsx` senza `fs.readFileSync`, `tests/setup.ts` globale, assert su ruoli reali.
 
 - [x] 🟡 **Nessuna CI** — `.github/workflows/` assente: nessun gate su install/test/typecheck/build (viola spirito zero-regression §3).
-  **Fix:** workflow minimo: `bun install --frozen-lockfile` → typecheck → test → build su PR/push dev.
+  **Fix:** workflow minimo: `bun install --frozen-lockfile` → typecheck → test → build su PR/push dev. ✅ **Decisione utente:** niente CI (config-only). Item chiuso per scelta esplicita.
 
-- [ ] ⚪ **`package.json` version `1.0.0` vs policy SemVer pre-release 0.x (gemini.md §2.7) e ultima release v0.3.0.** — Riallineare.
+- [x] ⚪ **`package.json` version `1.0.0` vs policy SemVer pre-release 0.x (gemini.md §2.7) e ultima release v0.3.0.** — Riallineare. ✅ Fatto (P5): bump `0.4.0`.
 - [ ] ⚪ **ActiveModal UX minore: doppio Escape (Modal + keyboardManager), terner drop_console rimuove i warn di produzione, README main con screenshot `assets/` non committato → immagine rotta** (viola §2.3).
 
 ---
 
 ## P6 — SICUREZZA
 
-- [ ] 🟠 **`new Function` su dati non fidati = stored XSS via import** — linkExecutor.ts:57-66 esegue scriptContent; `importJson` (dataStore.ts:356-373) valida solo `Array.isArray` → JSON di "backup" malevolo inietta bookmarklet persistenti. Fallback `window.location.href='javascript:...'` (riga 62) pericoloso e rotto.
-  **Fix:** eliminare fallback `javascript:`; schema validation per-item su import (flaggare `isScript` non richiesti); conferma utente al primo run di script non builtin; documentare trust-model in gemini.md.
+- [x] 🟠 **`new Function` su dati non fidati = stored XSS via import** — linkExecutor.ts:57-66 esegue scriptContent; `importJson` (dataStore.ts:356-373) valida solo `Array.isArray` → JSON di "backup" malevolo inietta bookmarklet persistenti. Fallback `window.location.href='javascript:...'` (riga 62) pericoloso e rotto.
+  **Fix:** eliminare fallback `javascript:`; schema validation per-item su import (flaggare `isScript` non richiesti); conferma utente al primo run di script non builtin; documentare trust-model in gemini.md. ✅ Fatto (P6): `linkExecutor` senza fallback `javascript:`; `importJson` hardenato (antisiss); `scriptConsent.ts` (consenso per-hash script non builtin, conferma al primo run); trust-model in gemini.md §5.
 
-- [ ] 🟡 **Script Unimib duplicati e offuscati** — ORARI_SCRIPT/ESAMI_SCRIPT (dataStore.ts:11-37) duplicano dynamicEvaluator.ts:20-31 con anno `2025` hardcoded in entrambi → rottura silenziosa a settembre.
-  **Fix:** single source of truth (generare scriptContent da dynamicEvaluator).
+- [x] 🟡 **Script Unimib duplicati e offuscati** — ORARI_SCRIPT/ESAMI_SCRIPT (dataStore.ts:11-37) duplicano dynamicEvaluator.ts:20-31 con anno `2025` hardcoded in entrambi → rottura silenziosa a settembre.
+  **Fix:** single source of truth (generare scriptContent da dynamicEvaluator). ✅ Fatto (P6): Unimib single-source con anno accademico da dynamicEvaluator.
 
-- [ ] 🟡 **`Buffer` in bundle browser + `data:` non validato** — iconResolver.ts:98 (`Buffer.from` = ReferenceError se btoa mancasse); nessuna whitelist MIME su `data:` iconSpec.
-  **Fix:** rimuovere ramo Buffer; accettare solo `data:image/`.
+- [x] 🟡 **`Buffer` in bundle browser + `data:` non validato** — iconResolver.ts:98 (`Buffer.from` = ReferenceError se btoa mancasse); nessuna whitelist MIME su `data:` iconSpec.
+  **Fix:** rimuovere ramo Buffer; accettare solo `data:image/`. ✅ Fatto (P6): whitelist `data:image/*`, ramo Buffer rimosso.
 
-- [ ] ⚪ **No-CSP by design (single-file)** — da documentare nel README come trust-model consapevole, insieme ai provider favicon remoti (privacy).
+- [x] ⚪ **No-CSP by design (single-file)** — da documentare nel README come trust-model consapevole, insieme ai provider favicon remoti (privacy). ✅ Fatto (P6): trust-model documentato in gemini.md §5 (limiti no-CSP + provider favicon remoti).
 
 ---
 
