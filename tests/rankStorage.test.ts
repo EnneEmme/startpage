@@ -134,11 +134,16 @@ describe('RankStorage Engine & Edge Cases', () => {
   it('importRankData persists after the debounce window', () => {
     vi.useFakeTimers();
 
-    rankStorage.importRankData({ mail: { linkId: 'mail', clicks: 3, lastUsedTimestamp: Date.now() } });
+    rankStorage.importRankData({
+      mail: { linkId: 'mail', clicks: 3, lastUsedTimestamp: Date.now() },
+    });
     expect(localStorage.getItem('startpage_ranks')).toBe(null);
 
     vi.advanceTimersByTime(RANK_SAVE_DEBOUNCE_MS);
-    const stored = JSON.parse(localStorage.getItem('startpage_ranks')!) as Record<string, { clicks: number }>;
+    const stored = JSON.parse(localStorage.getItem('startpage_ranks')!) as Record<
+      string,
+      { clicks: number }
+    >;
     expect(stored['mail']!.clicks).toBe(3);
   });
 });

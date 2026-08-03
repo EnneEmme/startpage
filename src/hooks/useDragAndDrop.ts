@@ -6,7 +6,7 @@ import {
   dragOverLinkIdSignal,
   dropPositionSignal,
   justDroppedLinkIdSignal,
-  dragStore
+  dragStore,
 } from '../stores/dragStore';
 import type { LinkItem, CategoryGroup } from '../types/startpage';
 
@@ -33,7 +33,10 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
     dragStore.setDraggedCategoryName(categoryName);
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'CATEGORY', name: categoryName }));
+      e.dataTransfer.setData(
+        'text/plain',
+        JSON.stringify({ type: 'CATEGORY', name: categoryName }),
+      );
     }
   };
 
@@ -85,7 +88,9 @@ export function useDragAndDrop(categories: CategoryGroup[], linksListSelector: s
     dragStore.setDragOverCategory(categoryName);
 
     // Auto-scroll the column when dragging near its top/bottom edge
-    const listContainer = (e.currentTarget as HTMLElement).closest(linksListSelector) as HTMLDivElement | null;
+    const listContainer = (e.currentTarget as HTMLElement).closest(
+      linksListSelector,
+    ) as HTMLDivElement | null;
     if (listContainer) {
       const containerRect = listContainer.getBoundingClientRect();
       const relativePointerY = e.clientY - containerRect.top;

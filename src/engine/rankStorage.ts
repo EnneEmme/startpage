@@ -9,12 +9,24 @@ const STORAGE_KEY = 'startpage_ranks';
 
 class MemoryStorage implements Storage {
   private store: Record<string, string> = {};
-  get length() { return Object.keys(this.store).length; }
-  clear() { this.store = {}; }
-  getItem(key: string) { return this.store[key] ?? null; }
-  key(index: number) { return Object.keys(this.store)[index] ?? null; }
-  removeItem(key: string) { delete this.store[key]; }
-  setItem(key: string, value: string) { this.store[key] = String(value); }
+  get length() {
+    return Object.keys(this.store).length;
+  }
+  clear() {
+    this.store = {};
+  }
+  getItem(key: string) {
+    return this.store[key] ?? null;
+  }
+  key(index: number) {
+    return Object.keys(this.store)[index] ?? null;
+  }
+  removeItem(key: string) {
+    delete this.store[key];
+  }
+  setItem(key: string, value: string) {
+    this.store[key] = String(value);
+  }
 }
 
 const getStorage = (): Storage => {
@@ -24,7 +36,10 @@ const getStorage = (): Storage => {
       return window.localStorage;
     }
   } catch (err) {
-    console.warn('[RankStorage] window.localStorage unavailable, falling back to in-memory storage:', err);
+    console.warn(
+      '[RankStorage] window.localStorage unavailable, falling back to in-memory storage:',
+      err,
+    );
   }
   return new MemoryStorage();
 };
@@ -109,7 +124,7 @@ export class RankStorage {
     this.ranks[linkId] = {
       linkId,
       clicks: current.clicks + 1,
-      lastUsedTimestamp: Date.now()
+      lastUsedTimestamp: Date.now(),
     };
     this.scheduleSave();
   }

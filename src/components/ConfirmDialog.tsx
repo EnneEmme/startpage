@@ -20,11 +20,7 @@ export const ConfirmDialog = () => {
       maxWidth="420px"
       footer={
         <div class={styles.actions}>
-          <button
-            type="button"
-            class={styles.cancelBtn}
-            onClick={() => settleConfirm(false)}
-          >
+          <button type="button" class={styles.cancelBtn} onClick={() => settleConfirm(false)}>
             {pending.cancelLabel ?? 'Cancel'}
           </button>
           <button

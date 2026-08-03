@@ -19,10 +19,7 @@ interface KeyboardFlags {
  * ref synced on every render: no detach/attach churn on modal toggles, no
  * stale closures and no manual dependency array to forget.
  */
-export function useKeyboardShortcuts(
-  handlers: KeyboardHandlers,
-  flags: KeyboardFlags = {}
-) {
+export function useKeyboardShortcuts(handlers: KeyboardHandlers, flags: KeyboardFlags = {}) {
   const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
 
   const handlersRef = useRef<KeyboardHandlers>(handlers);
@@ -30,13 +27,13 @@ export function useKeyboardShortcuts(
 
   useEffect(() => {
     keyboardManager.setHandlers({
-      onOpenSearch: (char) => handlersRef.current.onOpenSearch?.(char),
+      onOpenSearch: char => handlersRef.current.onOpenSearch?.(char),
       onOpenCheatsheet: () => handlersRef.current.onOpenCheatsheet?.(),
       onOpenVisualEdit: () => handlersRef.current.onOpenVisualEdit?.(),
       onOpenSettings: () => handlersRef.current.onOpenSettings?.(),
-      onSelectCategoryIndex: (index) => handlersRef.current.onSelectCategoryIndex?.(index),
+      onSelectCategoryIndex: index => handlersRef.current.onSelectCategoryIndex?.(index),
       onToggleShortcutsView: () => {
-        setShowShortcuts((prev) => !prev);
+        setShowShortcuts(prev => !prev);
         handlersRef.current.onToggleShortcutsView?.();
       },
     });

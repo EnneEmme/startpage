@@ -5,7 +5,7 @@ import {
   getAcademicYearStart,
   getUnimibOrariUrl,
   getUnimibEsamiUrl,
-  resolveDynamicUrl
+  resolveDynamicUrl,
 } from '../src/engine/dynamicEvaluator';
 
 describe('dynamicEvaluator Engine & Edge Cases', () => {

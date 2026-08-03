@@ -8,7 +8,7 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
     onOpenCheatsheet: vi.fn(),
     onOpenVisualEdit: vi.fn(),
     onOpenSettings: vi.fn(),
-    onSelectCategoryIndex: vi.fn()
+    onSelectCategoryIndex: vi.fn(),
   };
 
   beforeEach(() => {
@@ -73,7 +73,12 @@ describe('KeyboardManager Engine & Advanced Shortcuts', () => {
 
   it('selects category by Shift+digit (layout-independent via e.code)', () => {
     // IT layout: Shift+2 is '"'; the code is still Digit2
-    const shift2 = new KeyboardEvent('keydown', { key: '"', code: 'Digit2', shiftKey: true, cancelable: true });
+    const shift2 = new KeyboardEvent('keydown', {
+      key: '"',
+      code: 'Digit2',
+      shiftKey: true,
+      cancelable: true,
+    });
     keyboardManager.handleKeyDown(shift2);
     expect(mockHandlers.onSelectCategoryIndex).toHaveBeenCalledWith(1);
     expect(shift2.defaultPrevented).toBe(true);

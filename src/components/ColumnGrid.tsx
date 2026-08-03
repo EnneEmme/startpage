@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'preact/hooks';
 import { ChevronDown } from 'lucide-preact';
 import type { LinkItem, CategoryGroup } from '../types/startpage';
-import { executeLink, scrollBehavior, PAGE_CHEVRON_OVERFLOW_PX, PAGE_CHEVRON_SCROLL_OFFSET_PX, PAGE_CHEVRON_UNSCROLLED_PX } from '../engine';
+import {
+  executeLink,
+  scrollBehavior,
+  PAGE_CHEVRON_OVERFLOW_PX,
+  PAGE_CHEVRON_SCROLL_OFFSET_PX,
+  PAGE_CHEVRON_UNSCROLLED_PX,
+} from '../engine';
 import { appActions, linksSignal, showToast } from '../stores';
 import { useDragAndDrop, useContextMenu, useColumnScrollMasks } from '../hooks';
 import { CategoryColumn } from './CategoryColumn';
@@ -29,7 +35,7 @@ export const ColumnGrid = ({
   highlightedCategory,
   onEditLink,
   onOpenReorder,
-  onAddLink
+  onAddLink,
 }: ColumnGridProps) => {
   const drag = useDragAndDrop(categories, `.${styles.linksList}`);
   const contextMenu = useContextMenu();
@@ -67,7 +73,7 @@ export const ColumnGrid = ({
   const scrollToNextPageRow = () => {
     window.scrollTo({
       top: window.innerHeight - PAGE_CHEVRON_SCROLL_OFFSET_PX,
-      behavior: scrollBehavior()
+      behavior: scrollBehavior(),
     });
   };
 
@@ -99,7 +105,7 @@ export const ColumnGrid = ({
         actionLabel: 'Undo',
         onAction: () => {
           appActions.restoreLink(removedLink, categoryIndex);
-        }
+        },
       });
     }
   };
@@ -110,11 +116,7 @@ export const ColumnGrid = ({
         <div class={styles.gridEmptyState}>
           <p class={styles.emptyStateText}>No links yet</p>
           {onAddLink && (
-            <button
-              type="button"
-              class={styles.emptyStateAction}
-              onClick={() => onAddLink()}
-            >
+            <button type="button" class={styles.emptyStateAction} onClick={() => onAddLink()}>
               Add the first link
             </button>
           )}

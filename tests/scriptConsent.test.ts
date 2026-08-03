@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { clearConsents, grantConsent, hasConsent, hashScriptIdentity } from '../src/engine/scriptConsent';
+import {
+  clearConsents,
+  grantConsent,
+  hasConsent,
+  hashScriptIdentity,
+} from '../src/engine/scriptConsent';
 import type { LinkItem } from '../src/types/startpage';
 
 const STORAGE_KEY = 'startpage_script_consents';
@@ -11,7 +16,7 @@ const scriptLink = (id: string, scriptContent: string): LinkItem => ({
   isScript: true,
   scriptContent,
   aliases: [],
-  category: 'Tools'
+  category: 'Tools',
 });
 
 const bookmarkletLink = (id: string, url: string): LinkItem => ({
@@ -19,7 +24,7 @@ const bookmarkletLink = (id: string, url: string): LinkItem => ({
   title: `Bookmarklet ${id}`,
   url,
   aliases: [],
-  category: 'Tools'
+  category: 'Tools',
 });
 
 describe('scriptConsent Engine (D1)', () => {

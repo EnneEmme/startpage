@@ -1,20 +1,38 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { extractDomain, extractOrigin, formatSvgToDataUrl, getCachedFaviconIndex, getFaviconCandidates, getFaviconUrl, isAllowedImageDataUrl, resolveIcon, setCachedFaviconIndex } from '../src/engine/iconResolver';
+import {
+  extractDomain,
+  extractOrigin,
+  formatSvgToDataUrl,
+  getCachedFaviconIndex,
+  getFaviconCandidates,
+  getFaviconUrl,
+  isAllowedImageDataUrl,
+  resolveIcon,
+  setCachedFaviconIndex,
+} from '../src/engine/iconResolver';
 
 describe('iconResolver Engine', () => {
   it('extracts domain correctly from valid URL', () => {
     expect(extractDomain('https://github.com/trending')).toBe('github.com');
     expect(extractDomain('http://mail.google.com/mail')).toBe('mail.google.com');
     expect(extractDomain('https://notebooklm.google.com')).toBe('notebooklm.google.com');
-    expect(extractDomain('https://elearning.unimib.it/enrol/index.php?id=68868')).toBe('elearning.unimib.it');
+    expect(extractDomain('https://elearning.unimib.it/enrol/index.php?id=68868')).toBe(
+      'elearning.unimib.it',
+    );
     expect(extractDomain('invalid-url')).toBe('');
   });
 
   it('extracts origin correctly from valid URL', () => {
-    expect(extractOrigin('https://mail.google.com/mail/u/0/#inbox')).toBe('https://mail.google.com');
+    expect(extractOrigin('https://mail.google.com/mail/u/0/#inbox')).toBe(
+      'https://mail.google.com',
+    );
     expect(extractOrigin('https://notebooklm.google.com')).toBe('https://notebooklm.google.com');
-    expect(extractOrigin('https://elearning.unimib.it/enrol/index.php?id=68868')).toBe('https://elearning.unimib.it');
-    expect(extractOrigin('https://aistudio.google.com/prompts/new_chat')).toBe('https://aistudio.google.com');
+    expect(extractOrigin('https://elearning.unimib.it/enrol/index.php?id=68868')).toBe(
+      'https://elearning.unimib.it',
+    );
+    expect(extractOrigin('https://aistudio.google.com/prompts/new_chat')).toBe(
+      'https://aistudio.google.com',
+    );
     expect(extractOrigin('invalid-url')).toBe('');
   });
 
@@ -29,7 +47,9 @@ describe('iconResolver Engine', () => {
   it('returns candidate list with direct brand favicon overrides for NotebookLM', () => {
     const timestamp = 1720000000000;
     const candidates = getFaviconCandidates('https://notebooklm.google.com', timestamp);
-    expect(candidates[0]).toBe('https://ssl.gstatic.com/docs/doclist/images/infinite_notebooklm_color_32dp.png?_cb=1720000000000');
+    expect(candidates[0]).toBe(
+      'https://ssl.gstatic.com/docs/doclist/images/infinite_notebooklm_color_32dp.png?_cb=1720000000000',
+    );
     expect(candidates[1]).toContain('_cb=1720000000000');
   });
 
@@ -57,7 +77,8 @@ describe('iconResolver Engine', () => {
   });
 
   it('sanitizes markdown link artifacts inside pasted SVG code', () => {
-    const markdownSvg = '<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)"><path d="M0 0h10v10H0z"/></svg>';
+    const markdownSvg =
+      '<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)"><path d="M0 0h10v10H0z"/></svg>';
     const resolved = resolveIcon('https://example.com', markdownSvg);
     expect(resolved.type).toBe('custom_url');
     expect(resolved.src).toContain('data:image/svg+xml;base64,');
@@ -80,7 +101,7 @@ describe('iconResolver Engine', () => {
         'data:image/svg+xml;base64,PHN2Zy8+',
         'data:image/svg+xml;utf8,<svg></svg>',
         'data:image/x-icon;base64,AAABAA==',
-        'data:image/vnd.microsoft.icon;base64,AAABAA=='
+        'data:image/vnd.microsoft.icon;base64,AAABAA==',
       ];
       for (const spec of allowed) {
         expect(isAllowedImageDataUrl(spec)).toBe(true);
@@ -115,7 +136,9 @@ describe('iconResolver Engine', () => {
       // hostile/unknown data: payload → empty source (img onError fallback)
       expect(formatSvgToDataUrl('data:text/html;base64,PHNjcmlwdD48L3NjcmlwdD4=')).toBe('');
       // raw SVG keeps the existing encoding behavior
-      expect(formatSvgToDataUrl('<svg viewBox="0 0 1 1"></svg>')).toContain('data:image/svg+xml;base64,');
+      expect(formatSvgToDataUrl('<svg viewBox="0 0 1 1"></svg>')).toContain(
+        'data:image/svg+xml;base64,',
+      );
     });
   });
 

@@ -55,5 +55,5 @@ export const dragStore = {
     dragStore.setDraggedCategoryName(null);
     dragStore.setDragOverCategory(null);
     dragStore.setDragOverLink(null);
-  }
+  },
 };

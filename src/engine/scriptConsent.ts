@@ -43,7 +43,7 @@ const readConsents = (): Record<string, string> => {
   try {
     const parsed: unknown = JSON.parse(localStorage.getItem(CONSENTS_STORAGE_KEY) || '{}');
     return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
-      ? parsed as Record<string, string>
+      ? (parsed as Record<string, string>)
       : {};
   } catch (err) {
     console.warn('[ScriptConsent] Failed to read stored consents, starting empty:', err);

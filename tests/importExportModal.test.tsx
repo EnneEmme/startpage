@@ -15,14 +15,14 @@ const PLAIN_LINK = {
   title: 'Imported Test Link',
   url: 'https://imported.example.com',
   aliases: ['itl'],
-  category: 'ImportedCat'
+  category: 'ImportedCat',
 };
 
 const validBackupJson = () =>
   JSON.stringify({
     config: { commands: [PLAIN_LINK] },
     categoryOrder: ['ImportedCat'],
-    ranks: {}
+    ranks: {},
   });
 
 describe('ImportExportModal', () => {
@@ -36,7 +36,9 @@ describe('ImportExportModal', () => {
   it('renders the dialog with export controls and the JSON textarea when open', () => {
     render(<ImportExportModal isOpen={true} onClose={vi.fn()} />);
 
-    expect(screen.getByRole('dialog', { name: 'Data Management: Backup & Restore' })).not.toBeNull();
+    expect(
+      screen.getByRole('dialog', { name: 'Data Management: Backup & Restore' }),
+    ).not.toBeNull();
     expect(screen.getByRole('textbox')).not.toBeNull(); // the JSON textarea
     expect(screen.getByRole('button', { name: 'Export JSON' })).not.toBeNull();
     expect(screen.getByRole('button', { name: 'Apply & Import JSON' })).not.toBeNull();
@@ -84,7 +86,7 @@ describe('ImportExportModal', () => {
       <>
         <ImportExportModal isOpen={true} onClose={vi.fn()} />
         <Toast />
-      </>
+      </>,
     );
     const before = linksSignal.value.map(l => l.id).join(',');
 
@@ -104,14 +106,16 @@ describe('ImportExportModal', () => {
       <>
         <ImportExportModal isOpen={true} onClose={vi.fn()} />
         <Toast />
-      </>
+      </>,
     );
 
     const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
     fireEvent.input(textarea, { target: { value: '{"someKey": 123}' } });
     fireEvent.click(screen.getByRole('button', { name: 'Apply & Import JSON' }));
 
-    expect(screen.getByText('Import failed: Unrecognized backup format (missing "commands" array)')).not.toBeNull();
+    expect(
+      screen.getByText('Import failed: Unrecognized backup format (missing "commands" array)'),
+    ).not.toBeNull();
   });
 
   it('Reset Default requires the themed confirm, then restores defaults (no window.confirm)', async () => {
@@ -120,7 +124,7 @@ describe('ImportExportModal', () => {
       title: 'Custom Pre Reset',
       url: 'https://custom.example.com',
       aliases: [],
-      category: 'Social'
+      category: 'Social',
     });
     expect(linksSignal.value.some(l => l.id === 'custom-pre-reset')).toBe(true);
 

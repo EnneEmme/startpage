@@ -13,6 +13,6 @@ export {
   dragOverLinkIdSignal,
   dropPositionSignal,
   justDroppedLinkIdSignal,
-  dragStore
+  dragStore,
 } from './dragStore';
 export type { DropPosition } from './dragStore';

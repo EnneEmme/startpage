@@ -10,7 +10,7 @@ import {
   SettingsModal,
   ReorderModal,
   Toast,
-  ConfirmDialog
+  ConfirmDialog,
 } from './components';
 import type { LinkItem } from './types/startpage';
 import { scrollToCategory, scrollToTop, HIGHLIGHT_DURATION_MS } from './engine';
@@ -35,7 +35,7 @@ export const App = () => {
         window.clearTimeout(highlightTimerRef.current);
       }
     },
-    []
+    [],
   );
 
   const {
@@ -47,7 +47,7 @@ export const App = () => {
     toggleModalExclusive,
     initialSearchChar,
     setInitialSearchChar,
-    editTargetLink
+    editTargetLink,
   } = useModals();
 
   const handleSelectCategory = (catName: string | null) => {
@@ -75,20 +75,23 @@ export const App = () => {
     openModal('search');
   };
 
-  const { showShortcuts } = useKeyboardShortcuts({
-    onOpenSearch: (char?: string) => handleOpenSearch(char || ''),
-    onOpenCheatsheet: () => toggleModalExclusive('cheatsheet'),
-    onOpenVisualEdit: () => openVisualEdit(null),
-    onOpenSettings: () => toggleModalExclusive('settings'),
-    onSelectCategoryIndex: (index: number) => {
-      const target = categoriesSignal.value[index];
-      if (target) {
-        handleSelectCategory(target.name);
-      }
-    }
-  }, {
-    modalActive: isAnyModalOpen
-  });
+  const { showShortcuts } = useKeyboardShortcuts(
+    {
+      onOpenSearch: (char?: string) => handleOpenSearch(char || ''),
+      onOpenCheatsheet: () => toggleModalExclusive('cheatsheet'),
+      onOpenVisualEdit: () => openVisualEdit(null),
+      onOpenSettings: () => toggleModalExclusive('settings'),
+      onSelectCategoryIndex: (index: number) => {
+        const target = categoriesSignal.value[index];
+        if (target) {
+          handleSelectCategory(target.name);
+        }
+      },
+    },
+    {
+      modalActive: isAnyModalOpen,
+    },
+  );
 
   const handleEditLinkFromContext = (link: LinkItem) => {
     openVisualEdit(link);
@@ -99,7 +102,9 @@ export const App = () => {
   return (
     <>
       {/* Keyboard/sr aids: skip-link + visually hidden top-level heading */}
-      <a href="#main-grid" class="skipLink">Skip to content</a>
+      <a href="#main-grid" class="skipLink">
+        Skip to content
+      </a>
       <h1 class="sr-only">Startpage — link launcher and fuzzy search</h1>
 
       {/* Unified Header */}
@@ -148,15 +153,9 @@ export const App = () => {
         onClose={closeModal}
       />
 
-      <CheatsheetModal
-        isOpen={isModalOpen('cheatsheet')}
-        onClose={closeModal}
-      />
+      <CheatsheetModal isOpen={isModalOpen('cheatsheet')} onClose={closeModal} />
 
-      <ImportExportModal
-        isOpen={isModalOpen('importExport')}
-        onClose={closeModal}
-      />
+      <ImportExportModal isOpen={isModalOpen('importExport')} onClose={closeModal} />
 
       <VisualEditModal
         key={editTargetLink?.id ?? 'new'}

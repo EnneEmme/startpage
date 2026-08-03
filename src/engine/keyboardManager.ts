@@ -37,11 +37,7 @@ export class KeyboardManager {
   public isTypingInInput(target: EventTarget | null): boolean {
     if (!target || !(target instanceof HTMLElement)) return false;
     const tagName = target.tagName.toUpperCase();
-    return (
-      tagName === 'INPUT' ||
-      tagName === 'TEXTAREA' ||
-      Boolean(target.isContentEditable)
-    );
+    return tagName === 'INPUT' || tagName === 'TEXTAREA' || Boolean(target.isContentEditable);
   }
 
   public handleKeyDown(e: KeyboardEvent): void {
@@ -56,7 +52,9 @@ export class KeyboardManager {
     // prevents stacked modals and shortcuts firing behind an overlay.
     if (this.modalActive && !isInput) {
       const isModalToggleKey =
-        e.key === '?' || e.key === 'F1' || e.key === ',' ||
+        e.key === '?' ||
+        e.key === 'F1' ||
+        e.key === ',' ||
         (e.shiftKey && (e.key === 'N' || e.key === 'n'));
       if (!isModalToggleKey) return;
     }

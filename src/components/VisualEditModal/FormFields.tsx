@@ -24,9 +24,22 @@ interface FormFieldsProps {
 }
 
 export const FormFields = ({
-  activeTab, title, setTitle, url, setUrl, searchTemplate, setSearchTemplate,
-  aliases, setAliases, icon, setIcon, isIconDropdownOpen, setIsIconDropdownOpen,
-  iconSearchQuery, setIconSearchQuery, filteredIcons
+  activeTab,
+  title,
+  setTitle,
+  url,
+  setUrl,
+  searchTemplate,
+  setSearchTemplate,
+  aliases,
+  setAliases,
+  icon,
+  setIcon,
+  isIconDropdownOpen,
+  setIsIconDropdownOpen,
+  iconSearchQuery,
+  setIconSearchQuery,
+  filteredIcons,
 }: FormFieldsProps) => {
   const iconQueryTrimmed = iconSearchQuery.trim().toLowerCase();
 
@@ -34,7 +47,9 @@ export const FormFields = ({
     <>
       {/* Title Input */}
       <div class={styles.fieldGroup}>
-        <label class={styles.label} for="vem-title">Link Title</label>
+        <label class={styles.label} for="vem-title">
+          Link Title
+        </label>
         <input
           id="vem-title"
           type="text"
@@ -49,7 +64,9 @@ export const FormFields = ({
       {/* Dynamic Field Based on Selected Mode */}
       {activeTab === 'web' && (
         <div class={styles.fieldGroup}>
-          <label class={styles.label} for="vem-url">Website URL</label>
+          <label class={styles.label} for="vem-url">
+            Website URL
+          </label>
           <input
             id="vem-url"
             type="text"
@@ -65,7 +82,9 @@ export const FormFields = ({
       {activeTab === 'search' && (
         <>
           <div class={styles.fieldGroup}>
-            <label class={styles.label} for="vem-search-base-url">Site Base URL</label>
+            <label class={styles.label} for="vem-search-base-url">
+              Site Base URL
+            </label>
             <input
               id="vem-search-base-url"
               type="text"
@@ -78,7 +97,9 @@ export const FormFields = ({
           </div>
 
           <div class={styles.fieldGroup}>
-            <label class={styles.label} for="vem-search-template">Search Parameter (Query Template)</label>
+            <label class={styles.label} for="vem-search-template">
+              Search Parameter (Query Template)
+            </label>
             <input
               id="vem-search-template"
               type="text"
@@ -89,7 +110,15 @@ export const FormFields = ({
               required
             />
             <span class={styles.helperText}>
-              Enter the path with the <code>{"{"}q{"}"}</code> (e.g. <code>/results?search_query={"{"}q{"}"}</code>).
+              Enter the path with the{' '}
+              <code>
+                {'{'}q{'}'}
+              </code>{' '}
+              (e.g.{' '}
+              <code>
+                /results?search_query={'{'}q{'}'}
+              </code>
+              ).
             </span>
           </div>
         </>
@@ -97,7 +126,9 @@ export const FormFields = ({
 
       {/* Aliases */}
       <div class={styles.fieldGroup}>
-        <label class={styles.label} for="vem-aliases">Keyboard Shortcuts / Aliases (comma separated)</label>
+        <label class={styles.label} for="vem-aliases">
+          Keyboard Shortcuts / Aliases (comma separated)
+        </label>
         <input
           id="vem-aliases"
           type="text"
@@ -110,7 +141,9 @@ export const FormFields = ({
 
       {/* Icon Picker Dropdown */}
       <div class={styles.fieldGroup}>
-        <label class={styles.label} for="vem-icon">Custom Icon</label>
+        <label class={styles.label} for="vem-icon">
+          Custom Icon
+        </label>
         <div class={styles.iconDropdownWrapper}>
           <div class={styles.iconInputTriggerRow}>
             <div class={styles.iconLiveBadge}>
@@ -178,12 +211,16 @@ export const FormFields = ({
                     })
                   ) : (
                     <div class={styles.pickerEmpty}>
-                      No Lucide icon found for "{iconSearchQuery}". You can also paste a direct image URL.
+                      No Lucide icon found for "{iconSearchQuery}". You can also paste a direct
+                      image URL.
                     </div>
                   )
                 ) : (
                   <div class={styles.pickerEmpty}>
-                    🔍 Type in the field above to search <strong>{ICON_LIST.length} Lucide icons</strong> (e.g. <em>coffee, rocket, mail, shield, code, music</em>). Site icons are resolved automatically via favicon.
+                    🔍 Type in the field above to search{' '}
+                    <strong>{ICON_LIST.length} Lucide icons</strong> (e.g.{' '}
+                    <em>coffee, rocket, mail, shield, code, music</em>). Site icons are resolved
+                    automatically via favicon.
                   </div>
                 )}
               </div>

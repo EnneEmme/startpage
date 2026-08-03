@@ -9,7 +9,7 @@ const DEFAULT_CONFIG = {
   gridDensity: 'normal',
   fontSize: 'medium',
   aliasVisibility: 'smart',
-  defaultSearchEngine: 'g'
+  defaultSearchEngine: 'g',
 } as const;
 
 const ROOT_PROPS = [
@@ -25,7 +25,7 @@ const ROOT_PROPS = [
   '--font-size-header',
   '--font-size-badge',
   '--alias-badge-display-override',
-  '--alias-badge-opacity-override'
+  '--alias-badge-opacity-override',
 ];
 
 describe('ThemeEngine', () => {

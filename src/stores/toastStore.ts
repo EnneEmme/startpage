@@ -27,7 +27,7 @@ export const dismissToast = (): void => {
  */
 export const showToast = (
   message: string,
-  options: { actionLabel?: string; onAction?: () => void; duration?: number } = {}
+  options: { actionLabel?: string; onAction?: () => void; duration?: number } = {},
 ): void => {
   dismissToast();
   toastSignal.value = {
@@ -35,7 +35,7 @@ export const showToast = (
     message,
     actionLabel: options.actionLabel,
     onAction: options.onAction,
-    duration: options.duration ?? DEFAULT_DURATION
+    duration: options.duration ?? DEFAULT_DURATION,
   };
   dismissTimer = setTimeout(() => {
     toastSignal.value = null;

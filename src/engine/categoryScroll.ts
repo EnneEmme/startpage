@@ -20,8 +20,7 @@ export const prefersReducedMotion = (): boolean =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** 'smooth' normally, 'auto' under prefers-reduced-motion */
-export const scrollBehavior = (): ScrollBehavior =>
-  prefersReducedMotion() ? 'auto' : 'smooth';
+export const scrollBehavior = (): ScrollBehavior => (prefersReducedMotion() ? 'auto' : 'smooth');
 
 /** Smooth-scroll the page so the category column sits below the fixed header */
 export const scrollToCategory = (categoryName: string): void => {

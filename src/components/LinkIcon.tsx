@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'preact/hooks';
 import { Globe } from 'lucide-preact';
-import { extractDomain, getFaviconCandidates, formatSvgToDataUrl, getCachedFaviconIndex, setCachedFaviconIndex } from '../engine';
+import {
+  extractDomain,
+  getFaviconCandidates,
+  formatSvgToDataUrl,
+  getCachedFaviconIndex,
+  setCachedFaviconIndex,
+} from '../engine';
 import { getLucideIcon } from './iconRegistry';
 import styles from './LinkIcon.module.css';
 
@@ -13,7 +19,9 @@ interface LinkIconProps {
 
 export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => {
   // Start dal provider che ha funzionato l'ultima volta per questo dominio
-  const [candidateIndex, setCandidateIndex] = useState<number>(() => getCachedFaviconIndex(extractDomain(url)));
+  const [candidateIndex, setCandidateIndex] = useState<number>(() =>
+    getCachedFaviconIndex(extractDomain(url)),
+  );
   const [cacheBustTime, setCacheBustTime] = useState<number>(0);
   const [imgError, setImgError] = useState<boolean>(false);
 
@@ -24,7 +32,12 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
   }, [url, iconSpec]);
 
   // If explicit Lucide icon name provided and not a standard url/favicon/svg spec
-  if (iconSpec && !iconSpec.startsWith('http') && !iconSpec.startsWith('data:') && !iconSpec.includes('<svg')) {
+  if (
+    iconSpec &&
+    !iconSpec.startsWith('http') &&
+    !iconSpec.startsWith('data:') &&
+    !iconSpec.includes('<svg')
+  ) {
     const IconComponent = getLucideIcon(iconSpec);
     if (IconComponent) {
       return <IconComponent size={size} class={styles.lucideIcon} />;
@@ -35,7 +48,11 @@ export const LinkIcon = ({ url, iconSpec, title, size = 18 }: LinkIconProps) => 
   if (iconSpec) {
     const trimmed = iconSpec.trim();
     const isRawSvg = trimmed.startsWith('<svg') || trimmed.toLowerCase().includes('<svg');
-    const isCustomUrl = trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('/');
+    const isCustomUrl =
+      trimmed.startsWith('http://') ||
+      trimmed.startsWith('https://') ||
+      trimmed.startsWith('data:') ||
+      trimmed.startsWith('/');
 
     if (isRawSvg || isCustomUrl) {
       const srcUrl = isRawSvg ? formatSvgToDataUrl(trimmed) : trimmed;

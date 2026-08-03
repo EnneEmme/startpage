@@ -10,13 +10,12 @@ interface ImportExportModalProps {
   onClose: () => void;
 }
 
-export const ImportExportModal = ({
-  isOpen,
-  onClose
-}: ImportExportModalProps) => {
+export const ImportExportModal = ({ isOpen, onClose }: ImportExportModalProps) => {
   const [jsonText, setJsonText] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
-  const [statusMsg, setStatusMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [statusMsg, setStatusMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(
+    null,
+  );
   const copiedTimerRef = useRef<number | null>(null);
 
   // Release any pending "Copied!" reset on unmount
@@ -26,7 +25,7 @@ export const ImportExportModal = ({
         window.clearTimeout(copiedTimerRef.current);
       }
     },
-    []
+    [],
   );
 
   const handleExport = () => {
@@ -48,7 +47,10 @@ export const ImportExportModal = ({
         setCopied(false);
       }, IMPORT_COPIED_FEEDBACK_MS);
     } else {
-      setStatusMsg({ text: 'Clipboard unavailable here: use Download File instead.', type: 'error' });
+      setStatusMsg({
+        text: 'Clipboard unavailable here: use Download File instead.',
+        type: 'error',
+      });
     }
   };
 
@@ -85,7 +87,7 @@ export const ImportExportModal = ({
       title: 'Reset to defaults',
       message: 'Reset all links to the default configuration? You can undo right after.',
       confirmLabel: 'Reset',
-      danger: true
+      danger: true,
     }).then(ok => {
       if (!ok) return;
       const snapshot = appActions.exportJson();
@@ -95,7 +97,7 @@ export const ImportExportModal = ({
         actionLabel: 'Undo',
         onAction: () => {
           appActions.importJson(snapshot);
-        }
+        },
       });
     });
   };
@@ -135,9 +137,7 @@ export const ImportExportModal = ({
           </div>
 
           {statusMsg && (
-            <div class={`${styles.statusBanner} ${styles[statusMsg.type]}`}>
-              {statusMsg.text}
-            </div>
+            <div class={`${styles.statusBanner} ${styles[statusMsg.type]}`}>{statusMsg.text}</div>
           )}
 
           <textarea

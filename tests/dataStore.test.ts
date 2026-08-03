@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { DataStore, DEFAULT_CONFIG, sanitizeLinkItem, UNIMIB_ESAMI_BASE_URL, UNIMIB_ORARI_BASE_URL } from '../src/engine/dataStore';
+import {
+  DataStore,
+  DEFAULT_CONFIG,
+  sanitizeLinkItem,
+  UNIMIB_ESAMI_BASE_URL,
+  UNIMIB_ORARI_BASE_URL,
+} from '../src/engine/dataStore';
 import { rankStorage } from '../src/engine/rankStorage';
 import type { LinkItem } from '../src/types/startpage';
 
@@ -28,7 +34,7 @@ describe('DataStore Engine & Edge Cases', () => {
       title: 'My Custom Blog',
       url: 'https://myblog.com',
       aliases: ['blog'],
-      category: 'Dev'
+      category: 'Dev',
     };
 
     dataStore.addLink(newLink);
@@ -61,9 +67,15 @@ describe('DataStore Engine & Edge Cases', () => {
   describe('importJsonDetailed structured import errors (P7/R3)', () => {
     it('returns ok on a valid backup (both accepted shapes)', () => {
       expect(dataStore.importJsonDetailed(dataStore.exportJson())).toEqual({ ok: true });
-      expect(dataStore.importJsonDetailed(JSON.stringify({
-        commands: [{ id: 'a', title: 'A', url: 'https://a.example.com', aliases: [], category: 'Dev' }]
-      }))).toEqual({ ok: true });
+      expect(
+        dataStore.importJsonDetailed(
+          JSON.stringify({
+            commands: [
+              { id: 'a', title: 'A', url: 'https://a.example.com', aliases: [], category: 'Dev' },
+            ],
+          }),
+        ),
+      ).toEqual({ ok: true });
     });
 
     it('reports Invalid JSON for a non-parseable payload', () => {
@@ -126,7 +138,7 @@ describe('DataStore Engine & Edge Cases', () => {
   it('preserves user renames of default links across reloads (no force-sync)', () => {
     const links = dataStore.getLinks();
     const renamed = links.map(l =>
-      l.id === 'youtube' ? { ...l, title: 'YT Video', aliases: ['myvideo'] } : l
+      l.id === 'youtube' ? { ...l, title: 'YT Video', aliases: ['myvideo'] } : l,
     );
     localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: renamed }));
 
@@ -139,13 +151,15 @@ describe('DataStore Engine & Edge Cases', () => {
   it('runs the legacy migration exactly once (flag in localStorage)', () => {
     // Simulate a pre-migration profile: flag absent (beforeEach already ran it on fresh defaults)
     localStorage.removeItem('startpage_migrations');
-    const legacy = [{
-      id: 'old_llm',
-      title: 'Old LLM',
-      url: 'https://example.com',
-      aliases: [],
-      category: 'LLMs 2'
-    }];
+    const legacy = [
+      {
+        id: 'old_llm',
+        title: 'Old LLM',
+        url: 'https://example.com',
+        aliases: [],
+        category: 'LLMs 2',
+      },
+    ];
     localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: legacy }));
 
     const migrated = new DataStore();
@@ -177,20 +191,36 @@ describe('DataStore Engine & Edge Cases', () => {
     const legacyCommands = [
       {
         // user-renamed + customized: only the machinery must go
-        id: 'unimib_orari', title: 'Lezioni mie', url: 'javascript:updateOrari()',
-        aliases: ['orari'], category: 'ScuolaCustom', icon: 'https://example.com/icon.png',
-        dynamicUrlRule: 'unimib_orari', isScript: true, scriptContent: 'globalThis.__v3Old = 1'
+        id: 'unimib_orari',
+        title: 'Lezioni mie',
+        url: 'javascript:updateOrari()',
+        aliases: ['orari'],
+        category: 'ScuolaCustom',
+        icon: 'https://example.com/icon.png',
+        dynamicUrlRule: 'unimib_orari',
+        isScript: true,
+        scriptContent: 'globalThis.__v3Old = 1',
       },
       {
         // legacy shape without dynamicUrlRule: matched by id/title, rule ensured
-        id: 'esami', title: 'Esami', url: 'javascript:updateEsami()',
-        aliases: ['esami'], category: 'School', isScript: true, scriptContent: 'alert(1)'
+        id: 'esami',
+        title: 'Esami',
+        url: 'javascript:updateEsami()',
+        aliases: ['esami'],
+        category: 'School',
+        isScript: true,
+        scriptContent: 'alert(1)',
       },
       {
         // untouched: an unrelated custom bookmarklet stays as-is (user data)
-        id: 'mybm', title: 'My Bookmarklet', url: 'javascript:alert(1)',
-        aliases: [], category: 'Tools', isScript: true, scriptContent: 'alert(1)'
-      }
+        id: 'mybm',
+        title: 'My Bookmarklet',
+        url: 'javascript:alert(1)',
+        aliases: [],
+        category: 'Tools',
+        isScript: true,
+        scriptContent: 'alert(1)',
+      },
     ];
     localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: legacyCommands }));
 
@@ -220,8 +250,12 @@ describe('DataStore Engine & Edge Cases', () => {
     // flag persisted + migrated items persisted script-free (the unrelated
     // user bookmarklet legitimately keeps its own scriptContent)
     expect(localStorage.getItem('startpage_migrations')).toContain('migrated_v3_unimib_dynamic');
-    const persisted = JSON.parse(localStorage.getItem('startpage_custom_links')!) as { commands: LinkItem[] };
-    const persistedUnimib = persisted.commands.filter(l => l.id === 'unimib_orari' || l.id === 'esami');
+    const persisted = JSON.parse(localStorage.getItem('startpage_custom_links')!) as {
+      commands: LinkItem[];
+    };
+    const persistedUnimib = persisted.commands.filter(
+      l => l.id === 'unimib_orari' || l.id === 'esami',
+    );
     for (const item of persistedUnimib) {
       expect(item.scriptContent).toBeUndefined();
       expect(item.isScript).toBeUndefined();
@@ -250,7 +284,12 @@ describe('DataStore Engine & Edge Cases', () => {
     expect(sanitizeLinkItem({ title: 'No Id', url: 'https://x.com' })).toBeNull();
     expect(sanitizeLinkItem({ id: 'x', url: 'https://x.com' })).toBeNull();
 
-    const clean = sanitizeLinkItem({ id: 'x', title: 'X', url: 'https://x.com', aliases: 'not-an-array' });
+    const clean = sanitizeLinkItem({
+      id: 'x',
+      title: 'X',
+      url: 'https://x.com',
+      aliases: 'not-an-array',
+    });
     expect(clean).not.toBeNull();
     expect(clean!.aliases).toEqual([]);
     expect(clean!.category).toBe('General');
@@ -259,9 +298,9 @@ describe('DataStore Engine & Edge Cases', () => {
   it('sanitizes malformed items coming from localStorage instead of crashing', () => {
     const malformed = [
       { id: 'ok', title: 'Ok', url: 'https://ok.com' }, // missing aliases -> []
-      { id: 'broken-no-url', title: 'Broken' },          // dropped
-      'not-an-object',                                    // dropped
-      { id: 'ok2', title: 'Ok2', url: 'https://ok2.com', aliases: ['a', 7, 'b'] } // aliases filtered
+      { id: 'broken-no-url', title: 'Broken' }, // dropped
+      'not-an-object', // dropped
+      { id: 'ok2', title: 'Ok2', url: 'https://ok2.com', aliases: ['a', 7, 'b'] }, // aliases filtered
     ];
     localStorage.setItem('startpage_custom_links', JSON.stringify({ commands: malformed }));
 
@@ -296,11 +335,17 @@ describe('DataStore Engine & Edge Cases', () => {
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       (globalThis as Record<string, unknown>).__d2Pwned = undefined;
       const hostile = JSON.stringify({
-        commands: [{
-          id: 'evil1', title: 'Evil Blog', url: 'https://evil.example.com',
-          aliases: ['evil'], category: 'Dev',
-          isScript: true, scriptContent: 'globalThis.__d2Pwned = 1'
-        }]
+        commands: [
+          {
+            id: 'evil1',
+            title: 'Evil Blog',
+            url: 'https://evil.example.com',
+            aliases: ['evil'],
+            category: 'Dev',
+            isScript: true,
+            scriptContent: 'globalThis.__d2Pwned = 1',
+          },
+        ],
       });
 
       expect(dataStore.importJson(hostile)).toBe(true);
@@ -319,9 +364,21 @@ describe('DataStore Engine & Edge Cases', () => {
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const hostile = JSON.stringify({
         commands: [
-          { id: 'evil2', title: 'AlertBomb', url: 'javascript:alert(1)', aliases: [], category: 'Tools' },
-          { id: 'good1', title: 'Good', url: 'https://good.example.com', aliases: [], category: 'Tools' }
-        ]
+          {
+            id: 'evil2',
+            title: 'AlertBomb',
+            url: 'javascript:alert(1)',
+            aliases: [],
+            category: 'Tools',
+          },
+          {
+            id: 'good1',
+            title: 'Good',
+            url: 'https://good.example.com',
+            aliases: [],
+            category: 'Tools',
+          },
+        ],
       });
 
       expect(dataStore.importJson(hostile)).toBe(true);
@@ -336,11 +393,37 @@ describe('DataStore Engine & Edge Cases', () => {
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const hostile = JSON.stringify({
         commands: [
-          { id: 'good1', title: 'Good One', url: 'https://good.example.com', aliases: [], category: 'Tools' },
-          { id: 'good2', title: 'Good Two', url: 'https://good2.example.com', aliases: [], category: 'Tools' },
-          { id: 'strip1', title: 'StripMe', url: 'https://strip.example.com', aliases: [], category: 'Tools', scriptContent: 'alert(1)' },
-          { id: 'drop1', title: 'DropMe', url: 'javascript:alert(document.cookie)', aliases: [], category: 'Tools', isScript: true }
-        ]
+          {
+            id: 'good1',
+            title: 'Good One',
+            url: 'https://good.example.com',
+            aliases: [],
+            category: 'Tools',
+          },
+          {
+            id: 'good2',
+            title: 'Good Two',
+            url: 'https://good2.example.com',
+            aliases: [],
+            category: 'Tools',
+          },
+          {
+            id: 'strip1',
+            title: 'StripMe',
+            url: 'https://strip.example.com',
+            aliases: [],
+            category: 'Tools',
+            scriptContent: 'alert(1)',
+          },
+          {
+            id: 'drop1',
+            title: 'DropMe',
+            url: 'javascript:alert(document.cookie)',
+            aliases: [],
+            category: 'Tools',
+            isScript: true,
+          },
+        ],
       });
 
       expect(dataStore.importJson(hostile)).toBe(true);
@@ -355,10 +438,17 @@ describe('DataStore Engine & Edge Cases', () => {
     it('discards scripted items whose remaining url is not web-navigable', () => {
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const hostile = JSON.stringify({
-        commands: [{
-          id: 'evil3', title: 'FtpScript', url: 'ftp://files.example.com/x',
-          aliases: [], category: 'Tools', isScript: true, scriptContent: 'alert(1)'
-        }]
+        commands: [
+          {
+            id: 'evil3',
+            title: 'FtpScript',
+            url: 'ftp://files.example.com/x',
+            aliases: [],
+            category: 'Tools',
+            isScript: true,
+            scriptContent: 'alert(1)',
+          },
+        ],
       });
 
       expect(dataStore.importJson(hostile)).toBe(true);
@@ -369,13 +459,26 @@ describe('DataStore Engine & Edge Cases', () => {
 
     it('load() from own localStorage stays permissive (trusted profile data)', () => {
       localStorage.clear();
-      localStorage.setItem('startpage_custom_links', JSON.stringify({
-        commands: [{
-          id: 'my_bookmarklet', title: 'My Bookmarklet', url: 'javascript:alert(1)',
-          aliases: [], category: 'Tools', isScript: true, scriptContent: 'alert(1)'
-        }]
-      }));
-      localStorage.setItem('startpage_migrations', JSON.stringify({ v2_legacy_normalization: true }));
+      localStorage.setItem(
+        'startpage_custom_links',
+        JSON.stringify({
+          commands: [
+            {
+              id: 'my_bookmarklet',
+              title: 'My Bookmarklet',
+              url: 'javascript:alert(1)',
+              aliases: [],
+              category: 'Tools',
+              isScript: true,
+              scriptContent: 'alert(1)',
+            },
+          ],
+        }),
+      );
+      localStorage.setItem(
+        'startpage_migrations',
+        JSON.stringify({ v2_legacy_normalization: true }),
+      );
 
       const store = new DataStore();
       const kept = store.getLinks().find(l => l.id === 'my_bookmarklet');
@@ -394,12 +497,18 @@ describe('DataStore Engine & Edge Cases', () => {
 
     it('a tampered Unimib-shaped item is re-canonicalized on import', () => {
       const hostile = JSON.stringify({
-        commands: [{
-          id: 'unimib_orari', title: 'Orari', url: 'javascript:evil()',
-          aliases: ['orari'], category: 'School',
-          dynamicUrlRule: 'unimib_orari', isScript: true,
-          scriptContent: 'globalThis.__d2Tampered = 1'
-        }]
+        commands: [
+          {
+            id: 'unimib_orari',
+            title: 'Orari',
+            url: 'javascript:evil()',
+            aliases: ['orari'],
+            category: 'School',
+            dynamicUrlRule: 'unimib_orari',
+            isScript: true,
+            scriptContent: 'globalThis.__d2Tampered = 1',
+          },
+        ],
       });
 
       expect(dataStore.importJson(hostile)).toBe(true);

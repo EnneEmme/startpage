@@ -19,7 +19,9 @@ describe('ColumnGrid Component', () => {
   });
 
   it('renders a card per link with its title and href', () => {
-    const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
+    const { getAllByText } = render(
+      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />,
+    );
 
     // Default config contains two links titled 'Mail'; the Social one is first
     const anchor = getAllByText('Mail')[0]!.closest('a');
@@ -28,7 +30,9 @@ describe('ColumnGrid Component', () => {
   });
 
   it('click: records usage rank and prevents native navigation', () => {
-    const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
+    const { getAllByText } = render(
+      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />,
+    );
 
     const anchor = getAllByText('Mail')[0]!.closest('a') as HTMLAnchorElement;
     const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
@@ -39,16 +43,22 @@ describe('ColumnGrid Component', () => {
   });
 
   it('cmd/ctrl+click opens in a new tab instead of navigating current page', () => {
-    const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
+    const { getAllByText } = render(
+      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />,
+    );
     const anchor = getAllByText('Mail')[0]!.closest('a') as HTMLAnchorElement;
 
     fireEvent.click(anchor, { metaKey: true });
-    expect(window.open).toHaveBeenCalledWith(expect.stringContaining('mail.google.com'), '_blank', 'noopener,noreferrer');
+    expect(window.open).toHaveBeenCalledWith(
+      expect.stringContaining('mail.google.com'),
+      '_blank',
+      'noopener,noreferrer',
+    );
   });
 
   it('double-click on a column header shows the inline rename input', () => {
     const { getByText, getByDisplayValue, queryByDisplayValue } = render(
-      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />
+      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />,
     );
 
     const header = getByText('Social').closest('div') as HTMLElement;
@@ -66,7 +76,7 @@ describe('ColumnGrid Component', () => {
 
   it('double-click rename: Escape cancels without touching the dataStore', () => {
     const { getByText, getByDisplayValue, queryByDisplayValue } = render(
-      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />
+      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />,
     );
 
     const header = getByText('Social').closest('div') as HTMLElement;
@@ -84,7 +94,7 @@ describe('ColumnGrid Component', () => {
 
   it('right-click on a card opens the context menu for that link', () => {
     const { getAllByText, baseElement } = render(
-      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />
+      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />,
     );
 
     const anchor = getAllByText('Mail')[0]!.closest('a') as HTMLAnchorElement;
@@ -96,7 +106,7 @@ describe('ColumnGrid Component', () => {
 
   it('empty column: renders "No links yet" and no CTA without onAddLink', () => {
     const { getByText, queryByRole } = render(
-      <ColumnGrid categories={[{ name: 'EmptyCat', links: [] }]} showShortcuts={false} />
+      <ColumnGrid categories={[{ name: 'EmptyCat', links: [] }]} showShortcuts={false} />,
     );
 
     expect(getByText('No links yet')).not.toBeNull();
@@ -107,7 +117,11 @@ describe('ColumnGrid Component', () => {
   it('empty column: CTA calls onAddLink with the column category', () => {
     const onAddLink = vi.fn();
     const { getByRole } = render(
-      <ColumnGrid categories={[{ name: 'EmptyCat', links: [] }]} showShortcuts={false} onAddLink={onAddLink} />
+      <ColumnGrid
+        categories={[{ name: 'EmptyCat', links: [] }]}
+        showShortcuts={false}
+        onAddLink={onAddLink}
+      />,
     );
 
     fireEvent.click(getByRole('button', { name: 'Add the first link' }));
@@ -118,7 +132,7 @@ describe('ColumnGrid Component', () => {
   it('empty grid: renders page-level empty state and CTA calls onAddLink without a category', () => {
     const onAddLink = vi.fn();
     const { getByText, getByRole } = render(
-      <ColumnGrid categories={[]} showShortcuts={false} onAddLink={onAddLink} />
+      <ColumnGrid categories={[]} showShortcuts={false} onAddLink={onAddLink} />,
     );
 
     expect(getByText('No links yet')).not.toBeNull();
@@ -135,7 +149,9 @@ describe('ColumnGrid Component', () => {
   });
 
   it('Shift+F10 on a card dispatches the startpage:open-context-menu CustomEvent', () => {
-    const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
+    const { getAllByText } = render(
+      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />,
+    );
 
     const received: CustomEvent[] = [];
     const listener = (e: Event) => received.push(e as CustomEvent);
@@ -153,7 +169,9 @@ describe('ColumnGrid Component', () => {
   });
 
   it('ContextMenu key on a card dispatches the same CustomEvent, F10 without shift does not', () => {
-    const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
+    const { getAllByText } = render(
+      <ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />,
+    );
 
     const received: CustomEvent[] = [];
     const listener = (e: Event) => received.push(e as CustomEvent);

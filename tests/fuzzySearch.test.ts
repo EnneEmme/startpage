@@ -6,10 +6,34 @@ describe('FuzzySearchEngine & Edge Cases', () => {
   let engine: FuzzySearchEngine;
 
   const mockLinks: LinkItem[] = [
-    { id: 'mail', title: 'Gmail', url: 'https://mail.google.com', aliases: ['m', 'gmail', 'email'], category: 'Social' },
-    { id: 'youtube', title: 'YouTube', url: 'https://youtube.com', aliases: ['y', 'yt', 'video'], category: 'Fun' },
-    { id: 'github', title: 'GitHub', url: 'https://github.com', aliases: ['gh', 'code', 'git'], category: 'Dev' },
-    { id: 'whatsapp', title: 'WhatsApp Web', url: 'https://web.whatsapp.com', aliases: ['w', 'wa', 'chat'], category: 'Social' }
+    {
+      id: 'mail',
+      title: 'Gmail',
+      url: 'https://mail.google.com',
+      aliases: ['m', 'gmail', 'email'],
+      category: 'Social',
+    },
+    {
+      id: 'youtube',
+      title: 'YouTube',
+      url: 'https://youtube.com',
+      aliases: ['y', 'yt', 'video'],
+      category: 'Fun',
+    },
+    {
+      id: 'github',
+      title: 'GitHub',
+      url: 'https://github.com',
+      aliases: ['gh', 'code', 'git'],
+      category: 'Dev',
+    },
+    {
+      id: 'whatsapp',
+      title: 'WhatsApp Web',
+      url: 'https://web.whatsapp.com',
+      aliases: ['w', 'wa', 'chat'],
+      category: 'Social',
+    },
   ];
 
   beforeEach(() => {
@@ -81,15 +105,15 @@ describe('getEngineFallback (default web search engine)', () => {
   it('builds the URL from the configured engine key', () => {
     expect(getEngineFallback('ddg', 'meteo milano')).toEqual({
       name: 'DuckDuckGo',
-      url: 'https://duckduckgo.com/?q=meteo%20milano'
+      url: 'https://duckduckgo.com/?q=meteo%20milano',
     });
     expect(getEngineFallback('b', 'test')).toEqual({
       name: 'Bing',
-      url: 'https://www.bing.com/search?q=test'
+      url: 'https://www.bing.com/search?q=test',
     });
     expect(getEngineFallback('g', 'test')).toEqual({
       name: 'Google',
-      url: 'https://www.google.com/search?q=test'
+      url: 'https://www.google.com/search?q=test',
     });
   });
 
@@ -100,7 +124,7 @@ describe('getEngineFallback (default web search engine)', () => {
 
   it('encodes special characters in the query', () => {
     expect(getEngineFallback('g', 'c++ & co').url).toBe(
-      `https://www.google.com/search?q=${encodeURIComponent('c++ & co')}`
+      `https://www.google.com/search?q=${encodeURIComponent('c++ & co')}`,
     );
   });
 });

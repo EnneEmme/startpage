@@ -19,7 +19,7 @@ const APP_STORAGE_KEYS = [
   'startpage_category_order',
   'startpage_theme_settings',
   'startpage_ranks',
-  'startpage_script_consents'
+  'startpage_script_consents',
 ] as const;
 
 /* Inline styles on purpose: the boundary must still render when stylesheets
@@ -32,7 +32,7 @@ const hostStyle: JSX.CSSProperties = {
   padding: '1.5rem',
   background: '#08080a',
   color: '#e2e8f0',
-  fontFamily: 'system-ui, -apple-system, sans-serif'
+  fontFamily: 'system-ui, -apple-system, sans-serif',
 };
 
 const panelStyle: JSX.CSSProperties = {
@@ -42,12 +42,17 @@ const panelStyle: JSX.CSSProperties = {
   textAlign: 'center',
   background: 'rgba(255, 255, 255, 0.04)',
   border: '1px solid rgba(255, 255, 255, 0.1)',
-  borderRadius: '16px'
+  borderRadius: '16px',
 };
 
 const titleStyle: JSX.CSSProperties = { margin: '0 0 0.75rem', fontSize: '1.25rem' };
 
-const messageStyle: JSX.CSSProperties = { margin: '0 0 1rem', fontSize: '0.9rem', lineHeight: 1.6, color: '#8b9bb0' };
+const messageStyle: JSX.CSSProperties = {
+  margin: '0 0 1rem',
+  fontSize: '0.9rem',
+  lineHeight: 1.6,
+  color: '#8b9bb0',
+};
 
 const errorBoxStyle: JSX.CSSProperties = {
   margin: '0 0 1rem',
@@ -60,10 +65,15 @@ const errorBoxStyle: JSX.CSSProperties = {
   background: 'rgba(0, 0, 0, 0.4)',
   borderRadius: '8px',
   maxHeight: '9rem',
-  overflow: 'auto'
+  overflow: 'auto',
 };
 
-const actionsStyle: JSX.CSSProperties = { display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' };
+const actionsStyle: JSX.CSSProperties = {
+  display: 'flex',
+  gap: '0.75rem',
+  justifyContent: 'center',
+  flexWrap: 'wrap',
+};
 
 const baseButtonStyle: JSX.CSSProperties = {
   padding: '0.55rem 1.1rem',
@@ -73,14 +83,14 @@ const baseButtonStyle: JSX.CSSProperties = {
   background: 'rgba(255, 255, 255, 0.08)',
   border: '1px solid rgba(255, 255, 255, 0.15)',
   borderRadius: '8px',
-  cursor: 'pointer'
+  cursor: 'pointer',
 };
 
 const dangerButtonStyle: JSX.CSSProperties = {
   ...baseButtonStyle,
   color: '#f87171',
   background: 'rgba(248, 113, 113, 0.12)',
-  border: '1px solid rgba(248, 113, 113, 0.4)'
+  border: '1px solid rgba(248, 113, 113, 0.4)',
 };
 
 /**
@@ -125,8 +135,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         <div style={panelStyle} role="alert">
           <h2 style={titleStyle}>Something went wrong</h2>
           <p style={messageStyle}>
-            Startpage hit an unexpected error. Reload the page — if the problem keeps happening, reset all
-            local data (links, theme, ranks, script consents) to factory defaults.
+            Startpage hit an unexpected error. Reload the page — if the problem keeps happening,
+            reset all local data (links, theme, ranks, script consents) to factory defaults.
           </p>
           {error.message ? <pre style={errorBoxStyle}>{error.message}</pre> : null}
           <div style={actionsStyle}>

@@ -9,7 +9,7 @@ const DEFAULT_CONFIG = {
   gridDensity: 'normal',
   fontSize: 'medium',
   aliasVisibility: 'smart',
-  defaultSearchEngine: 'g'
+  defaultSearchEngine: 'g',
 } as const;
 
 describe('SettingsModal', () => {

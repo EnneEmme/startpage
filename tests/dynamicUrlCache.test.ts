@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   resolveDynamicUrl,
   clearDynamicUrlCache,
-  dynamicUrlCacheStats
+  dynamicUrlCacheStats,
 } from '../src/engine/dynamicEvaluator';
 
 describe('resolveDynamicUrl memoization (per-day cache)', () => {

@@ -35,7 +35,7 @@ export const Modal = ({
   className = '',
   contentClassName = '',
   hideHeader = false,
-  ariaLabel
+  ariaLabel,
 }: ModalProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
@@ -94,8 +94,9 @@ export const Modal = ({
 
       const container = containerRef.current;
       if (!container) return;
-      const focusable = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
-        .filter(el => el.offsetParent !== null || el === document.activeElement);
+      const focusable = Array.from(
+        container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      ).filter(el => el.offsetParent !== null || el === document.activeElement);
       if (focusable.length === 0) {
         e.preventDefault();
         container.focus();
@@ -139,31 +140,31 @@ export const Modal = ({
         {!hideHeader && (title || icon || subtitle) && (
           <div class={styles.modalHeader}>
             <div class={styles.headerTitleGroup}>
-              {icon && (
-                <div class={styles.headerIconBadge}>
-                  {icon}
-                </div>
-              )}
+              {icon && <div class={styles.headerIconBadge}>{icon}</div>}
               <div>
-                {title && <h2 id="modal-title" class={styles.modalTitle}>{title}</h2>}
+                {title && (
+                  <h2 id="modal-title" class={styles.modalTitle}>
+                    {title}
+                  </h2>
+                )}
                 {subtitle && <span class={styles.modalSubtitle}>{subtitle}</span>}
               </div>
             </div>
-            <button class={styles.closeBtn} onClick={onClose} type="button" title="Close (Esc)" aria-label="Close">
+            <button
+              class={styles.closeBtn}
+              onClick={onClose}
+              type="button"
+              title="Close (Esc)"
+              aria-label="Close"
+            >
               <X size={18} />
             </button>
           </div>
         )}
-        <div class={`${styles.modalContent} ${contentClassName}`}>
-          {children}
-        </div>
-        {footer && (
-          <div class={styles.modalFooter}>
-            {footer}
-          </div>
-        )}
+        <div class={`${styles.modalContent} ${contentClassName}`}>{children}</div>
+        {footer && <div class={styles.modalFooter}>{footer}</div>}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
