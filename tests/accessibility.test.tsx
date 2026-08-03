@@ -41,4 +41,15 @@ describe('Accessibility & WCAG Features', () => {
     expect(htmlContent).toContain('<html lang="en">');
     expect(htmlContent).toContain('<noscript>');
   });
+
+  it('JumpBar fade masks do not cover the focus ring of edge pills', () => {
+    const cssPath = path.resolve(__dirname, '../src/components/JumpBar.module.css');
+    const cssContent = fs.readFileSync(cssPath, 'utf-8');
+
+    // the mask is dropped while the bar holds keyboard focus…
+    expect(cssContent).toContain('.jumpBar:focus-within');
+    expect(cssContent).toContain('mask-image: none');
+    // …and scroll-padding keeps pills away from the fade zone
+    expect(cssContent).toContain('scroll-padding-inline');
+  });
 });

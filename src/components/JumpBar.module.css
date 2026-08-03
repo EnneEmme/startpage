@@ -40,6 +40,20 @@
   -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 24px, #000 calc(100% - 24px), transparent 100%);
 }
 
+/* The edge fades can visually swallow the focus ring of a pill scrolled to
+   the very edge: while navigating by keyboard, drop the mask entirely */
+.jumpBar:focus-within.fadeRight,
+.jumpBar:focus-within.fadeLeft,
+.jumpBar:focus-within.fadeBoth {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+/* Keep edge pills clear of the fade zone when scrolled into view */
+.jumpBar {
+  scroll-padding-inline: 24px;
+}
+
 .tabBtn {
   display: flex;
   align-items: center;
