@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks';
-import { ChevronDown } from 'lucide-preact';
+import { Icon } from './Icon';
 import type { LinkItem, CategoryGroup } from '../types/startpage';
 import {
   executeLink,
@@ -149,7 +149,7 @@ export const ColumnGrid = ({
         title="Scroll down to view remaining columns"
         aria-label="Scroll down to view remaining columns"
       >
-        <ChevronDown size={20} />
+        <Icon name="ChevronDown" size={20} />
       </button>
 
       {/* Context Menu */}

@@ -1,6 +1,6 @@
 import type { h } from 'preact';
 import { useState, useEffect, useMemo } from 'preact/hooks';
-import { Plus, Sliders, Globe, Zap, Search } from 'lucide-preact';
+import { Icon } from '../Icon';
 import type { LinkItem } from '../../types/startpage';
 import { resolveDynamicUrl } from '../../engine';
 import { appActions, categoriesSignal, confirmDialog } from '../../stores';
@@ -259,7 +259,7 @@ export const VisualEditModal = ({
       onClose={handleRequestClose}
       title={isEditing ? 'Edit Link' : 'Add New Link'}
       subtitle="Configure links, JS scripts and search engines"
-      icon={isEditing ? <Sliders size={18} /> : <Plus size={18} />}
+      icon={isEditing ? <Icon name="Sliders" size={18} /> : <Icon name="Plus" size={18} />}
       contentClassName={styles.formContent}
       hideHeader={false}
     >
@@ -289,7 +289,7 @@ export const VisualEditModal = ({
             class={`${styles.tabSegment} ${activeTab === 'web' ? styles.activeTabSegment : ''}`}
             onClick={() => setActiveTab('web')}
           >
-            <Globe size={14} />
+            <Icon name="Globe" size={14} />
             <span>Standard Website</span>
           </button>
           <button
@@ -302,7 +302,7 @@ export const VisualEditModal = ({
             class={`${styles.tabSegment} ${activeTab === 'script' ? styles.activeTabSegment : ''}`}
             onClick={() => setActiveTab('script')}
           >
-            <Zap size={14} />
+            <Icon name="Zap" size={14} />
             <span>Script JS / Bookmarklet</span>
           </button>
           <button
@@ -315,7 +315,7 @@ export const VisualEditModal = ({
             class={`${styles.tabSegment} ${activeTab === 'search' ? styles.activeTabSegment : ''}`}
             onClick={() => setActiveTab('search')}
           >
-            <Search size={14} />
+            <Icon name="Search" size={14} />
             <span>Search Engine</span>
           </button>
         </div>

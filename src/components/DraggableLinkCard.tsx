@@ -1,6 +1,6 @@
 import { memo } from 'preact/compat';
 import { useComputed } from '@preact/signals';
-import { Zap } from 'lucide-preact';
+import { Icon } from './Icon';
 import type { LinkItem } from '../types/startpage';
 import {
   draggedLinkIdSignal,
@@ -114,7 +114,7 @@ const DraggableLinkCardView = memo(
             <span class={styles.linkTitle}>
               {link.title}
               {isScript && (
-                <Zap size={11} class={styles.scriptBadge} title="JS Script Bookmarklet" />
+                <Icon name="Zap" size={11} class={styles.scriptBadge} title="JS Script Bookmarklet" />
               )}
             </span>
           </div>

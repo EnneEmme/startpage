@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'preact/hooks';
-import { Download, Upload, Copy, Check, RefreshCw, Database } from 'lucide-preact';
+import { Icon } from './Icon';
 import { copyTextToClipboard, dataStore, IMPORT_COPIED_FEEDBACK_MS } from '../engine';
 import { appActions, confirmDialog, showToast } from '../stores';
 import { Modal } from './Modals/Modal';
@@ -108,7 +108,7 @@ export const ImportExportModal = ({ isOpen, onClose }: ImportExportModalProps) =
       onClose={onClose}
       title="Data Management: Backup & Restore"
       subtitle="Export your links for safekeeping or import a previous backup"
-      icon={<Database size={18} />}
+      icon={<Icon name="Database" size={18} />}
       footer={
         <button type="button" class={styles.actionBtn} onClick={onClose}>
           Close
@@ -118,21 +118,21 @@ export const ImportExportModal = ({ isOpen, onClose }: ImportExportModalProps) =
       <div class={styles.contentBody}>
         <div>
           <div>
-            <Download size={16} />
+            <Icon name="Download" size={16} />
             <h3>Export Backup (JSON)</h3>
           </div>
           <div class={styles.actionBar}>
             <button class={styles.actionBtn} onClick={handleExport}>
-              <Download size={16} /> Export JSON
+              <Icon name="Download" size={16} /> Export JSON
             </button>
             <button class={styles.actionBtn} onClick={handleCopy}>
-              {copied ? <Check size={16} /> : <Copy size={16} />} {copied ? 'Copied!' : 'Copy'}
+              {copied ? <Icon name="Check" size={16} /> : <Icon name="Copy" size={16} />} {copied ? 'Copied!' : 'Copy'}
             </button>
             <button class={styles.actionBtn} onClick={handleDownloadFile}>
-              <Download size={16} /> Download File
+              <Icon name="Download" size={16} /> Download File
             </button>
             <button class={`${styles.actionBtn} ${styles.resetBtn}`} onClick={handleResetDefaults}>
-              <RefreshCw size={16} /> Reset Default
+              <Icon name="RefreshCw" size={16} /> Reset Default
             </button>
           </div>
 
@@ -150,7 +150,7 @@ export const ImportExportModal = ({ isOpen, onClose }: ImportExportModalProps) =
 
           <div class={styles.footerBar}>
             <button class={`${styles.actionBtn} ${styles.primaryBtn}`} onClick={handleImport}>
-              <Upload size={16} /> Apply & Import JSON
+              <Icon name="Upload" size={16} /> Apply & Import JSON
             </button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { X, Keyboard, Search, Sparkles, Command } from 'lucide-preact';
+import { Icon } from './Icon';
 import { getDynamicCheatsheetShortcuts } from '../engine';
 import { Modal } from './Modals/Modal';
 import styles from './CheatsheetModal.module.css';
@@ -41,7 +41,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
       onClose={onClose}
       title="Keyboard Shortcuts Cheatsheet"
       subtitle="Complete guide to keyboard shortcuts and quick commands"
-      icon={<Keyboard size={18} class={styles.keyboardIcon} />}
+      icon={<Icon name="Keyboard" size={18} class={styles.keyboardIcon} />}
       footer={
         <span class={styles.footerHint}>
           💡 Press <kbd class={styles.miniKbd}>?</kbd> at any time to open/close this guide
@@ -50,7 +50,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
     >
       {/* Search Bar */}
       <div class={styles.searchBarWrapper}>
-        <Search size={15} class={styles.searchIcon} />
+        <Icon name="Search" size={15} class={styles.searchIcon} />
         <input
           type="text"
           class={styles.searchInput}
@@ -68,7 +68,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
             title="Clear search"
             aria-label="Clear search"
           >
-            <X size={13} />
+            <Icon name="X" size={13} />
           </button>
         )}
       </div>
@@ -79,7 +79,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
           filteredGroups.map(group => (
             <div key={group.category} class={styles.shortcutSection}>
               <div class={styles.categoryHeaderRow}>
-                <Sparkles size={13} class={styles.categorySparkle} />
+                <Icon name="Sparkles" size={13} class={styles.categorySparkle} />
                 <h3 class={styles.categoryHeader}>{group.category}</h3>
               </div>
               <div class={styles.shortcutGrid}>
@@ -100,7 +100,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
           ))
         ) : (
           <div class={styles.noResultsState}>
-            <Command size={32} class={styles.noResultsIcon} />
+            <Icon name="Command" size={32} class={styles.noResultsIcon} />
             <p>No shortcuts found for "{searchQuery}"</p>
           </div>
         )}

@@ -1,4 +1,4 @@
-import { Search, CircleQuestionMark, PenLine, Settings } from 'lucide-preact';
+import { iconComponentFor } from './iconRegistry';
 import styles from './ActionToolbar.module.css';
 
 interface ActionToolbarProps {
@@ -25,14 +25,14 @@ export const ActionToolbar = ({
   const iconSize = isNav ? 20 : 16;
 
   const actions = [
-    { label: 'Fuzzy Search (Press any key)', Icon: Search, onClick: onOpenSearch },
+    { label: 'Fuzzy Search (Press any key)', Icon: iconComponentFor('Search'), onClick: onOpenSearch },
     {
       label: 'Shortcuts Cheatsheet (? or F1)',
-      Icon: CircleQuestionMark,
+      Icon: iconComponentFor('CircleQuestionMark'),
       onClick: onOpenCheatsheet,
     },
-    { label: 'Settings & Themes', Icon: Settings, onClick: onOpenSettings },
-    { label: 'Add or Edit Links (Shift+N)', Icon: PenLine, onClick: onOpenVisualEdit },
+    { label: 'Settings & Themes', Icon: iconComponentFor('Settings'), onClick: onOpenSettings },
+    { label: 'Add or Edit Links (Shift+N)', Icon: iconComponentFor('PenLine'), onClick: onOpenVisualEdit },
   ];
 
   const buttons = actions.map(({ label, Icon, onClick }) => (

@@ -1,4 +1,4 @@
-import { Tag, Check, Plus } from 'lucide-preact';
+import { Icon } from '../Icon';
 import styles from './VisualEditModal.module.css';
 
 interface CategoryPickerProps {
@@ -42,7 +42,7 @@ export const CategoryPicker = ({
             aria-haspopup="listbox"
           >
             <span class={styles.selectedCategoryText}>
-              <Tag size={14} class={styles.categoryTagIcon} />
+              <Icon name="Tag" size={14} class={styles.categoryTagIcon} />
               {category}
             </span>
             <span class={styles.arrowIcon}>{isCategoryPickerOpen ? '▲' : '▼'}</span>
@@ -86,7 +86,7 @@ export const CategoryPicker = ({
                 onClick={() => onSelectCategory(cat)}
               >
                 <span>{cat}</span>
-                {cat === category && <Check size={14} class={styles.checkIcon} />}
+                {cat === category && <Icon name="Check" size={14} class={styles.checkIcon} />}
               </div>
             ))}
             <div
@@ -98,7 +98,7 @@ export const CategoryPicker = ({
                 onSetIsCategoryPickerOpen(false);
               }}
             >
-              <Plus size={14} />
+              <Icon name="Plus" size={14} />
               <span>Create New Category...</span>
             </div>
           </div>

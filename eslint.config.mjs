@@ -58,6 +58,22 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off'
     }
   },
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.node
+      }
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+      ]
+    }
+  },
   // Deve restare l'ultimo: spegne eventuali regole di formatting dei preset.
   prettier
 );

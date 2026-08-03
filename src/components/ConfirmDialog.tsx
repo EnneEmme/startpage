@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-preact';
+import { Icon } from './Icon';
 import { confirmSignal, settleConfirm } from '../stores';
 import { Modal } from './Modals/Modal';
 import styles from './ConfirmDialog.module.css';
@@ -16,7 +16,7 @@ export const ConfirmDialog = () => {
       isOpen={true}
       onClose={() => settleConfirm(false)}
       title={pending.title ?? 'Confirm action'}
-      icon={<AlertTriangle size={18} />}
+      icon={<Icon name="AlertTriangle" size={18} />}
       maxWidth="420px"
       footer={
         <div class={styles.actions}>
