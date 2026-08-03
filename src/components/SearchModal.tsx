@@ -252,7 +252,7 @@ export const SearchModal = ({
       ariaLabel="Search links and commands"
       maxWidth="660px"
     >
-      <div class={styles.searchModalInner}>
+      <div>
         {/* Polite live region: announces the result count as the query changes */}
         <div class={styles.srOnly} role="status" aria-live="polite">
           {liveAnnouncement}
@@ -312,7 +312,7 @@ export const SearchModal = ({
             class={`${styles.resultRow} ${styles.prefixRow}`}
             onClick={handleExecuteCommandPrefix}
           >
-            <Globe size={20} class={styles.prefixIcon} />
+            <Globe size={20} />
             <div class={styles.resultInfo}>
               <span class={styles.resultTitle}>
                 Search {parsedPrefix.engineName}: <strong>{parsedPrefix.query}</strong>

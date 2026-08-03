@@ -106,17 +106,17 @@ export const ImportExportModal = ({
       onClose={onClose}
       title="Data Management: Backup & Restore"
       subtitle="Export your links for safekeeping or import a previous backup"
-      icon={<Database size={18} class={styles.headerIcon} />}
+      icon={<Database size={18} />}
       footer={
-        <button type="button" class={styles.closeActionBtn} onClick={onClose}>
+        <button type="button" class={styles.actionBtn} onClick={onClose}>
           Close
         </button>
       }
     >
       <div class={styles.contentBody}>
-        <div class={styles.sectionBlock}>
-          <div class={styles.sectionHeader}>
-            <Download size={16} class={styles.sectionIcon} />
+        <div>
+          <div>
+            <Download size={16} />
             <h3>Export Backup (JSON)</h3>
           </div>
           <div class={styles.actionBar}>
