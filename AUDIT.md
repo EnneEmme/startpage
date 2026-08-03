@@ -310,7 +310,7 @@
 - [x] ⚪ **Catch silenziosi ovunque** — dataStore.ts:241,371,381; rankStorage.ts:28,49,98; themeEngine.ts:222-233; `importJson` ritorna solo false.
   **Fix:** `console.warn` con contesto (restano in dev; drop_console li toglie in prod) + errori strutturati `{ok, error}` da importJson. ✅ Fatto (P7/R3): 18 catch silenti → `console.warn('[Modulo] contesto', err)` (fallback invariati); nuovo `dataStore.importJsonDetailed(): {ok:true}|{ok:false,error}` con motivi leggibili (Invalid JSON / missing "commands" array / No valid links), `importJson` boolean mantenuto come compat wrapper (appStore.ts read-only, annotazione `: boolean`), ImportExportModal mostra il motivo via toast; 5 test engine + 2 test modal nuovi/adattati.
 
-- [ ] ⚪ **Error boundary assente** — eccezione di render (dati corrotti) = pagina bianca. Aggiungere boundary con bottone "Reset defaults" in main.tsx.
+- [x] ⚪ **Error boundary assente** — eccezione di render (dati corrotti) = pagina bianca. Aggiungere boundary con bottone "Reset defaults" in main.tsx. ✅ Fatto (P7/R3): `components/ErrorBoundary.tsx` class component (componentDidCatch) con fallback dark inline-styled (rende anche senza CSS), bottoni "Reload" + "Reset defaults" (pulisce le 5 chiavi app: links/order/theme/ranks/script_consents, poi reload); wrappa `<App />` in main.tsx, export nel barrel components; tests/errorBoundary.test.tsx (3 test: passthrough sano, fallback+2 bottoni, reset selettivo chiavi).
 
 - [ ] ⚪ **Inline styles sparsi** — app.tsx:120, ScriptEditor:14, FormFields:169-176, ghost drag (giustificato), ambra ×2. Spostare in CSS/token.
 
