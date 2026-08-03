@@ -62,6 +62,8 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
             type="button"
             class={styles.clearSearchBtn}
             onClick={() => setSearchQuery('')}
+            title="Clear search"
+            aria-label="Clear search"
           >
             <X size={13} />
           </button>

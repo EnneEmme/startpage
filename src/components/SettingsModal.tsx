@@ -60,6 +60,7 @@ export const SettingsModal = ({
                     style={{ background: item.primary }}
                     onClick={() => handleSelectAccent(item.id)}
                     title={`${item.name} palette`}
+                    aria-label={`${item.name} palette`}
                   >
                     {isSelected && <Check size={16} class={styles.checkMarkIcon} />}
                   </button>

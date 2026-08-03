@@ -127,6 +127,8 @@ export const FormFields = ({
               type="button"
               class={styles.iconPickerToggleBtn}
               onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}
+              aria-expanded={isIconDropdownOpen}
+              aria-haspopup="listbox"
             >
               Pick ({ICON_LIST.length} Lucide) ▼
             </button>
