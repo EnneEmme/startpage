@@ -40,7 +40,7 @@
 }
 
 .confirmBtn.dangerBtn {
-  background: #f87171;
+  background: var(--danger);
   color: #14060a;
 }
 

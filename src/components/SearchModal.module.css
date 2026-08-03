@@ -29,11 +29,11 @@
   gap: 0.4rem;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #0b0d12;
   background: var(--accent-gradient);
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-full);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 2px 8px var(--accent-glow, rgba(226, 232, 240, 0.4));
 }
 
 .resultsList {
@@ -103,7 +103,7 @@
   bottom: 15%;
   width: 3px;
   background: var(--accent-primary);
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   box-shadow: 0 0 8px var(--accent-glow);
 }
 
