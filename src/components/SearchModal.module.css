@@ -124,9 +124,14 @@
   color: var(--text-primary);
 }
 
-.resultRow.selected, .resultRow:hover {
+.resultRow.selected {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
   box-shadow: 0 0 0 1px var(--border-focus);
+}
+
+/* Pointer hover = subtle affordance only (no selection, that is click/keyboard) */
+.resultRow:hover {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .resultRow.selected::before {
