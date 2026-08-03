@@ -72,7 +72,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
       </div>
 
       {/* Body Content */}
-      <div class={styles.cheatsheetBody}>
+      <div>
           {filteredGroups.length > 0 ? (
             filteredGroups.map(group => (
               <div key={group.category} class={styles.shortcutSection}>

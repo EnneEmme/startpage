@@ -45,5 +45,5 @@
 }
 
 .confirmBtn.dangerBtn:hover {
-  background: #ef4444;
+  background: color-mix(in srgb, var(--danger) 82%, black);
 }
