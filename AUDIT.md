@@ -268,11 +268,11 @@
 
 ## P7 — FILE, DOCS & IGIENE REPO
 
-- [ ] 🟠 **`structure.md` gravemente stantio** (viola gemini.md §2.5): cita `GEMINI.md` (file: `gemini.md`), documenta `old_homepage/` inesistente, VisualEditModal come file piatto (ora cartella con 4 sotto-file), mancano `stores/`, `hooks/`, `components/modals/`, `components/Widgets/`, 7 test su 21 non citati.
+- [x] 🟠 **`structure.md` gravemente stantio** (viola gemini.md §2.5): cita `GEMINI.md` (file: `gemini.md`), documenta `old_homepage/` inesistente, VisualEditModal come file piatto (ora cartella con 4 sotto-file), mancano `stores/`, `hooks/`, `components/modals/`, `components/Widgets/`, 7 test su 21 non citati. ✅ Fatto (P7): riscritto dallo stato reale — root completa (eslint.config.mjs, .prettierrc, bun.lock…), `engine/scriptConsent.ts`, dettaglio `VisualEditModal/` (5 file), ownership CSS condivisi, tutte le 29 suite test + `setup.ts`.
   **Fix:** riscrivere dallo stato reale; rieleggere a ogni commit che muove file.
 
-- [ ] 🟠 **TODO.md/plan.md dichiarano completamenti falsi** — "ESLint+Prettier+Husky ✅" (inesistenti), "structuredClone ✅" (ancora JSON.parse/stringify), "union type ✅" (ancora collassato, types:15: `'unimib_orari'|'unimib_esami'|string` → fix `(string & {})`), "coverage ✅" (nessuna config), "100dvh ✅" (ancora `100vh` ovunque); plan.md:35 dice Ctrl+1-9 ma è tasto singolo; TODO Task 2 dice "hold Alt" ma è toggle.
-  **Fix:** verificare prima di spuntare; riallineare.
+- [x] 🟠 **TODO.md/plan.md dichiarano completamenti falsi** — "ESLint+Prettier+Husky ✅" (inesistenti), "structuredClone ✅" (ancora JSON.parse/stringify), "union type ✅" (ancora collassato, types:15: `'unimib_orari'|'unimib_esami'|string` → fix `(string & {})`), "coverage ✅" (nessuna config), "100dvh ✅" (ancora `100vh` ovunque); plan.md:35 dice Ctrl+1-9 ma è tasto singolo; TODO Task 2 dice "hold Alt" ma è toggle.
+  **Fix:** verificare prima di spuntare; riallineare. ✅ Fatto (P7, verifiche grep/codice): realmente veri e mantenuti → structuredClone (dataStore.ts:148,424,521), union type (types:15 ha `(string & {})`), ESLint+Prettier (P5; Husky scartato da decisione utente), coverage v8 + script, strict flags (tsc 0 errori). Corretti i falsi → "100dvh ✅" → 🔴 aperto (8× `100vh` + `!important`, tracciato in P7), plan.md Ctrl+1-9 → `Shift+1..9`, TODO Task 2 "hold Alt" → toggle Alt/Shift+Space, script obsoleti (`vitest.mjs`/`vite.js` diretti → `bun run test`/`bun run build`).
 
 - [x] 🟡 **Chiavi localStorage doc ≠ codice** — gemini.md §1.3 cita `startpage_links/startpage_settings`; codice usa `startpage_custom_links`, `startpage_category_order`, `startpage_theme_settings` (+`startpage_ranks` corretta).
   **Fix:** aggiornare gemini.md (il codice è il contratto reale). ✅ Risolto in P6: gemini.md §1.3 ora elenca le chiavi reali (`startpage_custom_links`, `startpage_category_order`, `startpage_theme_settings`, `startpage_ranks`, `startpage_script_consents`).
