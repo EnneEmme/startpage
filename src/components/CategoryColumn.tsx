@@ -24,6 +24,8 @@ interface CategoryColumnProps {
   onCardTouchStart: (e: TouchEvent, link: LinkItem) => void;
   onCardTouchEnd: () => void;
   onCardClick: (e: MouseEvent, link: LinkItem) => void;
+  /** Optional: renders the empty-state CTA when the column has no links. */
+  onAddLink?: ((category: string) => void) | undefined;
 }
 
 /**
@@ -47,7 +49,8 @@ export const CategoryColumn = memo(({
   onCardContextMenu,
   onCardTouchStart,
   onCardTouchEnd,
-  onCardClick
+  onCardClick,
+  onAddLink
 }: CategoryColumnProps) => {
   // Inline category header rename state (local: only this column re-renders)
   const [isRenaming, setIsRenaming] = useState<boolean>(false);
@@ -133,25 +136,40 @@ export const CategoryColumn = memo(({
         class={`${styles.linksList} ${fadeClass}`}
         onScroll={e => onListScroll(cat.name, e.currentTarget as HTMLDivElement)}
       >
-        {cat.links.map((link, linkIdx) => (
-          <DraggableLinkCard
-            key={link.id}
-            link={link}
-            displayUrl={resolveDynamicUrl(link.url, link.dynamicUrlRule)}
-            isScript={isBookmarkletOrScript(link)}
-            showShortcuts={showShortcuts}
-            onDragStart={e => drag.handleLinkDragStart(e, link)}
-            onDragOver={e => drag.handleDragOver(e, cat.name, link.id)}
-            onDrop={e => drag.handleDrop(e, cat.name, linkIdx)}
-            onDragLeave={drag.handleDragLeave}
-            onDragEnd={drag.handleDragEnd}
-            onClick={e => onCardClick(e, link)}
-            onContextMenu={e => onCardContextMenu(e, link)}
-            onTouchStart={e => onCardTouchStart(e, link)}
-            onTouchEnd={onCardTouchEnd}
-            onTouchMove={onCardTouchEnd}
-          />
-        ))}
+        {cat.links.length === 0 ? (
+          <div class={styles.emptyState}>
+            <p class={styles.emptyStateText}>No links yet</p>
+            {onAddLink && (
+              <button
+                type="button"
+                class={styles.emptyStateAction}
+                onClick={() => onAddLink(cat.name)}
+              >
+                Add the first link
+              </button>
+            )}
+          </div>
+        ) : (
+          cat.links.map((link, linkIdx) => (
+            <DraggableLinkCard
+              key={link.id}
+              link={link}
+              displayUrl={resolveDynamicUrl(link.url, link.dynamicUrlRule)}
+              isScript={isBookmarkletOrScript(link)}
+              showShortcuts={showShortcuts}
+              onDragStart={e => drag.handleLinkDragStart(e, link)}
+              onDragOver={e => drag.handleDragOver(e, cat.name, link.id)}
+              onDrop={e => drag.handleDrop(e, cat.name, linkIdx)}
+              onDragLeave={drag.handleDragLeave}
+              onDragEnd={drag.handleDragEnd}
+              onClick={e => onCardClick(e, link)}
+              onContextMenu={e => onCardContextMenu(e, link)}
+              onTouchStart={e => onCardTouchStart(e, link)}
+              onTouchEnd={onCardTouchEnd}
+              onTouchMove={onCardTouchEnd}
+            />
+          ))
+        )}
       </div>
     </div>
   );

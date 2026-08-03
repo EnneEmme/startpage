@@ -14,6 +14,13 @@ interface ColumnGridProps {
   highlightedCategory?: string | null;
   onEditLink?: (link: LinkItem) => void;
   onOpenReorder?: () => void;
+  /**
+   * Optional CTA for empty states (column-level and page-level). Page-level
+   * invocation passes NO category; column-level passes the category name.
+   * Wiring of the "add link" modal is done by the app-level orchestrator
+   * post-merge — without this prop the empty states render text only.
+   */
+  onAddLink?: ((category?: string) => void) | undefined;
 }
 
 export const ColumnGrid = ({
@@ -21,7 +28,8 @@ export const ColumnGrid = ({
   showShortcuts,
   highlightedCategory,
   onEditLink,
-  onOpenReorder
+  onOpenReorder,
+  onAddLink
 }: ColumnGridProps) => {
   const drag = useDragAndDrop(categories, `.${styles.linksList}`);
   const contextMenu = useContextMenu();
@@ -98,22 +106,38 @@ export const ColumnGrid = ({
 
   return (
     <div class={styles.gridContainer}>
-      {categories.map(cat => (
-        <CategoryColumn
-          key={cat.name}
-          cat={cat}
-          highlighted={highlightedCategory === cat.name}
-          showShortcuts={showShortcuts}
-          drag={drag}
-          mask={masks[cat.name]}
-          registerList={registerList}
-          onListScroll={handleListScroll}
-          onCardContextMenu={contextMenu.handleLinkContextMenu}
-          onCardTouchStart={contextMenu.handleLinkTouchStart}
-          onCardTouchEnd={contextMenu.cancelLongPress}
-          onCardClick={handleCardClick}
-        />
-      ))}
+      {categories.length === 0 ? (
+        <div class={styles.gridEmptyState}>
+          <p class={styles.emptyStateText}>No links yet</p>
+          {onAddLink && (
+            <button
+              type="button"
+              class={styles.emptyStateAction}
+              onClick={() => onAddLink()}
+            >
+              Add the first link
+            </button>
+          )}
+        </div>
+      ) : (
+        categories.map(cat => (
+          <CategoryColumn
+            key={cat.name}
+            cat={cat}
+            highlighted={highlightedCategory === cat.name}
+            showShortcuts={showShortcuts}
+            drag={drag}
+            mask={masks[cat.name]}
+            registerList={registerList}
+            onListScroll={handleListScroll}
+            onCardContextMenu={contextMenu.handleLinkContextMenu}
+            onCardTouchStart={contextMenu.handleLinkTouchStart}
+            onCardTouchEnd={contextMenu.cancelLongPress}
+            onCardClick={handleCardClick}
+            onAddLink={onAddLink}
+          />
+        ))
+      )}
 
       {/* Page-Wide Floating Minimalist Down Indicator Cue (Bottom Center) */}
       <button

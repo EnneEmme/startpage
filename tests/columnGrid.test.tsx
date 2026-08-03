@@ -75,4 +75,80 @@ describe('ColumnGrid Component', () => {
     expect(baseElement.textContent).toContain('Edit Link');
     expect(baseElement.textContent).toContain('Remove Link');
   });
+
+  it('empty column: renders "No links yet" and no CTA without onAddLink', () => {
+    const { getByText, queryByRole } = render(
+      <ColumnGrid categories={[{ name: 'EmptyCat', links: [] }]} showShortcuts={false} />
+    );
+
+    expect(getByText('No links yet')).not.toBeNull();
+    // Degrades gracefully: no add-link CTA unless the parent wires onAddLink
+    expect(queryByRole('button', { name: 'Add the first link' })).toBeNull();
+  });
+
+  it('empty column: CTA calls onAddLink with the column category', () => {
+    const onAddLink = vi.fn();
+    const { getByRole } = render(
+      <ColumnGrid categories={[{ name: 'EmptyCat', links: [] }]} showShortcuts={false} onAddLink={onAddLink} />
+    );
+
+    fireEvent.click(getByRole('button', { name: 'Add the first link' }));
+    expect(onAddLink).toHaveBeenCalledTimes(1);
+    expect(onAddLink).toHaveBeenCalledWith('EmptyCat');
+  });
+
+  it('empty grid: renders page-level empty state and CTA calls onAddLink without a category', () => {
+    const onAddLink = vi.fn();
+    const { getByText, getByRole } = render(
+      <ColumnGrid categories={[]} showShortcuts={false} onAddLink={onAddLink} />
+    );
+
+    expect(getByText('No links yet')).not.toBeNull();
+    fireEvent.click(getByRole('button', { name: 'Add the first link' }));
+    expect(onAddLink).toHaveBeenCalledTimes(1);
+    expect(onAddLink).toHaveBeenCalledWith();
+  });
+
+  it('empty grid without onAddLink renders no CTA', () => {
+    const { getByText, queryByRole } = render(<ColumnGrid categories={[]} showShortcuts={false} />);
+
+    expect(getByText('No links yet')).not.toBeNull();
+    expect(queryByRole('button', { name: 'Add the first link' })).toBeNull();
+  });
+
+  it('Shift+F10 on a card dispatches the startpage:open-context-menu CustomEvent', () => {
+    const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
+
+    const received: CustomEvent[] = [];
+    const listener = (e: Event) => received.push(e as CustomEvent);
+    window.addEventListener('startpage:open-context-menu', listener);
+
+    const anchor = getAllByText('Mail')[0]!.closest('a') as HTMLAnchorElement;
+    fireEvent.keyDown(anchor, { key: 'F10', shiftKey: true });
+
+    window.removeEventListener('startpage:open-context-menu', listener);
+
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.linkId).toBe('mail');
+    expect(typeof received[0]!.detail.clientX).toBe('number');
+    expect(typeof received[0]!.detail.clientY).toBe('number');
+  });
+
+  it('ContextMenu key on a card dispatches the same CustomEvent, F10 without shift does not', () => {
+    const { getAllByText } = render(<ColumnGrid categories={dataStore.getCategories()} showShortcuts={false} />);
+
+    const received: CustomEvent[] = [];
+    const listener = (e: Event) => received.push(e as CustomEvent);
+    window.addEventListener('startpage:open-context-menu', listener);
+
+    const anchor = getAllByText('Mail')[0]!.closest('a') as HTMLAnchorElement;
+    fireEvent.keyDown(anchor, { key: 'F10', shiftKey: false });
+    expect(received).toHaveLength(0);
+
+    fireEvent.keyDown(anchor, { key: 'ContextMenu' });
+    expect(received).toHaveLength(1);
+    expect(received[0]!.detail.linkId).toBe('mail');
+
+    window.removeEventListener('startpage:open-context-menu', listener);
+  });
 });

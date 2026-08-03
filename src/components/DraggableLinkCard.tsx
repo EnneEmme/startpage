@@ -29,6 +29,9 @@ interface DraggableLinkCardProps {
   onTouchMove: () => void;
 }
 
+/** Dispatched when keyboard users request the card context menu (Shift+F10 / ContextMenu key). */
+export const OPEN_CONTEXT_MENU_EVENT = 'startpage:open-context-menu';
+
 interface DraggableLinkCardViewProps extends DraggableLinkCardProps {
   dragOverClass: string | undefined;
   isBeingDragged: boolean;
@@ -60,6 +63,19 @@ const DraggableLinkCardView = memo(({
 }: DraggableLinkCardViewProps) => {
   const mainAlias = link.aliases && link.aliases.length > 0 ? link.aliases[0] : null;
 
+  // Keyboard parity for right-click: Shift+F10 / ContextMenu key asks for the
+  // context menu at this card's anchor (listener lives in the context-menu
+  // branch; this CustomEvent is the cross-branch contract).
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if ((e.shiftKey && e.key === 'F10') || e.key === 'ContextMenu') {
+      e.preventDefault();
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      window.dispatchEvent(new CustomEvent(OPEN_CONTEXT_MENU_EVENT, {
+        detail: { linkId: link.id, clientX: rect.left, clientY: rect.bottom }
+      }));
+    }
+  };
+
   return (
     <div
       class={`${styles.linkCardDragWrapper} ${dragOverClass} ${isBeingDragged ? styles.linkBeingDragged : ''} ${isJustDropped ? styles.linkCardReleased : ''}`}
@@ -80,6 +96,7 @@ const DraggableLinkCardView = memo(({
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         onTouchMove={onTouchMove}
+        onKeyDown={handleKeyDown}
       >
         <div class={styles.iconContainer}>
           <LinkIcon
