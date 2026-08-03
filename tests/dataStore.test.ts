@@ -58,6 +58,51 @@ describe('DataStore Engine & Edge Cases', () => {
     expect(dataStore.importJson('{"someKey": 123}')).toBe(false);
   });
 
+  describe('importJsonDetailed structured import errors (P7/R3)', () => {
+    it('returns ok on a valid backup (both accepted shapes)', () => {
+      expect(dataStore.importJsonDetailed(dataStore.exportJson())).toEqual({ ok: true });
+      expect(dataStore.importJsonDetailed(JSON.stringify({
+        commands: [{ id: 'a', title: 'A', url: 'https://a.example.com', aliases: [], category: 'Dev' }]
+      }))).toEqual({ ok: true });
+    });
+
+    it('reports Invalid JSON for a non-parseable payload', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const result = dataStore.importJsonDetailed('invalid json string {');
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toBe('Invalid JSON');
+      warnSpy.mockRestore();
+    });
+
+    it('reports an unrecognized shape when no commands array exists', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      for (const payload of ['{"someKey": 123}', '[{"id":"x"}]', 'null', '42']) {
+        const result = dataStore.importJsonDetailed(payload);
+        expect(result.ok).toBe(false);
+        if (!result.ok) expect(result.error).toContain('missing "commands" array');
+      }
+      warnSpy.mockRestore();
+    });
+
+    it('reports a backup whose entries all miss required fields (and keeps current links)', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const payload = JSON.stringify({ commands: [{ id: 'only-id' }, { nope: true }] });
+      const result = dataStore.importJsonDetailed(payload);
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toContain('No valid links');
+      // Failed import must not wipe the current configuration
+      expect(dataStore.getLinks().some(l => l.id === 'mail')).toBe(true);
+      warnSpy.mockRestore();
+    });
+
+    it('boolean importJson stays the compat wrapper over the same pipeline', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      expect(dataStore.importJson('invalid json string {')).toBe(false);
+      expect(dataStore.importJson('{"commands": []}')).toBe(true); // empty backup stays importable
+      warnSpy.mockRestore();
+    });
+  });
+
   it('recovers gracefully from corrupted localStorage data', () => {
     localStorage.setItem('startpage_custom_links', 'CORRUPTED_{{{JSON');
     const corruptedStore = new DataStore();

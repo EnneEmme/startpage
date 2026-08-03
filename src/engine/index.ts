@@ -6,6 +6,7 @@ export { BASE_CHEATSHEET_SHORTCUTS, CHEATSHEET_SHORTCUTS, getDynamicCheatsheetSh
 export type { ShortcutGroup } from './cheatsheetData';
 export { copyTextToClipboard } from './clipboard';
 export { DEFAULT_CONFIG, UNIMIB_ESAMI_BASE_URL, UNIMIB_ORARI_BASE_URL, DataStore, dataStore, sanitizeLinkItem } from './dataStore';
+export type { ImportResult } from './dataStore';
 export { getAcademicYearStart, getUnimibEsamiUrl, getUnimibOrariUrl, parseDateFormatted, parseDateISO, resolveDynamicUrl } from './dynamicEvaluator';
 export { DEFAULT_PREFIX_RULES, FuzzySearchEngine, fuzzySearchEngine, getEngineFallback } from './fuzzySearch';
 export type { ParsedCommand } from './fuzzySearch';

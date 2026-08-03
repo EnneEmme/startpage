@@ -307,8 +307,8 @@
 - [ ] ⚪ **Magic numbers diffusi** — 1400ms highlight, -85 offset, 120/80px scroll, 35/12px auto-scroll, 190/220 clamp, pesi Fuse 0.45/0.35, rank factor 0.15, tabelle rem tema hardcoded.
   **Fix:** costanti nominate in `engine/constants.ts`.
 
-- [ ] ⚪ **Catch silenziosi ovunque** — dataStore.ts:241,371,381; rankStorage.ts:28,49,98; themeEngine.ts:222-233; `importJson` ritorna solo false.
-  **Fix:** `console.warn` con contesto (restano in dev; drop_console li toglie in prod) + errori strutturati `{ok, error}` da importJson.
+- [x] ⚪ **Catch silenziosi ovunque** — dataStore.ts:241,371,381; rankStorage.ts:28,49,98; themeEngine.ts:222-233; `importJson` ritorna solo false.
+  **Fix:** `console.warn` con contesto (restano in dev; drop_console li toglie in prod) + errori strutturati `{ok, error}` da importJson. ✅ Fatto (P7/R3): 18 catch silenti → `console.warn('[Modulo] contesto', err)` (fallback invariati); nuovo `dataStore.importJsonDetailed(): {ok:true}|{ok:false,error}` con motivi leggibili (Invalid JSON / missing "commands" array / No valid links), `importJson` boolean mantenuto come compat wrapper (appStore.ts read-only, annotazione `: boolean`), ImportExportModal mostra il motivo via toast; 5 test engine + 2 test modal nuovi/adattati.
 
 - [ ] ⚪ **Error boundary assente** — eccezione di render (dati corrotti) = pagina bianca. Aggiungere boundary con bottone "Reset defaults" in main.tsx.
 

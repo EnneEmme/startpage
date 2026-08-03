@@ -15,7 +15,8 @@ export const extractDomain = (url: string): string => {
   try {
     const parsed = new URL(url);
     return parsed.hostname;
-  } catch {
+  } catch (err) {
+    console.warn('[IconResolver] Could not parse URL, no domain extracted:', err);
     return '';
   }
 };
@@ -37,7 +38,8 @@ export const extractOrigin = (url: string): string => {
   try {
     const parsed = new URL(url);
     return `${parsed.protocol}//${parsed.hostname}`;
-  } catch {
+  } catch (err) {
+    console.warn('[IconResolver] Could not parse URL, no origin extracted:', err);
     return '';
   }
 };
@@ -90,7 +92,8 @@ const readFaviconCache = (): Record<string, number> => {
   try {
     const parsed = JSON.parse(localStorage.getItem(FAVICON_CACHE_KEY) || '{}');
     return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
-  } catch {
+  } catch (err) {
+    console.warn('[IconResolver] Failed to read favicon cache, starting empty:', err);
     return {};
   }
 };
@@ -106,8 +109,9 @@ export const setCachedFaviconIndex = (domain: string, index: number): void => {
     const cache = readFaviconCache();
     cache[domain] = index;
     localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(cache));
-  } catch {
+  } catch (err) {
     /* storage pieno/privato: cache best-effort */
+    console.warn('[IconResolver] Failed to persist favicon cache:', err);
   }
 };
 
@@ -143,7 +147,8 @@ export const formatSvgToDataUrl = (svgCode: string): string => {
     // btoa is a browser builtin; no Node Buffer fallback (this ships in a browser bundle)
     const base64 = btoa(binary);
     return `data:image/svg+xml;base64,${base64}`;
-  } catch {
+  } catch (err) {
+    console.warn('[IconResolver] base64 encoding failed, using utf8 data URL fallback:', err);
     return `data:image/svg+xml;utf8,${encodeURIComponent(cleanSvg)}`;
   }
 };

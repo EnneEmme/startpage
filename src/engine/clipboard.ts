@@ -11,8 +11,9 @@ export const copyTextToClipboard = async (text: string): Promise<boolean> => {
       await navigator.clipboard.writeText(text);
       return true;
     }
-  } catch {
+  } catch (err) {
     // fall through to legacy path
+    console.warn('[Clipboard] Async clipboard write failed, trying legacy fallback:', err);
   }
 
   // Legacy fallback: hidden textarea + execCommand('copy')
@@ -29,7 +30,8 @@ export const copyTextToClipboard = async (text: string): Promise<boolean> => {
     const ok = document.execCommand('copy');
     document.body.removeChild(textarea);
     return ok;
-  } catch {
+  } catch (err) {
+    console.warn('[Clipboard] Legacy execCommand copy failed:', err);
     return false;
   }
 };
