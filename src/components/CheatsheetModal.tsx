@@ -53,6 +53,7 @@ export const CheatsheetModal = ({ isOpen, onClose }: CheatsheetModalProps) => {
           type="text"
           class={styles.searchInput}
           placeholder="Filter shortcuts (e.g. Alt, numbers, search, delete)..."
+          aria-label="Filter shortcuts"
           value={searchQuery}
           onInput={e => setSearchQuery((e.target as HTMLInputElement).value)}
           autoFocus

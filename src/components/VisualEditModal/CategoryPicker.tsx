@@ -21,25 +21,30 @@ export const CategoryPicker = ({
 }: CategoryPickerProps) => {
   return (
     <div class={styles.fieldGroup}>
-      <label class={styles.label}>Column / Category</label>
+      <label class={styles.label} for="vem-category">Column / Category</label>
       <div class={styles.customSelectWrapper}>
         {!isCreatingNewCategory ? (
-          <div
+          <button
+            id="vem-category"
+            type="button"
             class={styles.customSelectTrigger}
             onClick={() => onSetIsCategoryPickerOpen(!isCategoryPickerOpen)}
+            aria-expanded={isCategoryPickerOpen}
+            aria-haspopup="listbox"
           >
             <span class={styles.selectedCategoryText}>
               <Tag size={14} class={styles.categoryTagIcon} />
               {category}
             </span>
             <span class={styles.arrowIcon}>{isCategoryPickerOpen ? '▲' : '▼'}</span>
-          </div>
+          </button>
         ) : (
           <div class={styles.newCategoryInputWrapper}>
             <input
               type="text"
               class={styles.input}
               placeholder="New category name..."
+              aria-label="New category name"
               value={newCategoryName}
               onInput={e => onSetNewCategoryName((e.target as HTMLInputElement).value)}
               autoFocus
@@ -62,10 +67,12 @@ export const CategoryPicker = ({
         )}
 
         {isCategoryPickerOpen && !isCreatingNewCategory && (
-          <div class={`${styles.customDropdownMenu} fade-in`}>
+          <div class={`${styles.customDropdownMenu} fade-in`} role="listbox" aria-label="Available categories">
             {categories.map(cat => (
               <div
                 key={cat}
+                role="option"
+                aria-selected={cat === category}
                 class={`${styles.dropdownOption} ${cat === category ? styles.activeOption : ''}`}
                 onClick={() => onSelectCategory(cat)}
               >
@@ -74,6 +81,8 @@ export const CategoryPicker = ({
               </div>
             ))}
             <div
+              role="option"
+              aria-selected={false}
               class={`${styles.dropdownOption} ${styles.createOption}`}
               onClick={() => {
                 onSetIsCreatingNewCategory(true);

@@ -42,14 +42,14 @@ export const SettingsModal = ({
       {/* Accent Color Theme Section */}
           <div class={styles.sectionGroup}>
             <div class={styles.sectionHeaderRow}>
-              <label class={styles.sectionLabel}>
+              <label class={styles.sectionLabel} id="settings-accent-label">
                 <Palette size={15} class={styles.sectionIcon} />
                 Primary Accent Color
               </label>
               <span class={styles.sectionSubtext}>Applies the palette to buttons, selections and highlight effects</span>
             </div>
 
-            <div class={styles.colorPaletteGrid}>
+            <div class={styles.colorPaletteGrid} role="group" aria-labelledby="settings-accent-label">
               {ACCENT_COLORS.map(item => {
                 const isSelected = config.accentColorId === item.id;
                 return (
@@ -72,7 +72,7 @@ export const SettingsModal = ({
           {/* Grid Density Section */}
           <div class={styles.sectionGroup}>
             <div class={styles.sectionHeaderRow}>
-              <label class={styles.sectionLabel}>
+              <label class={styles.sectionLabel} id="settings-density-label">
                 <LayoutGrid size={15} class={styles.sectionIcon} />
                 Column Grid Density
               </label>
@@ -83,7 +83,7 @@ export const SettingsModal = ({
               </span>
             </div>
 
-            <div class={styles.segmentedControl}>
+            <div class={styles.segmentedControl} role="group" aria-labelledby="settings-density-label">
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${config.gridDensity === 'compact' ? styles.activeSegment : ''}`}
@@ -111,14 +111,14 @@ export const SettingsModal = ({
           {/* Font Size Section */}
           <div class={styles.sectionGroup}>
             <div class={styles.sectionHeaderRow}>
-              <label class={styles.sectionLabel}>
+              <label class={styles.sectionLabel} id="settings-fontsize-label">
                 <Type size={15} class={styles.sectionIcon} />
                 Font Size
               </label>
               <span class={styles.sectionSubtext}>Adjusts the typographic scale of the whole interface</span>
             </div>
 
-            <div class={styles.segmentedControl}>
+            <div class={styles.segmentedControl} role="group" aria-labelledby="settings-fontsize-label">
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${config.fontSize === 'small' ? styles.activeSegment : ''}`}
@@ -153,7 +153,7 @@ export const SettingsModal = ({
           {/* Alias Badge Visibility Section */}
           <div class={styles.sectionGroup}>
             <div class={styles.sectionHeaderRow}>
-              <label class={styles.sectionLabel}>
+              <label class={styles.sectionLabel} id="settings-alias-label">
                 <Eye size={15} class={styles.sectionIcon} />
                 Shortcut Badge Visibility (Aliases)
               </label>
@@ -162,7 +162,7 @@ export const SettingsModal = ({
               </span>
             </div>
 
-            <div class={styles.segmentedControl}>
+            <div class={styles.segmentedControl} role="group" aria-labelledby="settings-alias-label">
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${(config.aliasVisibility === 'smart' || !config.aliasVisibility) ? styles.activeSegment : ''}`}
@@ -183,14 +183,14 @@ export const SettingsModal = ({
           {/* Default Search Engine Section */}
           <div class={styles.sectionGroup}>
             <div class={styles.sectionHeaderRow}>
-              <label class={styles.sectionLabel}>
+              <label class={styles.sectionLabel} id="settings-engine-label">
                 <Search size={15} class={styles.sectionIcon} />
                 Default Search Engine
               </label>
               <span class={styles.sectionSubtext}>Used for general web searches from the search bar</span>
             </div>
 
-            <div class={styles.segmentedControl}>
+            <div class={styles.segmentedControl} role="group" aria-labelledby="settings-engine-label">
               <button
                 type="button"
                 class={`${styles.segmentBtn} ${config.defaultSearchEngine === 'g' ? styles.activeSegment : ''}`}
@@ -232,14 +232,14 @@ export const SettingsModal = ({
           {/* Backup & Import/Export Section */}
           <div class={styles.sectionGroup}>
             <div class={styles.sectionHeaderRow}>
-              <label class={styles.sectionLabel}>
+              <label class={styles.sectionLabel} id="settings-backup-label">
                 <Download size={15} class={styles.sectionIcon} />
                 Backup & Data Sync
               </label>
               <span class={styles.sectionSubtext}>Export or import links and preferences in JSON format</span>
             </div>
 
-            <div class={styles.backupBtnRow}>
+            <div class={styles.backupBtnRow} role="group" aria-labelledby="settings-backup-label">
               <button
                 type="button"
                 class={styles.backupActionBtn}
