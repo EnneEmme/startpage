@@ -538,5 +538,25 @@ describe('DataStore Engine & Edge Cases', () => {
       expect(speechify?.category).toBe('Media');
       expect(speechify?.url).toBe('https://platform.speechify.ai/');
     });
+
+    it('contains Sophon and respects the requested AI & LLMs column order', () => {
+      const links = dataStore.getLinks();
+      const aiLinks = links.filter(l => l.category === 'AI & LLMs');
+
+      expect(aiLinks.map(l => l.id).slice(0, 6)).toEqual([
+        'gemini',
+        'aistudio',
+        'artificialanalysis',
+        'openrouter',
+        'llmstats',
+        'sophon',
+      ]);
+
+      const sophon = aiLinks.find(l => l.id === 'sophon');
+      expect(sophon).toBeDefined();
+      expect(sophon?.title).toBe('Sophon');
+      expect(sophon?.url).toBe('https://sophon.at');
+      expect(sophon?.aliases).toContain('sophon');
+    });
   });
 });
