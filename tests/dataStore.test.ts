@@ -520,5 +520,23 @@ describe('DataStore Engine & Edge Cases', () => {
       expect(orari.dynamicUrlRule).toBe('unimib_orari');
       expect((globalThis as Record<string, unknown>).__d2Tampered).toBeUndefined();
     });
+
+    it('contains new default links for MS Playground, Cartesia, and Speechify', () => {
+      const links = dataStore.getLinks();
+      const msPlayground = links.find(l => l.id === 'ms_playground');
+      expect(msPlayground).toBeDefined();
+      expect(msPlayground?.category).toBe('ImGen');
+      expect(msPlayground?.url).toBe('https://playground.microsoft.ai');
+
+      const cartesia = links.find(l => l.id === 'cartesia');
+      expect(cartesia).toBeDefined();
+      expect(cartesia?.category).toBe('Media');
+      expect(cartesia?.url).toBe('https://play.cartesia.ai/dashboard');
+
+      const speechify = links.find(l => l.id === 'speechify');
+      expect(speechify).toBeDefined();
+      expect(speechify?.category).toBe('Media');
+      expect(speechify?.url).toBe('https://platform.speechify.ai/');
+    });
   });
 });

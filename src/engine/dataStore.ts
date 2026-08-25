@@ -721,6 +721,13 @@ export const DEFAULT_CONFIG: StartpageConfig = {
       aliases: ['krea'],
       category: 'ImGen',
     },
+    {
+      id: 'ms_playground',
+      title: 'MS Playground',
+      url: 'https://playground.microsoft.ai',
+      aliases: ['msplay', 'msplayground', 'playground'],
+      category: 'ImGen',
+    },
 
     // Media / AudioGen (Kept separate)
     { id: 'suno', title: 'Suno', url: 'https://suno.com', aliases: ['suno'], category: 'Media' },
@@ -736,6 +743,20 @@ export const DEFAULT_CONFIG: StartpageConfig = {
       title: 'Fish Audio',
       url: 'https://fish.audio/app/',
       aliases: ['fish', 'fishaudio'],
+      category: 'Media',
+    },
+    {
+      id: 'cartesia',
+      title: 'Cartesia',
+      url: 'https://play.cartesia.ai/dashboard',
+      aliases: ['cartesia'],
+      category: 'Media',
+    },
+    {
+      id: 'speechify',
+      title: 'Speechify',
+      url: 'https://platform.speechify.ai/',
+      aliases: ['speechify'],
       category: 'Media',
     },
 
