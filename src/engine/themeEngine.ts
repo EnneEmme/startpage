@@ -138,6 +138,11 @@ export class ThemeEngine {
     this.saveAndApply();
   }
 
+  public resetToDefaults(): void {
+    this.config = { ...DEFAULT_THEME_CONFIG };
+    this.saveAndApply();
+  }
+
   public applyTheme(config: ThemeConfig): void {
     if (typeof document === 'undefined') return;
 

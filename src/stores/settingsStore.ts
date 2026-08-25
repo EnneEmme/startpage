@@ -26,4 +26,6 @@ export const settingsActions = {
 
   setDefaultSearchEngine: (engine: 'g' | 'ddg' | 'b' | 'yt' | 'gh'): void =>
     themeEngine.setDefaultSearchEngine(engine),
+
+  resetToDefaults: (): void => themeEngine.resetToDefaults(),
 };

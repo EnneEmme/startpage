@@ -146,6 +146,17 @@
   transform: translateY(-1px);
 }
 
+.dangerActionBtn {
+  color: var(--color-error, #f43f5e);
+  border-color: rgba(244, 63, 94, 0.2);
+}
+
+.dangerActionBtn:hover {
+  background: rgba(244, 63, 94, 0.12);
+  border-color: rgba(244, 63, 94, 0.4);
+  color: #fb7185;
+}
+
 .saveBtn {
   padding: 0.6rem 1.35rem;
   border-radius: var(--radius-lg);

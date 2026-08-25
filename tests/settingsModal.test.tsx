@@ -78,6 +78,39 @@ describe('SettingsModal', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it('renders Clear Local Storage button and triggers reset upon confirmation', async () => {
+    const { confirmSignal, settleConfirm } = await import('../src/stores/confirmStore');
+    const { dataStore } = await import('../src/engine/dataStore');
+
+    // Add a custom link to test clearing
+    dataStore.addLink({
+      id: 'custom_clear_test',
+      title: 'Clear Test',
+      url: 'https://test.com',
+      aliases: ['test'],
+      category: 'Dev',
+    });
+    expect(dataStore.getLinks().some(l => l.id === 'custom_clear_test')).toBe(true);
+
+    render(<SettingsModal isOpen={true} onClose={vi.fn()} />);
+
+    const clearBtn = screen.getByRole('button', { name: /Clear Local Storage/i });
+    expect(clearBtn).toBeDefined();
+
+    fireEvent.click(clearBtn);
+
+    // Confirm dialog should be pending
+    expect(confirmSignal.value).not.toBeNull();
+    expect(confirmSignal.value?.title).toBe('Clear Local Storage');
+
+    // Confirm the action
+    settleConfirm(true);
+    await Promise.resolve();
+
+    // Should have reset dataStore to default (custom link gone)
+    expect(dataStore.getLinks().some(l => l.id === 'custom_clear_test')).toBe(false);
+  });
+
   it('renders nothing when closed', () => {
     const { container } = render(<SettingsModal isOpen={false} onClose={vi.fn()} />);
     expect(container.firstChild).toBeNull();

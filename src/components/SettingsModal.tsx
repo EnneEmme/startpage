@@ -1,6 +1,12 @@
 import { Icon } from './Icon';
-import { ACCENT_COLORS } from '../engine';
-import { themeConfigSignal, settingsActions } from '../stores';
+import { ACCENT_COLORS, clearConsents } from '../engine';
+import {
+  themeConfigSignal,
+  settingsActions,
+  appActions,
+  confirmDialog,
+  showToast,
+} from '../stores';
 import { Modal } from './Modals/Modal';
 import styles from './SettingsModal.module.css';
 
@@ -25,6 +31,28 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
     settingsActions.setAliasVisibility(visibility);
   const handleSelectEngine = (engine: 'g' | 'ddg' | 'b' | 'yt' | 'gh') =>
     settingsActions.setDefaultSearchEngine(engine);
+
+  const handleClearLocalStorage = () => {
+    void confirmDialog({
+      title: 'Clear Local Storage',
+      message:
+        'Are you sure you want to clear all local storage? All custom links, theme settings, categories, and usage statistics will be permanently removed and reset to default.',
+      confirmLabel: 'Clear Storage',
+      cancelLabel: 'Cancel',
+      danger: true,
+    }).then(ok => {
+      if (!ok) return;
+      try {
+        localStorage.clear();
+      } catch (err) {
+        console.warn('[SettingsModal] Failed to clear localStorage:', err);
+      }
+      appActions.resetToDefaults();
+      settingsActions.resetToDefaults();
+      clearConsents();
+      showToast('Local storage cleared and reset to defaults');
+    });
+  };
 
   return (
     <Modal
@@ -266,6 +294,30 @@ export const SettingsModal = ({ isOpen, onClose, onOpenImportExport }: SettingsM
           >
             <Icon name="Download" size={15} />
             <span>Export / Import JSON Backup</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Clear Local Storage Section */}
+      <div class={styles.sectionGroup}>
+        <div class={styles.sectionHeaderRow}>
+          <label class={styles.sectionLabel} id="settings-storage-label">
+            <Icon name="Trash2" size={15} class={styles.sectionIcon} />
+            Local Storage & Factory Reset
+          </label>
+          <span class={styles.sectionSubtext}>
+            Permanently clear all saved data, custom links, preferences and cached items
+          </span>
+        </div>
+
+        <div class={styles.backupBtnRow} role="group" aria-labelledby="settings-storage-label">
+          <button
+            type="button"
+            class={`${styles.backupActionBtn} ${styles.dangerActionBtn}`}
+            onClick={handleClearLocalStorage}
+          >
+            <Icon name="Trash2" size={15} />
+            <span>Clear Local Storage</span>
           </button>
         </div>
       </div>
