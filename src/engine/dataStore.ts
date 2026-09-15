@@ -11,13 +11,41 @@ const STORAGE_ORDER_KEY = 'startpage_category_order';
 const STORAGE_MIGRATIONS_KEY = 'startpage_migrations';
 const MIGRATION_V2 = 'v2_legacy_normalization';
 const MIGRATION_V3 = 'migrated_v3_unimib_dynamic';
+const MIGRATION_V4 = 'migrated_v4_restore_unimib_scripts';
+
+export const ORARI_SCRIPT = `(function() {
+  var parseDate = function(date) {
+    var dd = String(date.getDate()).padStart(2, '0');
+    var mm = String(date.getMonth() + 1).padStart(2, '0');
+    var yyyy = date.getFullYear();
+    return dd + '-' + mm + '-' + yyyy;
+  };
+  var now = new Date();
+  var today = parseDate(now);
+  var anno = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+  var url = "https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easycourse&form-type=corso&include=corso&txtcurr=1+-+PERCORSO+COMUNE&anno=" + anno + "&scuola=&corso=F1802Q&anno2%5B%5D=GGG%7C1&visualizzazione_orario=cal&date=" + today + "&periodo_didattico=&_lang=it&list=&week_grid_type=-1&ar_codes_=EC508261%7CEC512923%7CEC508282%7CEC512924%7CEC509735&ar_select_=true%7Ctrue%7Ctrue%7Ctrue%7Cfalse&col_cells=0&empty_box=0&only_grid=0&highlighted_date=0&all_events=0#";
+  window.location.href = url;
+})();`;
+
+export const ESAMI_SCRIPT = `(function() {
+  var parseDate = function(date) {
+    var dd = String(date.getDate()).padStart(2, '0');
+    var mm = String(date.getMonth() + 1).padStart(2, '0');
+    var yyyy = date.getFullYear();
+    return dd + '-' + mm + '-' + yyyy;
+  };
+  var today = new Date();
+  var date = new Date(today);
+  date.setDate(date.getDate() + 60);
+  var todayStr = parseDate(today);
+  var dateStr = parseDate(date);
+  var url = "https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easytest&form-type=et_cdl&include=et_cdl&et_er=1&scuola=AreaScientifica-Informatica&esami_cdl=F1802Q&anno2%5B%5D=1&datefrom=" + todayStr + "&dateto=" + dateStr + "&_lang=it&list=&week_grid_type=-1&ar_codes_=&ar_select_=&col_cells=0&empty_box=0&only_grid=0&highlighted_date=0&all_events=0#";
+  window.location.href = url;
+})();`;
 
 /**
  * Stable, readable base URLs for the built-in Unimib links: they feed
- * favicons/tooltips/edit-forms only — navigation always goes through the
- * `dynamicUrlRule` (dynamicEvaluator is the single source of truth for the
- * full dated URL). This is what remains of the old `javascript:` stubs after
- * the dynamic-only migration: no script machinery ships in the defaults.
+ * favicons/tooltips/edit-forms fallback.
  */
 export const UNIMIB_ORARI_BASE_URL =
   'https://gestioneorari.didattica.unimib.it/PortaleStudentiUnimib/index.php?view=easycourse&corso=F1802Q';
@@ -321,18 +349,22 @@ export const DEFAULT_CONFIG: StartpageConfig = {
     {
       id: 'unimib_esami',
       title: 'Esami',
-      url: UNIMIB_ESAMI_BASE_URL,
+      url: 'javascript:updateEsami()',
       aliases: ['esami', 'unimib_esami'],
       category: 'School',
       dynamicUrlRule: 'unimib_esami',
+      isScript: true,
+      scriptContent: ESAMI_SCRIPT,
     },
     {
       id: 'unimib_orari',
       title: 'Orari',
-      url: UNIMIB_ORARI_BASE_URL,
+      url: 'javascript:updateOrari()',
       aliases: ['orari', 'unimib_orari'],
       category: 'School',
       dynamicUrlRule: 'unimib_orari',
+      isScript: true,
+      scriptContent: ORARI_SCRIPT,
     },
     {
       id: 'appunti',
@@ -917,7 +949,40 @@ export type ImportResult = { ok: true } | { ok: false; error: string };
 const isWebNavigableUrl = (url: string): boolean =>
   /^https?:\/\//i.test(url.trim()) || url.trim().startsWith('/');
 
+const isBuiltinUnimibScriptItem = (item: LinkItem): boolean => {
+  if (item.dynamicUrlRule === 'unimib_orari') {
+    return (
+      item.id === 'unimib_orari' ||
+      item.id === 'orari' ||
+      item.title === 'Orari'
+    );
+  }
+  if (item.dynamicUrlRule === 'unimib_esami') {
+    return (
+      item.id === 'unimib_esami' ||
+      item.id === 'esami' ||
+      item.title === 'Esami'
+    );
+  }
+  return false;
+};
+
 const neutralizeImportedScript = (item: LinkItem): LinkItem | null => {
+  if (isBuiltinUnimibScriptItem(item)) {
+    const isOrari =
+      item.dynamicUrlRule === 'unimib_orari' ||
+      item.id === 'unimib_orari' ||
+      item.id === 'orari' ||
+      item.title === 'Orari';
+    return {
+      ...item,
+      isScript: true,
+      url: isOrari ? 'javascript:updateOrari()' : 'javascript:updateEsami()',
+      scriptContent: isOrari ? ORARI_SCRIPT : ESAMI_SCRIPT,
+      dynamicUrlRule: isOrari ? 'unimib_orari' : 'unimib_esami',
+    };
+  }
+
   const hasScriptFlag = item.isScript === true;
   const hasScriptContent =
     typeof item.scriptContent === 'string' && item.scriptContent.trim().length > 0;
@@ -1007,10 +1072,52 @@ const normalizeUnimibDynamicItem = (item: LinkItem): boolean => {
 };
 
 /**
+ * Migration v4: Restores built-in Unimib links (Orari & Esami) to first-party
+ * JavaScript bookmarklet scripts with dynamic academic year and date calculation.
+ * User customizations (title/icon/category/aliases) are preserved.
+ */
+const normalizeRestoreUnimibScripts = (item: LinkItem): boolean => {
+  const isOrari =
+    item.dynamicUrlRule === 'unimib_orari' ||
+    item.id === 'unimib_orari' ||
+    item.id === 'orari' ||
+    item.title === 'Orari';
+  const isEsami =
+    item.dynamicUrlRule === 'unimib_esami' ||
+    item.id === 'unimib_esami' ||
+    item.id === 'esami' ||
+    item.title === 'Esami';
+  if (!isOrari && !isEsami) return false;
+
+  let dirty = false;
+  const rule = isOrari ? 'unimib_orari' : 'unimib_esami';
+  const scriptContent = isOrari ? ORARI_SCRIPT : ESAMI_SCRIPT;
+  const url = isOrari ? 'javascript:updateOrari()' : 'javascript:updateEsami()';
+
+  if (item.dynamicUrlRule !== rule) {
+    item.dynamicUrlRule = rule;
+    dirty = true;
+  }
+  if (!item.isScript) {
+    item.isScript = true;
+    dirty = true;
+  }
+  if (item.scriptContent !== scriptContent) {
+    item.scriptContent = scriptContent;
+    dirty = true;
+  }
+  if (item.url !== url) {
+    item.url = url;
+    dirty = true;
+  }
+  return dirty;
+};
+
+/**
  * One-shot legacy normalization (migration v2):
  * - merges the old 'LLMs 2'/'LLMs' categories into 'AI & LLMs'
  * - normalizes the built-in Unimib links (legacy items identified by id or
- *   exact default title) into their dynamic-url scriptless form.
+ *   exact default title) into their first-party script bookmarklet form.
  * Idempotent: safe to run on imports of old backups as well.
  * Returns true when the item was modified.
  */
@@ -1020,7 +1127,7 @@ const normalizeLegacyItem = (item: LinkItem): boolean => {
     item.category = 'AI & LLMs';
     dirty = true;
   }
-  if (normalizeUnimibDynamicItem(item)) dirty = true;
+  if (normalizeRestoreUnimibScripts(item)) dirty = true;
   return dirty;
 };
 
@@ -1098,6 +1205,8 @@ export class DataStore {
       // v3 (security): Unimib links become dynamic-url-only — strips script
       // machinery and javascript: stub urls from stored profiles.
       [MIGRATION_V3]: normalizeUnimibDynamicItem,
+      // v4 (first-party): restores built-in Unimib links to first-party scripts.
+      [MIGRATION_V4]: normalizeRestoreUnimibScripts,
     };
 
     const persistFlags = () => {

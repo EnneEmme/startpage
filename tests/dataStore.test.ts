@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   DataStore,
   DEFAULT_CONFIG,
+  ESAMI_SCRIPT,
+  ORARI_SCRIPT,
   sanitizeLinkItem,
   UNIMIB_ESAMI_BASE_URL,
   UNIMIB_ORARI_BASE_URL,
@@ -173,43 +175,52 @@ describe('DataStore Engine & Edge Cases', () => {
     expect(secondLoad.getLinks()[0]!.category).toBe('LLMs 2');
   });
 
-  it('ships a default config with no script machinery at all (D3)', () => {
-    for (const link of DEFAULT_CONFIG.commands) {
+  it('ships a default config with first-party Unimib scripts (D3)', () => {
+    const nonUnimib = DEFAULT_CONFIG.commands.filter(
+      l => l.id !== 'unimib_orari' && l.id !== 'unimib_esami',
+    );
+    for (const link of nonUnimib) {
       expect(link.isScript).toBeUndefined();
       expect(link.scriptContent).toBeUndefined();
       expect(link.url.toLowerCase().startsWith('javascript:')).toBe(false);
     }
     const orari = DEFAULT_CONFIG.commands.find(l => l.id === 'unimib_orari')!;
-    expect(orari.url).toBe(UNIMIB_ORARI_BASE_URL);
+    expect(orari.isScript).toBe(true);
+    expect(orari.scriptContent).toBe(ORARI_SCRIPT);
+    expect(orari.url).toBe('javascript:updateOrari()');
     expect(orari.dynamicUrlRule).toBe('unimib_orari');
+
+    const esami = DEFAULT_CONFIG.commands.find(l => l.id === 'unimib_esami')!;
+    expect(esami.isScript).toBe(true);
+    expect(esami.scriptContent).toBe(ESAMI_SCRIPT);
+    expect(esami.url).toBe('javascript:updateEsami()');
+    expect(esami.dynamicUrlRule).toBe('unimib_esami');
   });
 
-  it('migration v3 converts stored Unimib script links to dynamic-only (D3, idempotent)', () => {
-    // Pre-v3 profile: v2 done, Unimib links still in script form
+  it('migration v4 restores stored Unimib links to first-party scripts (idempotent)', () => {
     localStorage.clear();
-    localStorage.setItem('startpage_migrations', JSON.stringify({ v2_legacy_normalization: true }));
+    localStorage.setItem(
+      'startpage_migrations',
+      JSON.stringify({ v2_legacy_normalization: true, migrated_v3_unimib_dynamic: true }),
+    );
     const legacyCommands = [
       {
-        // user-renamed + customized: only the machinery must go
+        // user-renamed + customized: only the machinery must be restored
         id: 'unimib_orari',
         title: 'Lezioni mie',
-        url: 'javascript:updateOrari()',
+        url: UNIMIB_ORARI_BASE_URL,
         aliases: ['orari'],
         category: 'ScuolaCustom',
         icon: 'https://example.com/icon.png',
         dynamicUrlRule: 'unimib_orari',
-        isScript: true,
-        scriptContent: 'globalThis.__v3Old = 1',
       },
       {
         // legacy shape without dynamicUrlRule: matched by id/title, rule ensured
         id: 'esami',
         title: 'Esami',
-        url: 'javascript:updateEsami()',
+        url: UNIMIB_ESAMI_BASE_URL,
         aliases: ['esami'],
         category: 'School',
-        isScript: true,
-        scriptContent: 'alert(1)',
       },
       {
         // untouched: an unrelated custom bookmarklet stays as-is (user data)
@@ -228,9 +239,9 @@ describe('DataStore Engine & Edge Cases', () => {
     const links = migrated.getLinks();
 
     const orari = links.find(l => l.id === 'unimib_orari')!;
-    expect(orari.isScript).toBeUndefined();
-    expect(orari.scriptContent).toBeUndefined();
-    expect(orari.url).toBe(UNIMIB_ORARI_BASE_URL);
+    expect(orari.isScript).toBe(true);
+    expect(orari.scriptContent).toBe(ORARI_SCRIPT);
+    expect(orari.url).toBe('javascript:updateOrari()');
     expect(orari.dynamicUrlRule).toBe('unimib_orari');
     // rename/custom icons/category survive
     expect(orari.title).toBe('Lezioni mie');
@@ -238,18 +249,16 @@ describe('DataStore Engine & Edge Cases', () => {
     expect(orari.category).toBe('ScuolaCustom');
 
     const esami = links.find(l => l.id === 'esami')!;
-    expect(esami.isScript).toBeUndefined();
-    expect(esami.scriptContent).toBeUndefined();
-    expect(esami.url).toBe(UNIMIB_ESAMI_BASE_URL);
+    expect(esami.isScript).toBe(true);
+    expect(esami.scriptContent).toBe(ESAMI_SCRIPT);
+    expect(esami.url).toBe('javascript:updateEsami()');
     expect(esami.dynamicUrlRule).toBe('unimib_esami');
 
     // unrelated user scripts are NOT touched by the Unimib migration
     const bm = links.find(l => l.id === 'mybm')!;
     expect(bm.isScript).toBe(true);
 
-    // flag persisted + migrated items persisted script-free (the unrelated
-    // user bookmarklet legitimately keeps its own scriptContent)
-    expect(localStorage.getItem('startpage_migrations')).toContain('migrated_v3_unimib_dynamic');
+    expect(localStorage.getItem('startpage_migrations')).toContain('migrated_v4_restore_unimib_scripts');
     const persisted = JSON.parse(localStorage.getItem('startpage_custom_links')!) as {
       commands: LinkItem[];
     };
@@ -257,8 +266,8 @@ describe('DataStore Engine & Edge Cases', () => {
       l => l.id === 'unimib_orari' || l.id === 'esami',
     );
     for (const item of persistedUnimib) {
-      expect(item.scriptContent).toBeUndefined();
-      expect(item.isScript).toBeUndefined();
+      expect(item.scriptContent).toBeDefined();
+      expect(item.isScript).toBe(true);
     }
 
     // idempotent: a reload leaves everything identical
@@ -513,10 +522,10 @@ describe('DataStore Engine & Edge Cases', () => {
 
       expect(dataStore.importJson(hostile)).toBe(true);
       const orari = dataStore.getLinks().find(l => l.id === 'unimib_orari')!;
-      // Unimib links are dynamic-only: the normalizer drops machinery entirely
-      expect(orari.scriptContent).toBeUndefined();
-      expect(orari.isScript).toBeUndefined();
-      expect(orari.url).toBe(UNIMIB_ORARI_BASE_URL);
+      // Unimib links are canonicalized to the trusted script, dropping tampered payload
+      expect(orari.scriptContent).toBe(ORARI_SCRIPT);
+      expect(orari.isScript).toBe(true);
+      expect(orari.url).toBe('javascript:updateOrari()');
       expect(orari.dynamicUrlRule).toBe('unimib_orari');
       expect((globalThis as Record<string, unknown>).__d2Tampered).toBeUndefined();
     });

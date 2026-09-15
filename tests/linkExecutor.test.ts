@@ -270,28 +270,38 @@ describe('LinkExecutor Engine', () => {
       expect(ran).toBe(3);
     });
 
-    it('default Unimib links are dynamic-only (no script) and navigate via rule', () => {
-      const windowSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    it('builtin default scripts (unimib_orari/esami) run with implicit consent', () => {
+      let ran = 0;
+      (globalThis as Record<string, unknown>).__secBuiltinRun = () => {
+        ran++;
+      };
       const handler = vi.fn(() => Promise.resolve(true));
       setScriptConfirmHandler(handler);
-      const orari = DEFAULT_CONFIG.commands.find(l => l.id === 'unimib_orari')!;
+      const builtin: LinkItem = {
+        id: 'unimib_orari',
+        title: 'Orari',
+        url: 'javascript:updateOrari()',
+        isScript: true,
+        scriptContent: 'globalThis.__secBuiltinRun()',
+        aliases: [],
+        category: 'School',
+      };
 
-      // Shipped defaults carry no script machinery at all
-      expect(orari.isScript).toBeUndefined();
-      expect(orari.scriptContent).toBeUndefined();
-      expect(isBookmarkletOrScript(orari)).toBe(false);
-
-      expect(executeLink(orari, '_blank')).toBe(true);
-      expect(windowSpy).toHaveBeenCalledWith(
-        expect.stringContaining('view=easycourse'),
-        '_blank',
-        'noopener,noreferrer',
-      );
-      const navigatedUrl = windowSpy.mock.calls[0]![0] as string;
-      expect(navigatedUrl).not.toContain('javascript:');
-      expect(navigatedUrl).toMatch(/anno=\d{4}/);
+      expect(executeLink(builtin)).toBe(true);
+      expect(ran).toBe(1);
       expect(handler).not.toHaveBeenCalled();
-      windowSpy.mockRestore();
+    });
+
+    it('default Unimib links are configured as first-party scripts in DEFAULT_CONFIG', () => {
+      const orari = DEFAULT_CONFIG.commands.find(l => l.id === 'unimib_orari')!;
+      expect(orari.isScript).toBe(true);
+      expect(orari.scriptContent).toBeDefined();
+      expect(isBookmarkletOrScript(orari)).toBe(true);
+
+      const esami = DEFAULT_CONFIG.commands.find(l => l.id === 'unimib_esami')!;
+      expect(esami.isScript).toBe(true);
+      expect(esami.scriptContent).toBeDefined();
+      expect(isBookmarkletOrScript(esami)).toBe(true);
     });
 
     it('confirm handler rejection fails closed (no execution, no crash)', async () => {

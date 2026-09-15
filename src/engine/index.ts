@@ -31,6 +31,8 @@ export {
 } from './constants';
 export {
   DEFAULT_CONFIG,
+  ESAMI_SCRIPT,
+  ORARI_SCRIPT,
   UNIMIB_ESAMI_BASE_URL,
   UNIMIB_ORARI_BASE_URL,
   DataStore,
@@ -71,6 +73,7 @@ export type { ResolvedIcon } from './iconResolver';
 export { KeyboardManager, keyboardManager } from './keyboardManager';
 export type { KeyboardActionHandlers } from './keyboardManager';
 export {
+  BUILTIN_SCRIPT_IDS,
   executeLink,
   extractScriptCode,
   isBookmarkletOrScript,
