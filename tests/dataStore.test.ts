@@ -258,7 +258,9 @@ describe('DataStore Engine & Edge Cases', () => {
     const bm = links.find(l => l.id === 'mybm')!;
     expect(bm.isScript).toBe(true);
 
-    expect(localStorage.getItem('startpage_migrations')).toContain('migrated_v4_restore_unimib_scripts');
+    expect(localStorage.getItem('startpage_migrations')).toContain(
+      'migrated_v4_restore_unimib_scripts',
+    );
     const persisted = JSON.parse(localStorage.getItem('startpage_custom_links')!) as {
       commands: LinkItem[];
     };
@@ -566,6 +568,20 @@ describe('DataStore Engine & Edge Cases', () => {
       expect(sophon?.title).toBe('Sophon');
       expect(sophon?.url).toBe('https://sophon.at');
       expect(sophon?.aliases).toContain('sophon');
+    });
+
+    it('updates School links: removes CRV and Info, contains IR', () => {
+      const links = dataStore.getLinks();
+      const schoolLinks = links.filter(l => l.category === 'School');
+
+      expect(schoolLinks.find(l => l.id === 'crv')).toBeUndefined();
+      expect(schoolLinks.find(l => l.id === 'info_course')).toBeUndefined();
+
+      const ir = schoolLinks.find(l => l.id === 'ir');
+      expect(ir).toBeDefined();
+      expect(ir?.title).toBe('IR');
+      expect(ir?.url).toBe('https://elearning.unimib.it/course/view.php?id=68846');
+      expect(ir?.aliases).toEqual(['IR', 'ir', 'information retrieval']);
     });
   });
 });

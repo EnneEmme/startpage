@@ -388,13 +388,6 @@ export const DEFAULT_CONFIG: StartpageConfig = {
       category: 'School',
     },
     {
-      id: 'crv',
-      title: 'CRV',
-      url: 'https://elearning.unimib.it/enrol/index.php?id=68849',
-      aliases: ['CRV', 'crv'],
-      category: 'School',
-    },
-    {
       id: 'vipm',
       title: 'VIPM',
       url: 'https://elearning.unimib.it/enrol/index.php?id=68845',
@@ -402,10 +395,10 @@ export const DEFAULT_CONFIG: StartpageConfig = {
       category: 'School',
     },
     {
-      id: 'info_course',
-      title: 'Info',
-      url: 'https://elearning.unimib.it/course/view.php?id=62130',
-      aliases: ['info', 'info_course'],
+      id: 'ir',
+      title: 'IR',
+      url: 'https://elearning.unimib.it/course/view.php?id=68846',
+      aliases: ['IR', 'ir', 'information retrieval'],
       category: 'School',
     },
 
@@ -951,18 +944,10 @@ const isWebNavigableUrl = (url: string): boolean =>
 
 const isBuiltinUnimibScriptItem = (item: LinkItem): boolean => {
   if (item.dynamicUrlRule === 'unimib_orari') {
-    return (
-      item.id === 'unimib_orari' ||
-      item.id === 'orari' ||
-      item.title === 'Orari'
-    );
+    return item.id === 'unimib_orari' || item.id === 'orari' || item.title === 'Orari';
   }
   if (item.dynamicUrlRule === 'unimib_esami') {
-    return (
-      item.id === 'unimib_esami' ||
-      item.id === 'esami' ||
-      item.title === 'Esami'
-    );
+    return item.id === 'unimib_esami' || item.id === 'esami' || item.title === 'Esami';
   }
   return false;
 };
